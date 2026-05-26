@@ -1,0 +1,8 @@
+node_modules
+.env
+backend/.env
+frontend/.env
+JCF-CONNECT-SECRETS.txt
+dist
+build
+coverage
