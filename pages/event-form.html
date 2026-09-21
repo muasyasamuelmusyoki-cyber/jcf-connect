@@ -1,0 +1,540 @@
+// Example for members.html
+requireAccess('members');   // blocks + redirects if no permission
+applySidebarAccess();       // hides forbidden nav items
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Form – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+      --error: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 900px; }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem 1.5rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    label .req { color: var(--accent); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    input.error, select.error { border-color: var(--error); }
+    .field-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      display: none;
+    }
+    .field-error.show { display: block; }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .success-msg, .error-msg {
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      display: none;
+      font-size: 0.9rem;
+    }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .error-msg {
+      background: rgba(248,113,113,0.12);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .check-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="#" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="#" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="#" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item active">Events</a>
+      <a href="#" class="nav-item">Reports</a>
+      <a href="#" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2 id="pageTitle">Add Event</h2>
+          <p id="pageSubtitle">Create a new church event</p>
+        </div>
+      </div>
+      <div>
+        <a href="events.html" class="btn btn-secondary">← Back to Events</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <form id="eventForm" onsubmit="saveEvent(event)" novalidate>
+        <div class="form-card">
+          <div class="section-title">Event Details</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Event ID</label>
+              <input type="text" id="eventId" readonly style="opacity:0.7;" />
+            </div>
+            <div class="form-group">
+              <label>Title <span class="req">*</span></label>
+              <input type="text" id="title" placeholder="e.g. Sunday Celebration Service" />
+              <span class="field-error" id="errTitle">Title is required</span>
+            </div>
+            <div class="form-group">
+              <label>Type <span class="req">*</span></label>
+              <select id="type">
+                <option value="Sunday Service">Sunday Service</option>
+                <option value="Midweek Service">Midweek Service</option>
+                <option value="Prayer Meeting">Prayer Meeting</option>
+                <option value="Youth Service">Youth Service</option>
+                <option value="Teens Meeting">Teens Meeting</option>
+                <option value="Sunday School">Sunday School</option>
+                <option value="Growth Group">Growth Group</option>
+                <option value="Conference">Conference</option>
+                <option value="Outreach">Outreach</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Funeral">Funeral</option>
+                <option value="Baptism">Baptism</option>
+                <option value="Special Event">Special Event</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status <span class="req">*</span></label>
+              <select id="status">
+                <option value="Planned">Planned</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date <span class="req">*</span></label>
+              <input type="date" id="date" />
+              <span class="field-error" id="errDate">Date is required</span>
+            </div>
+            <div class="form-group">
+              <label>End Date (optional)</label>
+              <input type="date" id="endDate" />
+            </div>
+            <div class="form-group">
+              <label>Start Time</label>
+              <input type="time" id="startTime" />
+            </div>
+            <div class="form-group">
+              <label>End Time</label>
+              <input type="time" id="endTime" />
+            </div>
+            <div class="form-group">
+              <label>Venue</label>
+              <input type="text" id="venue" placeholder="e.g. Main Sanctuary" />
+            </div>
+            <div class="form-group">
+              <label>Organizer</label>
+              <input type="text" id="organizer" placeholder="e.g. Pastor Samuel" />
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <input type="text" id="department" placeholder="e.g. Youth, Media" />
+            </div>
+            <div class="form-group">
+              <label>Expected Attendance</label>
+              <input type="number" id="expectedAttendance" min="0" value="0" />
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="description" placeholder="Short description of the event..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Notes</label>
+              <textarea id="notes" placeholder="Internal notes..."></textarea>
+            </div>
+            <div class="form-group full">
+              <div class="check-row">
+                <input type="checkbox" id="isRecurring" onchange="toggleRecurrence()" />
+                <label for="isRecurring" style="margin:0;cursor:pointer;">Recurring event</label>
+              </div>
+            </div>
+            <div class="form-group" id="recurrenceGroup" style="display:none;">
+              <label>Recurrence</label>
+              <select id="recurrence">
+                <option value="">Select</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='events.html'">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let isEditMode = false;
+    let editingId = null;
+
+    const SAMPLE = [
+      { id: "EVT-001", title: "Sunday Celebration Service", type: "Sunday Service", date: "2026-09-20", endDate: "", startTime: "09:00", endTime: "12:00", venue: "Main Sanctuary", description: "Morning service", status: "Planned", expectedAttendance: 350, organizer: "Pastor Samuel", department: "", isRecurring: true, recurrence: "weekly", notes: "", createdAt: "2026-09-01T10:00:00.000Z", updatedAt: "2026-09-01T10:00:00.000Z" },
+      { id: "EVT-002", title: "Midweek Bible Study", type: "Midweek Service", date: "2026-09-17", endDate: "", startTime: "18:00", endTime: "20:00", venue: "Main Sanctuary", description: "", status: "Planned", expectedAttendance: 120, organizer: "Pastor Samuel", department: "", isRecurring: true, recurrence: "weekly", notes: "", createdAt: "2026-09-01T10:00:00.000Z", updatedAt: "2026-09-01T10:00:00.000Z" },
+      { id: "EVT-003", title: "Youth Night", type: "Youth Service", date: "2026-09-19", endDate: "", startTime: "18:30", endTime: "21:00", venue: "Youth Hall", description: "Friday youth fellowship", status: "Planned", expectedAttendance: 80, organizer: "Youth Leader", department: "Youth", isRecurring: false, recurrence: "", notes: "", createdAt: "2026-09-05T10:00:00.000Z", updatedAt: "2026-09-05T10:00:00.000Z" },
+      { id: "EVT-004", title: "All Night Prayer", type: "Prayer Meeting", date: "2026-09-26", endDate: "", startTime: "22:00", endTime: "05:00", venue: "Main Sanctuary", description: "Monthly all-night prayer", status: "Planned", expectedAttendance: 200, organizer: "Prayer Team", department: "", isRecurring: true, recurrence: "monthly", notes: "", createdAt: "2026-09-08T10:00:00.000Z", updatedAt: "2026-09-08T10:00:00.000Z" },
+      { id: "EVT-005", title: "Community Outreach – Kware", type: "Outreach", date: "2026-09-13", endDate: "", startTime: "10:00", endTime: "14:00", venue: "Kware Estate", description: "Evangelism and food distribution", status: "Completed", expectedAttendance: 50, organizer: "Outreach Team", department: "", isRecurring: false, recurrence: "", notes: "", createdAt: "2026-09-01T10:00:00.000Z", updatedAt: "2026-09-13T16:00:00.000Z" },
+      { id: "EVT-006", title: "Water Baptism Service", type: "Baptism", date: "2026-08-30", endDate: "", startTime: "14:00", endTime: "16:00", venue: "Outdoor", description: "Baptism for new converts", status: "Completed", expectedAttendance: 40, organizer: "Pastor Samuel", department: "", isRecurring: false, recurrence: "", notes: "", createdAt: "2026-08-20T10:00:00.000Z", updatedAt: "2026-08-30T17:00:00.000Z" },
+      { id: "EVT-007", title: "Leaders Retreat", type: "Conference", date: "2026-10-03", endDate: "2026-10-04", startTime: "08:00", endTime: "17:00", venue: "Retreat Centre", description: "Two-day leaders retreat", status: "Planned", expectedAttendance: 60, organizer: "Church Board", department: "", isRecurring: false, recurrence: "", notes: "", createdAt: "2026-09-10T10:00:00.000Z", updatedAt: "2026-09-10T10:00:00.000Z" },
+      { id: "EVT-008", title: "Wedding – Kamau & Wanjiku", type: "Wedding", date: "2026-09-12", endDate: "", startTime: "11:00", endTime: "15:00", venue: "Main Sanctuary", description: "", status: "Cancelled", expectedAttendance: 150, organizer: "Family", department: "", isRecurring: false, recurrence: "", notes: "Postponed by couple", createdAt: "2026-08-15T10:00:00.000Z", updatedAt: "2026-09-10T10:00:00.000Z" }
+    ];
+
+    function getAllEvents() {
+      const saved = JSON.parse(localStorage.getItem('jcf_events') || '[]');
+      const map = {};
+      SAMPLE.forEach(e => { map[e.id] = e; });
+      saved.forEach(e => { map[e.id] = e; });
+      return Object.values(map);
+    }
+
+    function generateId() {
+      const all = getAllEvents();
+      return 'EVT-' + String(all.length + 1).padStart(3, '0');
+    }
+
+    function toggleRecurrence() {
+      const show = document.getElementById('isRecurring').checked;
+      document.getElementById('recurrenceGroup').style.display = show ? 'flex' : 'none';
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('input, select').forEach(el => el.classList.remove('error'));
+      document.getElementById('errorMsg').classList.remove('show');
+    }
+
+    function validate() {
+      clearErrors();
+      let valid = true;
+      const title = document.getElementById('title').value.trim();
+      const date = document.getElementById('date').value;
+      if (!title) {
+        document.getElementById('title').classList.add('error');
+        document.getElementById('errTitle').classList.add('show');
+        valid = false;
+      }
+      if (!date) {
+        document.getElementById('date').classList.add('error');
+        document.getElementById('errDate').classList.add('show');
+        valid = false;
+      }
+      return valid;
+    }
+
+    function fillForm(e) {
+      document.getElementById('eventId').value = e.id || '';
+      document.getElementById('title').value = e.title || '';
+      document.getElementById('type').value = e.type || 'Sunday Service';
+      document.getElementById('status').value = e.status || 'Planned';
+      document.getElementById('date').value = e.date || '';
+      document.getElementById('endDate').value = e.endDate || '';
+      document.getElementById('startTime').value = e.startTime || '';
+      document.getElementById('endTime').value = e.endTime || '';
+      document.getElementById('venue').value = e.venue || '';
+      document.getElementById('organizer').value = e.organizer || '';
+      document.getElementById('department').value = e.department || '';
+      document.getElementById('expectedAttendance').value = e.expectedAttendance || 0;
+      document.getElementById('description').value = e.description || '';
+      document.getElementById('notes').value = e.notes || '';
+      document.getElementById('isRecurring').checked = !!e.isRecurring;
+      document.getElementById('recurrence').value = e.recurrence || '';
+      toggleRecurrence();
+    }
+
+    function saveEvent(ev) {
+      ev.preventDefault();
+      if (!validate()) {
+        document.getElementById('errorMsg').textContent = 'Please fix the errors above.';
+        document.getElementById('errorMsg').classList.add('show');
+        return;
+      }
+
+      const record = {
+        id: document.getElementById('eventId').value,
+        title: document.getElementById('title').value.trim(),
+        type: document.getElementById('type').value,
+        status: document.getElementById('status').value,
+        date: document.getElementById('date').value,
+        endDate: document.getElementById('endDate').value,
+        startTime: document.getElementById('startTime').value,
+        endTime: document.getElementById('endTime').value,
+        venue: document.getElementById('venue').value.trim(),
+        organizer: document.getElementById('organizer').value.trim(),
+        department: document.getElementById('department').value.trim(),
+        expectedAttendance: parseInt(document.getElementById('expectedAttendance').value) || 0,
+        description: document.getElementById('description').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        isRecurring: document.getElementById('isRecurring').checked,
+        recurrence: document.getElementById('isRecurring').checked ? document.getElementById('recurrence').value : '',
+        updatedAt: new Date().toISOString()
+      };
+
+      let saved = JSON.parse(localStorage.getItem('jcf_events') || '[]');
+
+      if (isEditMode) {
+        const idx = saved.findIndex(e => e.id === editingId);
+        if (idx !== -1) {
+          record.createdAt = saved[idx].createdAt || record.updatedAt;
+          saved[idx] = record;
+        } else {
+          record.createdAt = record.updatedAt;
+          saved.push(record);
+        }
+        document.getElementById('successMsg').textContent = 'Event updated successfully!';
+      } else {
+        record.createdAt = record.updatedAt;
+        saved.push(record);
+        document.getElementById('successMsg').textContent = 'Event "' + record.title + '" saved successfully!';
+      }
+
+      localStorage.setItem('jcf_events', JSON.stringify(saved));
+      document.getElementById('successMsg').classList.add('show');
+      document.getElementById('errorMsg').classList.remove('show');
+
+      setTimeout(function () {
+        window.location.href = 'events.html';
+      }, 1200);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('id');
+
+    if (editId) {
+      isEditMode = true;
+      editingId = editId;
+      document.getElementById('pageTitle').textContent = 'Edit Event';
+      document.getElementById('pageSubtitle').textContent = 'Update event details';
+      document.getElementById('saveBtn').textContent = 'Update Event';
+      document.title = 'Edit Event – JCF Connect';
+      const event = getAllEvents().find(function (e) { return e.id === editId; });
+      if (event) fillForm(event);
+      else {
+        alert('Event not found');
+        window.location.href = 'events.html';
+      }
+    } else {
+      document.getElementById('eventId').value = generateId();
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('status').value = 'Planned';
+    }
+  </script>
+</body>
+</html>

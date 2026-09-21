@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Champs House – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .content { padding: 1.5rem 1.75rem; flex: 1; }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(212,160,23,0.1));
+      border: 1px solid rgba(196,30,58,0.3);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .hero p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    .stat-card.green .stat-value { color: #34d399; }
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.blue .stat-value { color: #60a5fa; }
+
+    .tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.55rem 1.15rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: rgba(196,30,58,0.15);
+      border-color: rgba(196,30,58,0.35);
+      color: #ff6b7a;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 0.85rem;
+      min-width: 220px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+    }
+    .filter-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: rgba(255,255,255,0.03); }
+    th {
+      text-align: left;
+      padding: 0.8rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.22rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
+    .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.28rem 0.5rem;
+      border-radius: 7px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.2rem;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item active">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2>Champs House</h2>
+          <p>Classes, teachers and students</p>
+        </div>
+      </div>
+      <div class="date-badge" id="currentDate" style="font-size:0.8rem;color:var(--text-muted);padding:0.4rem 0.8rem;border:1px solid var(--border);border-radius:8px;"></div>
+    </header>
+
+    <div class="content">
+      <div class="hero">
+        <h3>Champs House</h3>
+        <p>Manage classes (each with a teacher) and student records. Add, edit or delete classes and students.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Classes</div>
+          <div class="stat-value" id="statClasses">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Active Classes</div>
+          <div class="stat-value" id="statActiveClasses">0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Students</div>
+          <div class="stat-value" id="statStudents">0</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Teachers</div>
+          <div class="stat-value" id="statTeachers">0</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('classes', this)">Classes</button>
+        <button class="tab-btn" onclick="showTab('students', this)">Students</button>
+      </div>
+
+      <!-- CLASSES TAB -->
+      <div class="tab-panel active" id="tab-classes">
+        <div class="toolbar">
+          <div class="search-box">
+            <span style="margin-right:0.35rem;opacity:0.6;">🔍</span>
+            <input type="text" id="classSearch" placeholder="Search class or teacher..." oninput="renderClasses()" />
+          </div>
+          <a href="champs-class-form.html" class="btn-primary">+ Add Class</a>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Class Name</th>
+                <th>Teacher</th>
+                <th>Students</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="classesTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STUDENTS TAB -->
+      <div class="tab-panel" id="tab-students">
+        <div class="toolbar">
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <div class="search-box">
+              <span style="margin-right:0.35rem;opacity:0.6;">🔍</span>
+              <input type="text" id="studentSearch" placeholder="Search student..." oninput="renderStudents()" />
+            </div>
+            <select class="filter-select" id="filterClass" onchange="renderStudents()">
+              <option value="">All Classes</option>
+            </select>
+          </div>
+          <a href="champs-student-form.html" class="btn-primary">+ Add Student</a>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+   <script>
+    var API = 'http://localhost:3000/api';
+    var CLASSES = [];
+    var STUDENTS = [];
+
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function requireLogin() {
+      if (!getToken() || !getSession()) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      return getSession();
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) options.headers['Content-Type'] = 'application/json';
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; } catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+          }
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
+
+    function normalizeClass(c) {
+      return {
+        id: c.id || '',
+        name: c.name || '',
+        teacher: c.teacher || '',
+        status: c.status || 'Active',
+        notes: c.notes || ''
+      };
+    }
+    function normalizeStudent(s) {
+      return {
+        id: s.id || '',
+        name: s.name || '',
+        classId: s.class_id || s.classId || '',
+        className: s.class_name || s.className || '',
+        phone: s.phone || '',
+        status: s.status || 'Active',
+        notes: s.notes || ''
+      };
+    }
+
+    function loadAll() {
+      return Promise.all([
+        apiFetch('/champs-classes'),
+        apiFetch('/champs-students')
+      ]).then(function (results) {
+        CLASSES = results[0].ok && Array.isArray(results[0].data)
+          ? results[0].data.map(normalizeClass) : [];
+        STUDENTS = results[1].ok && Array.isArray(results[1].data)
+          ? results[1].data.map(normalizeStudent) : [];
+        updateStats();
+        fillClassFilter();
+        renderClasses();
+        renderStudents();
+      }).catch(function (err) {
+        console.error(err);
+        CLASSES = [];
+        STUDENTS = [];
+        updateStats();
+        fillClassFilter();
+        renderClasses();
+        renderStudents();
+      });
+    }
+
+    function studentCount(classId) {
+      return STUDENTS.filter(function (s) { return s.classId === classId; }).length;
+    }
+
+    function updateStats() {
+      document.getElementById('statClasses').textContent = CLASSES.length;
+      document.getElementById('statActiveClasses').textContent = CLASSES.filter(function (c) { return c.status === 'Active'; }).length;
+      document.getElementById('statStudents').textContent = STUDENTS.length;
+      var teachers = {};
+      CLASSES.forEach(function (c) { if (c.teacher) teachers[c.teacher] = true; });
+      document.getElementById('statTeachers').textContent = Object.keys(teachers).length;
+    }
+
+    function showTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.getElementById('tab-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function renderClasses() {
+      var q = (document.getElementById('classSearch').value || '').toLowerCase();
+      var data = CLASSES.filter(function (c) {
+        return !q ||
+          (c.name || '').toLowerCase().indexOf(q) !== -1 ||
+          (c.teacher || '').toLowerCase().indexOf(q) !== -1;
+      });
+      var tbody = document.getElementById('classesTable');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No classes found</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function (c) {
+        return '<tr>' +
+          '<td>' + c.id + '</td>' +
+          '<td><strong>' + c.name + '</strong></td>' +
+          '<td>' + (c.teacher || '-') + '</td>' +
+          '<td>' + studentCount(c.id) + '</td>' +
+          '<td><span class="badge ' + (c.status === 'Active' ? 'active' : 'inactive') + '">' + c.status + '</span></td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editClass(\'' + c.id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteClass(\'' + c.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    function fillClassFilter() {
+      var sel = document.getElementById('filterClass');
+      var cur = sel.value;
+      sel.innerHTML = '<option value="">All Classes</option>' +
+        CLASSES.map(function (c) {
+          return '<option value="' + c.id + '">' + c.name + '</option>';
+        }).join('');
+      sel.value = cur;
+    }
+
+    function renderStudents() {
+      var q = (document.getElementById('studentSearch').value || '').toLowerCase();
+      var classId = document.getElementById('filterClass').value;
+      var data = STUDENTS.filter(function (s) {
+        var matchQ = !q || (s.name || '').toLowerCase().indexOf(q) !== -1 || (s.phone || '').indexOf(q) !== -1;
+        var matchC = !classId || s.classId === classId;
+        return matchQ && matchC;
+      });
+      var tbody = document.getElementById('studentsTable');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No students found</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function (s) {
+        return '<tr>' +
+          '<td>' + s.id + '</td>' +
+          '<td><strong>' + s.name + '</strong></td>' +
+          '<td>' + (s.className || '-') + '</td>' +
+          '<td>' + (s.phone || '-') + '</td>' +
+          '<td><span class="badge ' + (s.status === 'Active' ? 'active' : 'inactive') + '">' + s.status + '</span></td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editStudent(\'' + s.id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    function editClass(id) {
+      window.location.href = 'champs-class-form.html?id=' + encodeURIComponent(id);
+    }
+    function deleteClass(id) {
+      var count = studentCount(id);
+      var msg = count
+        ? 'This class has ' + count + ' student(s). Delete class (students stay, unassigned)?'
+        : 'Delete this class?';
+      if (!confirm(msg)) return;
+      apiFetch('/champs-classes/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (result) {
+          if (result.ok) loadAll();
+          else alert((result.data && result.data.error) || 'Delete failed');
+        })
+        .catch(function (err) { alert(err.message || 'Server error'); });
+    }
+
+    function editStudent(id) {
+      window.location.href = 'champs-student-form.html?id=' + encodeURIComponent(id);
+    }
+    function deleteStudent(id) {
+      if (!confirm('Delete this student?')) return;
+      apiFetch('/champs-students/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (result) {
+          if (result.ok) loadAll();
+          else alert((result.data && result.data.error) || 'Delete failed');
+        })
+        .catch(function (err) { alert(err.message || 'Server error'); });
+    }
+
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    requireLogin();
+    loadAll();
+  </script>
+</body>
+</html>

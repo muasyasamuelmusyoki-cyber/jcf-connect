@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 500; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; flex: 1; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-print {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    .stat-card.green .stat-value { color: #34d399; }
+    .stat-card.blue .stat-value { color: #60a5fa; }
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.red .stat-value { color: #ff6b7a; }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem;
+    }
+    .card.full { grid-column: 1 / -1; }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.1rem;
+    }
+    .card-title { font-size: 0.95rem; font-weight: 600; }
+    .card-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+    .chart-wrap { position: relative; height: 220px; }
+
+    .report-table { width: 100%; border-collapse: collapse; }
+    .report-table th {
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .report-table td {
+      padding: 0.65rem 0.75rem;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .report-table tr:last-child td { border-bottom: none; }
+
+    .section-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+    .section-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .section-btn.active, .section-btn:hover {
+      background: rgba(196,30,58,0.15);
+      border-color: rgba(196,30,58,0.35);
+      color: #ff6b7a;
+    }
+    .report-section { display: none; }
+    .report-section.active { display: block; }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .reports-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+    @media print {
+      .sidebar, .topbar, .toolbar, .section-nav, .menu-toggle { display: none !important; }
+      .main { margin-left: 0; }
+      body { background: #fff; color: #000; }
+      .card, .stat-card { border: 1px solid #ccc; background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item active">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2>Reports</h2>
+          <p>Summaries from Members, Attendance, Finance & more</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="date-badge" id="currentDate"></div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">P</div>
+          <div>
+            <div class="user-name" id="userName">Pastor Samuel</div>
+            <div class="user-role" id="userRole">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="toolbar">
+        <div class="section-nav">
+          <button class="section-btn active" onclick="showSection('overview', this)">Overview</button>
+          <button class="section-btn" onclick="showSection('attendance', this)">Attendance</button>
+          <button class="section-btn" onclick="showSection('finance', this)">Finance</button>
+          <button class="section-btn" onclick="showSection('members', this)">Members</button>
+          <button class="section-btn" onclick="showSection('events', this)">Events</button>
+        </div>
+        <button class="btn-print" onclick="window.print()">🖨 Print Report</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div class="report-section active" id="sec-overview">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Members</div>
+            <div class="stat-value" id="ovMembers">0</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Visitors</div>
+            <div class="stat-value" id="ovVisitors">0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Last Attendance</div>
+            <div class="stat-value" id="ovAttendance">0</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">Net Finance</div>
+            <div class="stat-value" id="ovFinance">KES 0</div>
+          </div>
+        </div>
+
+        <div class="reports-grid">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Attendance Trend</div>
+                <div class="card-subtitle">Recent services</div>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartAttOverview"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Finance Summary</div>
+                <div class="card-subtitle">Income vs Expenses</div>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartFinOverview"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card full">
+          <div class="card-header">
+            <div class="card-title">Module Snapshot</div>
+          </div>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Records</th>
+                <th>Key Metric</th>
+              </tr>
+            </thead>
+            <tbody id="snapshotTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ATTENDANCE -->
+      <div class="report-section" id="sec-attendance">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Records</div>
+            <div class="stat-value" id="attRecords">0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Highest Total</div>
+            <div class="stat-value" id="attHigh">0</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Average</div>
+            <div class="stat-value" id="attAvg">0</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">Last Total</div>
+            <div class="stat-value" id="attLast">0</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Attendance History</div>
+              <div class="card-subtitle">By group totals</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:260px;">
+            <canvas id="chartAttDetail"></canvas>
+          </div>
+          <table class="report-table" style="margin-top:1.25rem;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Men</th>
+                <th>Ladies</th>
+                <th>Youths</th>
+                <th>Teens</th>
+                <th>S. School</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="attTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FINANCE -->
+      <div class="report-section" id="sec-finance">
+        <div class="stats-row">
+          <div class="stat-card green">
+            <div class="stat-label">Total Income</div>
+            <div class="stat-value" id="finIncome">KES 0</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">Total Expenses</div>
+            <div class="stat-value" id="finExpense">KES 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Balance</div>
+            <div class="stat-value" id="finBalance">KES 0</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">Tithe</div>
+            <div class="stat-value" id="finTithe">KES 0</div>
+          </div>
+        </div>
+        <div class="reports-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Income by Category</div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartFinIncome"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Transactions</div>
+            </div>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="finTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEMBERS -->
+      <div class="report-section" id="sec-members">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Members</div>
+            <div class="stat-value" id="memTotal">0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Active</div>
+            <div class="stat-value" id="memActive">0</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Visitors Tracked</div>
+            <div class="stat-value" id="memVisitors">0</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">Growth Groups</div>
+            <div class="stat-value" id="memGroups">0</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Membership Summary</div>
+          </div>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody id="memTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EVENTS -->
+      <div class="report-section" id="sec-events">
+        <div class="stats-row">
+          <div class="stat-card blue">
+            <div class="stat-label">Upcoming</div>
+            <div class="stat-value" id="evtUpcoming">0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" id="evtCompleted">0</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value" id="evtMonth">0</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">Cancelled</div>
+            <div class="stat-value" id="evtCancelled">0</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Upcoming Events</div>
+          </div>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Venue</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="evtTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function formatMoney(n) {
+      return 'KES ' + Number(n || 0).toLocaleString('en-KE');
+    }
+    function formatDate(d) {
+      if (!d) return '-';
+      var dt = new Date(d);
+      if (isNaN(dt.getTime())) return d;
+      return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function showSection(id, btn) {
+      document.querySelectorAll('.report-section').forEach(function (s) { s.classList.remove('active'); });
+      document.querySelectorAll('.section-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.getElementById('sec-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
+    if (session) {
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = session.name.charAt(0);
+    }
+
+    var members = JSON.parse(localStorage.getItem('jcf_members') || '[]');
+    var visitors = JSON.parse(localStorage.getItem('jcf_visitors') || '[]');
+    var groups = JSON.parse(localStorage.getItem('jcf_groups') || '[]');
+    var attendance = JSON.parse(localStorage.getItem('jcf_attendance') || '[]');
+    var finance = JSON.parse(localStorage.getItem('jcf_finance') || '[]');
+    var events = JSON.parse(localStorage.getItem('jcf_events') || '[]');
+    var depts = JSON.parse(localStorage.getItem('jcf_departments') || '[]');
+    var assets = JSON.parse(localStorage.getItem('jcf_assets') || '[]');
+
+    if (!attendance.length) {
+      attendance = [
+        { date: '2026-09-07', men: 85, ladies: 120, youths: 55, teens: 40, sundaySchool: 35, total: 335 },
+        { date: '2026-08-31', men: 80, ladies: 110, youths: 50, teens: 38, sundaySchool: 35, total: 313 },
+        { date: '2026-08-24', men: 90, ladies: 130, youths: 60, teens: 45, sundaySchool: 40, total: 365 }
+      ];
+    }
+
+    document.getElementById('ovMembers').textContent = members.length || 0;
+    document.getElementById('ovVisitors').textContent = visitors.length || 0;
+    document.getElementById('ovAttendance').textContent = attendance[0] ? attendance[0].total : 0;
+
+    var income = finance.filter(function (t) { return t.type === 'income'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+    var expense = finance.filter(function (t) { return t.type === 'expense'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+    document.getElementById('ovFinance').textContent = formatMoney(income - expense);
+
+    document.getElementById('snapshotTable').innerHTML =
+      '<tr><td>Members</td><td>' + members.length + '</td><td>Registered members</td></tr>' +
+      '<tr><td>Visitors</td><td>' + visitors.length + '</td><td>Tracked visitors</td></tr>' +
+      '<tr><td>Growth Groups</td><td>' + groups.length + '</td><td>Cell groups</td></tr>' +
+      '<tr><td>Departments</td><td>' + depts.length + '</td><td>Ministries</td></tr>' +
+      '<tr><td>Attendance records</td><td>' + attendance.length + '</td><td>Services logged</td></tr>' +
+      '<tr><td>Finance transactions</td><td>' + finance.length + '</td><td>Income & expenses</td></tr>' +
+      '<tr><td>Events</td><td>' + events.length + '</td><td>Calendar items</td></tr>' +
+      '<tr><td>Assets</td><td>' + assets.length + '</td><td>Inventory items</td></tr>';
+
+    var attLabels = attendance.slice(0, 6).reverse().map(function (a) {
+      try { return new Date(a.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+      catch (e) { return a.date || ''; }
+    });
+    var attData = attendance.slice(0, 6).reverse().map(function (a) { return a.total || 0; });
+
+    new Chart(document.getElementById('chartAttOverview'), {
+      type: 'line',
+      data: {
+        labels: attLabels.length ? attLabels : ['No data'],
+        datasets: [{
+          data: attData.length ? attData : [0],
+          borderColor: '#c41e3a',
+          backgroundColor: 'rgba(196,30,58,0.15)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('chartFinOverview'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Income', 'Expenses'],
+        datasets: [{
+          data: [income || 0, expense || 0],
+          backgroundColor: ['rgba(52,211,153,0.8)', 'rgba(196,30,58,0.8)']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12 } }
+        }
+      }
+    });
+
+    document.getElementById('attRecords').textContent = attendance.length;
+    var totals = attendance.map(function (a) { return a.total || 0; });
+    document.getElementById('attHigh').textContent = totals.length ? Math.max.apply(null, totals) : 0;
+    document.getElementById('attAvg').textContent = totals.length ? Math.round(totals.reduce(function (a, b) { return a + b; }, 0) / totals.length) : 0;
+    document.getElementById('attLast').textContent = attendance[0] ? attendance[0].total : 0;
+
+    document.getElementById('attTable').innerHTML = attendance.slice(0, 10).map(function (a) {
+      return '<tr><td>' + formatDate(a.date) + '</td><td>' + (a.men || 0) + '</td><td>' + (a.ladies || 0) +
+        '</td><td>' + (a.youths || 0) + '</td><td>' + (a.teens || 0) + '</td><td>' + (a.sundaySchool || 0) +
+        '</td><td><strong>' + (a.total || 0) + '</strong></td></tr>';
+    }).join('') || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;">No attendance records</td></tr>';
+
+    new Chart(document.getElementById('chartAttDetail'), {
+      type: 'bar',
+      data: {
+        labels: attLabels.length ? attLabels : ['No data'],
+        datasets: [{
+          label: 'Total',
+          data: attData.length ? attData : [0],
+          backgroundColor: 'rgba(196,30,58,0.7)',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
+        }
+      }
+    });
+
+    var tithe = finance.filter(function (t) { return t.type === 'income' && t.category === 'Tithe'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+    document.getElementById('finIncome').textContent = formatMoney(income);
+    document.getElementById('finExpense').textContent = formatMoney(expense);
+    document.getElementById('finBalance').textContent = formatMoney(income - expense);
+    document.getElementById('finTithe').textContent = formatMoney(tithe);
+
+    var catMap = {};
+    finance.filter(function (t) { return t.type === 'income'; }).forEach(function (t) {
+      var c = t.category || 'Other';
+      catMap[c] = (catMap[c] || 0) + (t.amount || 0);
+    });
+    var catLabels = Object.keys(catMap);
+    var catData = Object.values(catMap);
+    if (!catLabels.length) {
+      catLabels = ['No data'];
+      catData = [0];
+    }
+
+    new Chart(document.getElementById('chartFinIncome'), {
+      type: 'pie',
+      data: {
+        labels: catLabels,
+        datasets: [{
+          data: catData,
+          backgroundColor: ['#c41e3a', '#d4a017', '#34d399', '#60a5fa', '#a78bfa', '#fbbf24']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12, font: { size: 11 } } }
+        }
+      }
+    });
+
+    var finRows = finance.slice(0, 8);
+    document.getElementById('finTable').innerHTML = finRows.length ? finRows.map(function (t) {
+      return '<tr><td>' + formatDate(t.date) + '</td><td>' + (t.type || '') + '</td><td>' + (t.category || '') +
+        '</td><td>' + formatMoney(t.amount) + '</td></tr>';
+    }).join('') : '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">No transactions</td></tr>';
+
+    document.getElementById('memTotal').textContent = members.length;
+    document.getElementById('memActive').textContent = members.filter(function (m) { return m.status === 'Active'; }).length;
+    document.getElementById('memVisitors').textContent = visitors.length;
+    document.getElementById('memGroups').textContent = groups.length;
+    document.getElementById('memTable').innerHTML =
+      '<tr><td>Total registered members</td><td>' + members.length + '</td></tr>' +
+      '<tr><td>Active members</td><td>' + members.filter(function (m) { return m.status === 'Active'; }).length + '</td></tr>' +
+      '<tr><td>Visitors</td><td>' + visitors.length + '</td></tr>' +
+      '<tr><td>Growth groups</td><td>' + groups.length + '</td></tr>' +
+      '<tr><td>Departments</td><td>' + depts.length + '</td></tr>';
+
+    var today = new Date().toISOString().split('T')[0];
+    var thisMonth = today.slice(0, 7);
+    document.getElementById('evtUpcoming').textContent = events.filter(function (e) { return e.status === 'Planned' && e.date >= today; }).length;
+    document.getElementById('evtCompleted').textContent = events.filter(function (e) { return e.status === 'Completed'; }).length;
+    document.getElementById('evtMonth').textContent = events.filter(function (e) { return e.date && e.date.indexOf(thisMonth) === 0; }).length;
+    document.getElementById('evtCancelled').textContent = events.filter(function (e) { return e.status === 'Cancelled'; }).length;
+
+    var upcoming = events.filter(function (e) { return e.status === 'Planned'; }).sort(function (a, b) {
+      return (a.date || '').localeCompare(b.date || '');
+    }).slice(0, 8);
+    document.getElementById('evtTable').innerHTML = upcoming.length ? upcoming.map(function (e) {
+      return '<tr><td>' + formatDate(e.date) + '</td><td>' + e.title + '</td><td>' + (e.type || '-') + '</td><td>' + (e.venue || '-') + '</td><td>' + e.status + '</td></tr>';
+    }).join('') : '<tr><td colspan="5" style="text-align:center;color:#94a3b8;">No upcoming events</td></tr>';
+  </script>
+</body>
+</html>

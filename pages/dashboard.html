@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root, [data-theme="dark"] {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --success: #10b981;
+      --info: #3b82f6;
+    }
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --sidebar: #ffffff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      transition: background 0.25s, color 0.25s;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(196,30,58,0.08); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(128,128,128,0.08);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .session-timer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(196,30,58,0.1);
+      border: 1px solid rgba(196,30,58,0.25);
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    .session-timer.warn { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.1); }
+    .icon-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(196,30,58,0.08); }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
+      color: #fff;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 500; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.75rem; flex: 1; }
+
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(196,30,58,0.15), rgba(196,30,58,0.05));
+      border: 1px solid rgba(196,30,58,0.25);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .welcome-banner h3 { font-size: 1.1rem; font-weight: 600; }
+    .welcome-banner p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .stat-change { font-size: 0.7rem; margin-top: 0.45rem; font-weight: 500; color: var(--success); }
+    .stat-card.green .stat-value { color: #34d399; }
+    .stat-card.blue .stat-value { color: #60a5fa; }
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.purple .stat-value { color: #a78bfa; }
+
+    .middle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 320px;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem;
+    }
+    .card-header { display: flex; justify-content: space-between; margin-bottom: 1.1rem; }
+    .card-title { font-size: 0.95rem; font-weight: 600; }
+    .card-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+    .chart-wrap { position: relative; height: 220px; }
+
+    .mini-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.65rem 0;
+      font-size: 0.85rem;
+    }
+    .mini-stat .label { color: var(--text-muted); }
+    .mini-stat .val { font-weight: 600; }
+    .mini-stat .val.green { color: #34d399; }
+    .mini-stat .val.red { color: #ff6b7a; }
+    .mini-stat .val.gold { color: var(--gold); }
+
+    .activity-list { list-style: none; max-height: 280px; overflow-y: auto; }
+    .activity-item {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .activity-dot.red { background: var(--accent); }
+    .activity-dot.green { background: var(--success); }
+    .activity-dot.blue { background: var(--info); }
+    .activity-dot.gold { background: var(--gold); }
+    .activity-text { font-size: 0.82rem; line-height: 1.4; }
+    .activity-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.9rem;
+    }
+    .action-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 0.75rem;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .action-btn:hover {
+      border-color: var(--accent);
+      background: rgba(196,30,58,0.08);
+      transform: translateY(-2px);
+    }
+    .action-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+    .action-label { font-size: 0.78rem; font-weight: 500; }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
+
+    .session-warning {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.15rem 1.35rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      z-index: 200;
+      display: none;
+      max-width: 340px;
+    }
+    .session-warning.show { display: block; }
+    .session-warning h4 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #ff6b7a; }
+    .session-warning p { font-size: 0.85rem; margin-bottom: 0.9rem; color: var(--text-muted); line-height: 1.45; }
+    .session-warning .btn-row { display: flex; gap: 0.5rem; }
+    .session-warning button {
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .session-warning .btn-stay { background: var(--accent); color: #fff; }
+    .session-warning .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .middle-row { grid-template-columns: 1fr 1fr; }
+      .middle-row .card:last-child { grid-column: 1 / -1; }
+      .quick-actions { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .quick-actions { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: 1rem; }
+      .topbar-right .date-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item active">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="openSidebar()">☰</button>
+        <div class="topbar-left">
+          <h2>Dashboard</h2>
+          <p>Welcome back. Here’s what’s happening today.</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="session-timer" id="sessionTimer" title="Auto-logout after inactivity">⏱ 5:00</div>
+        <div class="date-badge" id="currentDate"></div>
+        <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        <button class="icon-btn" onclick="logout()" title="Logout">⏻</button>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div>
+            <div class="user-name" id="userName">—</div>
+            <div class="user-role" id="userRole">—</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="welcome-banner">
+        <div>
+          <h3 id="welcomeText">Welcome back!</h3>
+          <p>Joy Christian Fellowship – Rongai · City of Champions</p>
+        </div>
+        <div class="date-badge" id="bannerDate"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Members</div>
+          <div class="stat-value" id="statMembers">0</div>
+          <div class="stat-change">Church membership</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Active Members</div>
+          <div class="stat-value" id="statActive">0</div>
+          <div class="stat-change">From records</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Visitors</div>
+          <div class="stat-value" id="statVisitors">0</div>
+          <div class="stat-change">Tracked visitors</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Growth Groups</div>
+          <div class="stat-value" id="statGroups">0</div>
+          <div class="stat-change">Active cells</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Last Attendance</div>
+          <div class="stat-value" id="statAttendance">0</div>
+          <div class="stat-change">Total last service</div>
+        </div>
+      </div>
+
+      <div class="middle-row">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Attendance Trend</div>
+              <div class="card-subtitle">Last 6 services</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="attendanceChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Finance Trend</div>
+              <div class="card-subtitle">Income vs Expenses</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="financeChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Activities</div>
+              <div class="card-subtitle">Latest system actions</div>
+            </div>
+          </div>
+          <ul class="activity-list">
+            <li class="activity-item">
+              <div class="activity-dot green"></div>
+              <div>
+                <div class="activity-text">Logged in successfully</div>
+                <div class="activity-time">Just now</div>
+              </div>
+            </li>
+            <li class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div>
+                <div class="activity-text">Server connected · API ready</div>
+                <div class="activity-time">Today</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.75rem;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Finance Snapshot</div>
+            <div class="card-subtitle">From recorded transactions</div>
+          </div>
+          <a href="finance.html" style="font-size:0.8rem;color:#ff6b7a;text-decoration:none;">Open Finance →</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+          <div class="mini-stat" style="border:none;flex-direction:column;align-items:flex-start;gap:0.25rem;">
+            <span class="label">Income</span>
+            <span class="val green" id="finIncome">KES 0</span>
+          </div>
+          <div class="mini-stat" style="border:none;flex-direction:column;align-items:flex-start;gap:0.25rem;">
+            <span class="label">Expenses</span>
+            <span class="val red" id="finExpense">KES 0</span>
+          </div>
+          <div class="mini-stat" style="border:none;flex-direction:column;align-items:flex-start;gap:0.25rem;">
+            <span class="label">Balance</span>
+            <span class="val" id="finBalance">KES 0</span>
+          </div>
+          <div class="mini-stat" style="border:none;flex-direction:column;align-items:flex-start;gap:0.25rem;">
+            <span class="label">Tithe</span>
+            <span class="val gold" id="finTithe">KES 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Quick Actions</div>
+        </div>
+        <div class="quick-actions">
+          <a href="member-form.html" class="action-btn">
+            <div class="action-icon">👤</div>
+            <div class="action-label">Add Member</div>
+          </a>
+          <a href="visitor-form.html" class="action-btn">
+            <div class="action-icon">👋</div>
+            <div class="action-label">Add Visitor</div>
+          </a>
+          <a href="attendance.html" class="action-btn">
+            <div class="action-icon">📋</div>
+            <div class="action-label">Attendance</div>
+          </a>
+          <a href="finance.html" class="action-btn">
+            <div class="action-icon">💰</div>
+            <div class="action-label">Finance</div>
+          </a>
+          <a href="events.html" class="action-btn">
+            <div class="action-icon">📅</div>
+            <div class="action-label">Events</div>
+          </a>
+          <a href="reports.html" class="action-btn">
+            <div class="action-icon">📊</div>
+            <div class="action-label">Reports</div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="session-warning" id="sessionWarning">
+    <h4>⚠ Session expiring soon</h4>
+    <p>You will be logged out in <strong id="warnSeconds">60</strong> seconds due to inactivity. Click below to stay signed in.</p>
+    <div class="btn-row">
+      <button class="btn-stay" onclick="resetIdleTimer()">Stay Logged In</button>
+      <button class="btn-logout" onclick="logout()">Logout now</button>
+    </div>
+  </div>
+
+  <script>
+    var API = 'http://localhost:3000/api';
+
+    /* ========== AUTH (token + role) ========== */
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function requireLogin() {
+      var session = getSession();
+      var token = getToken();
+      if (!session || !token) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      return session;
+    }
+
+    var session = requireLogin();
+    if (session) {
+      document.getElementById('userName').textContent = session.name || 'User';
+      document.getElementById('userRole').textContent = session.role || '';
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0).toUpperCase();
+      document.getElementById('welcomeText').textContent =
+        'Welcome back, ' + (session.name || 'User').split(' ')[0] + '!';
+    }
+
+    /* ========== THEME ========== */
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('jcf_theme', theme);
+      var btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      updateChartColors(theme);
+    }
+    function toggleTheme() {
+      var current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    var savedTheme = localStorage.getItem('jcf_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    /* ========== MOBILE SIDEBAR ========== */
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    document.querySelectorAll('.nav-item').forEach(function (link) {
+      link.addEventListener('click', function () {
+        if (window.innerWidth <= 900) closeSidebar();
+      });
+    });
+
+    /* ========== AUTO LOGOUT (5 MIN IDLE) ========== */
+    var IDLE_MS = 5 * 60 * 1000;
+    var WARN_BEFORE_MS = 60 * 1000;
+    var idleTimer = null;
+    var warnTimer = null;
+    var countdownInterval = null;
+    var displayInterval = null;
+    var remainingMs = IDLE_MS;
+    var lastActivity = Date.now();
+
+    function formatTime(ms) {
+      var s = Math.max(0, Math.ceil(ms / 1000));
+      var m = Math.floor(s / 60);
+      var sec = s % 60;
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    function updateTimerDisplay() {
+      remainingMs = IDLE_MS - (Date.now() - lastActivity);
+      var el = document.getElementById('sessionTimer');
+      if (!el) return;
+      el.textContent = '⏱ ' + formatTime(remainingMs);
+      if (remainingMs <= WARN_BEFORE_MS) el.classList.add('warn');
+      else el.classList.remove('warn');
+    }
+
+    function resetIdleTimer() {
+      document.getElementById('sessionWarning').classList.remove('show');
+      clearTimeout(idleTimer);
+      clearTimeout(warnTimer);
+      clearInterval(countdownInterval);
+      lastActivity = Date.now();
+      remainingMs = IDLE_MS;
+      updateTimerDisplay();
+
+      warnTimer = setTimeout(function () {
+        document.getElementById('sessionWarning').classList.add('show');
+        var secsLeft = 60;
+        document.getElementById('warnSeconds').textContent = secsLeft;
+        countdownInterval = setInterval(function () {
+          secsLeft--;
+          document.getElementById('warnSeconds').textContent = Math.max(0, secsLeft);
+          if (secsLeft <= 0) clearInterval(countdownInterval);
+        }, 1000);
+      }, IDLE_MS - WARN_BEFORE_MS);
+
+      idleTimer = setTimeout(function () {
+        alert('You have been logged out due to 5 minutes of inactivity.');
+        logout();
+      }, IDLE_MS);
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'].forEach(function (evt) {
+      document.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    /* ========== DATE ========== */
+    var dateStr = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+    document.getElementById('currentDate').textContent = dateStr;
+    document.getElementById('bannerDate').textContent = dateStr;
+
+    function formatMoney(n) {
+      return 'KES ' + Number(n || 0).toLocaleString('en-KE');
+    }
+
+    /* ========== STATS FROM LOCALSTORAGE ========== */
+    try {
+      var members = JSON.parse(localStorage.getItem('jcf_members') || '[]');
+      document.getElementById('statMembers').textContent = members.length;
+      document.getElementById('statActive').textContent =
+        members.filter(function (m) { return m.status === 'Active'; }).length;
+
+      var visitors = JSON.parse(localStorage.getItem('jcf_visitors') || '[]');
+      document.getElementById('statVisitors').textContent = visitors.length;
+
+      var groups = JSON.parse(localStorage.getItem('jcf_groups') || '[]');
+      document.getElementById('statGroups').textContent =
+        groups.filter(function (g) { return g.status === 'Active'; }).length || groups.length;
+    } catch (e) {}
+
+    /* ========== CHARTS ========== */
+    var attendanceChart = null;
+    var financeChart = null;
+
+    function getChartColors(theme) {
+      var isDark = theme === 'dark';
+      return {
+        grid: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        text: isDark ? '#94a3b8' : '#64748b',
+        accent: '#c41e3a'
+      };
+    }
+
+    function buildCharts(theme) {
+      var c = getChartColors(theme);
+      var attLabels = ['No data'];
+      var attData = [0];
+      try {
+        var att = JSON.parse(localStorage.getItem('jcf_attendance') || '[]');
+        if (att.length) {
+          var recent = att.slice(0, 6).reverse();
+          attLabels = recent.map(function (r) {
+            return new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+          });
+          attData = recent.map(function (r) { return r.total || 0; });
+          if (att[0]) document.getElementById('statAttendance').textContent = att[0].total || 0;
+        }
+      } catch (e) {}
+
+      if (attendanceChart) attendanceChart.destroy();
+      attendanceChart = new Chart(document.getElementById('attendanceChart'), {
+        type: 'line',
+        data: {
+          labels: attLabels,
+          datasets: [{
+            label: 'Total Attendance',
+            data: attData,
+            borderColor: c.accent,
+            backgroundColor: 'rgba(196,30,58,0.15)',
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: c.accent,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: c.text }, grid: { color: c.grid } },
+            y: { ticks: { color: c.text }, grid: { color: c.grid }, beginAtZero: true }
+          }
+        }
+      });
+
+      var finLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+      var incomeData = [0, 0, 0, 0];
+      var expenseData = [0, 0, 0, 0];
+      try {
+        var fin = JSON.parse(localStorage.getItem('jcf_finance') || '[]');
+        if (fin.length) {
+          var income = fin.filter(function (t) { return t.type === 'income'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+          var expense = fin.filter(function (t) { return t.type === 'expense'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+          var tithe = fin.filter(function (t) { return t.type === 'income' && t.category === 'Tithe'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
+          document.getElementById('finIncome').textContent = formatMoney(income);
+          document.getElementById('finExpense').textContent = formatMoney(expense);
+          document.getElementById('finBalance').textContent = formatMoney(income - expense);
+          document.getElementById('finTithe').textContent = formatMoney(tithe);
+        }
+      } catch (e) {}
+
+      if (financeChart) financeChart.destroy();
+      financeChart = new Chart(document.getElementById('financeChart'), {
+        type: 'bar',
+        data: {
+          labels: finLabels,
+          datasets: [
+            { label: 'Income', data: incomeData, backgroundColor: 'rgba(52,211,153,0.7)', borderRadius: 6 },
+            { label: 'Expenses', data: expenseData, backgroundColor: 'rgba(196,30,58,0.7)', borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: c.text, boxWidth: 12, font: { size: 11 } } }
+          },
+          scales: {
+            x: { ticks: { color: c.text }, grid: { color: c.grid } },
+            y: {
+              ticks: {
+                color: c.text,
+                callback: function (v) { return v >= 1000 ? (v / 1000) + 'k' : v; }
+              },
+              grid: { color: c.grid },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function updateChartColors(theme) {
+      if (document.getElementById('attendanceChart')) buildCharts(theme);
+    }
+
+    buildCharts(savedTheme);
+    resetIdleTimer();
+    displayInterval = setInterval(updateTimerDisplay, 1000);
+  </script>
+</body>
+</html>

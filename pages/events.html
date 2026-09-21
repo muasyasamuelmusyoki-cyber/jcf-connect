@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 500; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; flex: 1; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-card.green .stat-value { color: #34d399; }
+    .stat-card.blue .stat-value { color: #60a5fa; }
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.red .stat-value { color: #ff6b7a; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .filter-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.8rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      min-width: 220px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: rgba(255,255,255,0.03); }
+    th {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.8rem 1rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge.planned { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge.ongoing { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .badge.completed { background: rgba(16,185,129,0.15); color: #34d399; }
+    .badge.cancelled { background: rgba(196,30,58,0.15); color: #ff6b7a; }
+
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.55rem;
+      border-radius: 7px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.25rem;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+    .pagination {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item active">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2>Events</h2>
+          <p>Church calendar and special programmes</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="date-badge" id="currentDate"></div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">P</div>
+          <div>
+            <div class="user-name" id="userName">Pastor Samuel</div>
+            <div class="user-role" id="userRole">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="stats-row">
+        <div class="stat-card blue">
+          <div class="stat-label">Upcoming</div>
+          <div class="stat-value" id="statUpcoming">0</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="statMonth">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Completed</div>
+          <div class="stat-value" id="statCompleted">0</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Cancelled</div>
+          <div class="stat-value" id="statCancelled">0</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="filters">
+          <div class="search-box">
+            <span style="margin-right:0.4rem;opacity:0.6;">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search events..." oninput="filterEvents()" />
+          </div>
+          <select class="filter-select" id="filterType" onchange="filterEvents()">
+            <option value="">All Types</option>
+            <option value="Sunday Service">Sunday Service</option>
+            <option value="Midweek Service">Midweek Service</option>
+            <option value="Prayer Meeting">Prayer Meeting</option>
+            <option value="Youth Service">Youth Service</option>
+            <option value="Teens Meeting">Teens Meeting</option>
+            <option value="Sunday School">Sunday School</option>
+            <option value="Conference">Conference</option>
+            <option value="Outreach">Outreach</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Funeral">Funeral</option>
+            <option value="Baptism">Baptism</option>
+            <option value="Special Event">Special Event</option>
+            <option value="Other">Other</option>
+          </select>
+          <select class="filter-select" id="filterStatus" onchange="filterEvents()">
+            <option value="">All Status</option>
+            <option value="Planned">Planned</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <a href="event-form.html" class="btn-primary"><span>+</span> Add Event</a>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Time</th>
+              <th>Venue</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="eventsTable"></tbody>
+        </table>
+        <div class="pagination">
+          <span id="pageInfo">Showing 0 events</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+   <script>
+    var API = 'http://localhost:3000/api';
+    var EVENTS = [];
+
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function requireLogin() {
+      if (!getToken() || !getSession()) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      return getSession();
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) options.headers['Content-Type'] = 'application/json';
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; } catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + '). Is /api/events registered?'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      });
+    }
+
+    function normalize(e) {
+      return {
+        id: e.id || '',
+        title: e.title || '',
+        type: e.type || '',
+        date: e.date || '',
+        endDate: e.end_date || e.endDate || '',
+        startTime: e.start_time || e.startTime || '',
+        endTime: e.end_time || e.endTime || '',
+        venue: e.venue || '',
+        description: e.description || '',
+        status: e.status || 'Planned',
+        expectedAttendance: e.expected_attendance || e.expectedAttendance || 0,
+        organizer: e.organizer || '',
+        department: e.department || '',
+        notes: e.notes || ''
+      };
+    }
+
+    function loadEvents() {
+      apiFetch('/events')
+        .then(function (result) {
+          EVENTS = result.ok && Array.isArray(result.data)
+            ? result.data.map(normalize)
+            : [];
+          updateStats();
+          filterEvents();
+        })
+        .catch(function (err) {
+          console.error(err);
+          EVENTS = [];
+          updateStats();
+          filterEvents();
+        });
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      var d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function updateStats() {
+      var today = new Date().toISOString().split('T')[0];
+      var thisMonth = today.slice(0, 7);
+      document.getElementById('statUpcoming').textContent = EVENTS.filter(function (e) {
+        return e.status === 'Planned' && e.date >= today;
+      }).length;
+      document.getElementById('statMonth').textContent = EVENTS.filter(function (e) {
+        return e.date && e.date.indexOf(thisMonth) === 0;
+      }).length;
+      document.getElementById('statCompleted').textContent = EVENTS.filter(function (e) {
+        return e.status === 'Completed';
+      }).length;
+      document.getElementById('statCancelled').textContent = EVENTS.filter(function (e) {
+        return e.status === 'Cancelled';
+      }).length;
+    }
+
+    function renderTable(data) {
+      var tbody = document.getElementById('eventsTable');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#94a3b8;">No events found. Click Add Event.</td></tr>';
+        document.getElementById('pageInfo').textContent = 'Showing 0 events';
+        return;
+      }
+      var sorted = data.slice().sort(function (a, b) {
+        return (a.date || '').localeCompare(b.date || '');
+      });
+      tbody.innerHTML = sorted.map(function (e) {
+        return '<tr>' +
+          '<td>' + formatDate(e.date) + (e.endDate ? ' – ' + formatDate(e.endDate) : '') + '</td>' +
+          '<td><strong>' + e.title + '</strong></td>' +
+          '<td>' + (e.type || '-') + '</td>' +
+          '<td>' + (e.startTime || '-') + (e.endTime ? ' – ' + e.endTime : '') + '</td>' +
+          '<td>' + (e.venue || '-') + '</td>' +
+          '<td><span class="badge ' + (e.status || '').toLowerCase() + '">' + (e.status || '-') + '</span></td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editEvent(\'' + e.id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteEvent(\'' + e.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+      document.getElementById('pageInfo').textContent = 'Showing ' + data.length + ' events';
+    }
+
+    function filterEvents() {
+      var q = (document.getElementById('searchInput').value || '').toLowerCase();
+      var type = document.getElementById('filterType').value;
+      var status = document.getElementById('filterStatus').value;
+      var filtered = EVENTS.filter(function (e) {
+        var matchQ = !q ||
+          (e.title || '').toLowerCase().indexOf(q) !== -1 ||
+          (e.venue || '').toLowerCase().indexOf(q) !== -1 ||
+          (e.type || '').toLowerCase().indexOf(q) !== -1;
+        var matchType = !type || e.type === type;
+        var matchStatus = !status || e.status === status;
+        return matchQ && matchType && matchStatus;
+      });
+      renderTable(filtered);
+    }
+
+    function editEvent(id) {
+      window.location.href = 'event-form.html?id=' + encodeURIComponent(id);
+    }
+
+    function deleteEvent(id) {
+      if (!confirm('Delete this event?')) return;
+      apiFetch('/events/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (result) {
+          if (result.ok) loadEvents();
+          else alert((result.data && result.data.error) || 'Delete failed');
+        })
+        .catch(function (err) {
+          alert(err.message || 'Server error');
+        });
+    }
+
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    requireLogin();
+    var session = getSession();
+    if (session) {
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+    }
+
+    loadEvents();
+  </script>
+</body>
+</html>

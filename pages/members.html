@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Members – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --info: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 500; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; flex: 1; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-card.green .stat-value { color: #34d399; }
+    .stat-card.blue .stat-value { color: #60a5fa; }
+    .stat-card.gold .stat-value { color: var(--gold); }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      flex: 1;
+      max-width: 360px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+    }
+    .filters { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+    .filter-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.8rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: rgba(255,255,255,0.03); }
+    th {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.85rem 1rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .member-info { display: flex; align-items: center; gap: 0.75rem; }
+    .avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a5f, #2a4a70);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+    .member-name { font-weight: 600; }
+    .member-id { font-size: 0.75rem; color: var(--text-muted); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
+    .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .badge.transferred { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge.deceased { background: rgba(196,30,58,0.15); color: #ff6b7a; }
+
+    .actions { display: flex; gap: 0.4rem; }
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.6rem;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+    .action-btn.view:hover { border-color: var(--info); color: #60a5fa; }
+    .action-btn.edit:hover { border-color: var(--gold); color: var(--gold); }
+    .action-btn.delete:hover { border-color: var(--accent); color: #ff6b7a; }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      max-width: 420px;
+      width: 100%;
+    }
+    .modal h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+    .modal-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.875rem;
+    }
+    .modal-row:last-child { border-bottom: none; }
+    .modal-row span { color: var(--text-muted); }
+    .modal-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      justify-content: flex-end;
+    }
+    .modal-actions button {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+    }
+    .modal-actions .btn-close {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .modal-actions .btn-edit {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .search-box { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item active">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2>Members</h2>
+          <p>Manage church membership records</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="date-badge" id="currentDate"></div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div>
+            <div class="user-name" id="userName">—</div>
+            <div class="user-role" id="userRole">—</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Members</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Active</div>
+          <div class="stat-value" id="statActive">0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">New This Month</div>
+          <div class="stat-value" id="statNew">0</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Inactive</div>
+          <div class="stat-value" id="statInactive">0</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span style="margin-right:0.5rem;color:#64748b;">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by name, phone, or member number..." oninput="filterMembers()" />
+        </div>
+        <div class="filters">
+          <select class="filter-select" id="statusFilter" onchange="filterMembers()">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Transferred">Transferred</option>
+            <option value="Deceased">Deceased</option>
+          </select>
+          <select class="filter-select" id="genderFilter" onchange="filterMembers()">
+            <option value="">All Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+          <a href="member-form.html" class="btn-primary"><span>+</span> Add Member</a>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Phone</th>
+              <th>Growth Group</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="membersTable"></tbody>
+        </table>
+        <div class="pagination">
+          <span id="pageInfo">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal">
+      <h3 id="viewTitle">Member Profile</h3>
+      <div id="viewBody"></div>
+      <div class="modal-actions">
+        <button class="btn-close" onclick="closeView()">Close</button>
+        <button class="btn-edit" id="viewEditBtn">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API = 'http://localhost:3000/api';
+    var MEMBERS = [];
+
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function requireLogin() {
+      if (!getToken() || !getSession()) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      return getSession();
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body && !options.headers['Content-Type']) {
+        options.headers['Content-Type'] = 'application/json';
+      }
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.json().then(function (data) {
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      });
+    }
+
+    function normalizeMember(m) {
+      return {
+        id: m.id || '',
+        name: m.name || '',
+        gender: m.gender || '',
+        phone: m.phone || '',
+        email: m.email || '',
+        group: m.group || m.growth_group || m.growthGroup || '',
+        department: m.department || '',
+        status: m.status || 'Active',
+        joined: m.joined || m.date_joined || m.dateJoined || '',
+        dob: m.dob || ''
+      };
+    }
+
+    function loadMembers() {
+      document.getElementById('pageInfo').textContent = 'Loading...';
+      apiFetch('/members')
+        .then(function (result) {
+          if (result.ok && Array.isArray(result.data)) {
+            MEMBERS = result.data.map(normalizeMember);
+          } else {
+            MEMBERS = [];
+          }
+          updateStats();
+          filterMembers();
+        })
+        .catch(function (err) {
+          console.error(err);
+          document.getElementById('pageInfo').textContent = 'Could not load members (is server running?)';
+          MEMBERS = [];
+          updateStats();
+          filterMembers();
+        });
+    }
+
+    function getInitials(name) {
+      return (name || '?').split(' ').slice(0, 2).map(function (n) { return n[0] || ''; }).join('').toUpperCase();
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      var d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function statusClass(s) {
+      return (s || 'active').toLowerCase();
+    }
+
+    function renderTable(data) {
+      var tbody = document.getElementById('membersTable');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#94a3b8;">No members found. Click Add Member to create one.</td></tr>';
+        document.getElementById('pageInfo').textContent = 'Showing 0 members';
+        return;
+      }
+      tbody.innerHTML = data.map(function (m) {
+        return '<tr>' +
+          '<td><div class="member-info"><div class="avatar">' + getInitials(m.name) + '</div><div><div class="member-name">' + m.name + '</div><div class="member-id">' + m.id + '</div></div></div></td>' +
+          '<td>' + (m.phone || '-') + '</td>' +
+          '<td>' + (m.group || '-') + '</td>' +
+          '<td>' + (m.department || '-') + '</td>' +
+          '<td><span class="badge ' + statusClass(m.status) + '">' + (m.status || 'Active') + '</span></td>' +
+          '<td>' + formatDate(m.joined) + '</td>' +
+          '<td><div class="actions">' +
+            '<button class="action-btn view" onclick="viewMember(\'' + m.id + '\')">View</button>' +
+            '<button class="action-btn edit" onclick="editMember(\'' + m.id + '\')">Edit</button>' +
+            '<button class="action-btn delete" onclick="deleteMember(\'' + m.id + '\')">Delete</button>' +
+          '</div></td></tr>';
+      }).join('');
+      document.getElementById('pageInfo').textContent = 'Showing ' + data.length + ' members';
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = MEMBERS.length;
+      document.getElementById('statActive').textContent = MEMBERS.filter(function (m) { return m.status === 'Active'; }).length;
+      document.getElementById('statInactive').textContent = MEMBERS.filter(function (m) { return m.status === 'Inactive'; }).length;
+      var now = new Date();
+      var ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+      document.getElementById('statNew').textContent = MEMBERS.filter(function (m) {
+        return m.joined && String(m.joined).indexOf(ym) === 0;
+      }).length;
+    }
+
+    function filterMembers() {
+      var search = (document.getElementById('searchInput').value || '').toLowerCase();
+      var status = document.getElementById('statusFilter').value;
+      var gender = document.getElementById('genderFilter').value;
+      var filtered = MEMBERS.filter(function (m) {
+        var matchSearch = !search ||
+          (m.name || '').toLowerCase().indexOf(search) !== -1 ||
+          (m.phone || '').indexOf(search) !== -1 ||
+          (m.id || '').toLowerCase().indexOf(search) !== -1;
+        var matchStatus = !status || m.status === status;
+        var matchGender = !gender || m.gender === gender;
+        return matchSearch && matchStatus && matchGender;
+      });
+      renderTable(filtered);
+    }
+
+    function viewMember(id) {
+      var m = MEMBERS.find(function (x) { return x.id === id; });
+      if (!m) return;
+      document.getElementById('viewTitle').textContent = m.name;
+      document.getElementById('viewBody').innerHTML =
+        '<div class="modal-row"><span>ID</span><strong>' + m.id + '</strong></div>' +
+        '<div class="modal-row"><span>Phone</span><strong>' + (m.phone || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Email</span><strong>' + (m.email || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Gender</span><strong>' + (m.gender || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Growth Group</span><strong>' + (m.group || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Department</span><strong>' + (m.department || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Status</span><strong>' + (m.status || '-') + '</strong></div>' +
+        '<div class="modal-row"><span>Joined</span><strong>' + formatDate(m.joined) + '</strong></div>';
+      document.getElementById('viewEditBtn').onclick = function () { editMember(id); };
+      document.getElementById('viewModal').classList.add('show');
+    }
+
+    function closeView() {
+      document.getElementById('viewModal').classList.remove('show');
+    }
+
+    function editMember(id) {
+      window.location.href = 'member-form.html?id=' + encodeURIComponent(id);
+    }
+
+    function deleteMember(id) {
+      if (!confirm('Delete member ' + id + '? This cannot be undone.')) return;
+      apiFetch('/members/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (result) {
+          if (result.ok) {
+            closeView();
+            loadMembers();
+          } else {
+            alert((result.data && result.data.error) || 'Delete failed');
+          }
+        })
+        .catch(function () {
+          alert('Server error. Is npm start running?');
+        });
+    }
+
+    document.getElementById('viewModal').addEventListener('click', function (e) {
+      if (e.target === this) closeView();
+    });
+
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    requireLogin();
+    var session = getSession();
+    if (session) {
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+    }
+
+    loadMembers();
+  </script>
+</body>
+</html>

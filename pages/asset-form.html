@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset Form – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+      --gold: #d4a017;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
+    .sidebar-brand span { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; font-weight: 600; }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; }
+    .nav-item {
+      display: block;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item.active { background: rgba(196,30,58,0.15); color: #ff6b7a; }
+    .main { flex: 1; margin-left: 260px; }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+    }
+    .topbar h2 { font-size: 1.15rem; }
+    .topbar p { font-size: 0.8rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; max-width: 800px; }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1.15rem; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; color: var(--text-muted); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+    }
+    .btn {
+      padding: 0.65rem 1.3rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .success-msg.show { display: block; }
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="assets.html" class="nav-item active">Assets</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Add Asset</h2>
+        <p id="pageSubtitle">Register church equipment</p>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+      <div class="form-card">
+        <div class="section-title">Asset details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="name" placeholder="e.g. Microphone" />
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="category">
+              <option value="Audio Visual">Audio Visual</option>
+              <option value="Furniture">Furniture</option>
+              <option value="IT Equipment">IT Equipment</option>
+              <option value="Musical Instruments">Musical Instruments</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Kitchen">Kitchen</option>
+              <option value="Generator / Power">Generator / Power</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Serial number</label>
+            <input type="text" id="serialNumber" />
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="quantity" min="1" value="1" />
+          </div>
+          <div class="form-group">
+            <label>Condition</label>
+            <select id="condition">
+              <option value="Excellent">Excellent</option>
+              <option value="Good" selected>Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="status">
+              <option value="Available">Available</option>
+              <option value="In Use">In Use</option>
+              <option value="Under Repair">Under Repair</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" placeholder="e.g. Store Room" />
+          </div>
+          <div class="form-group">
+            <label>Purchase value (KES)</label>
+            <input type="number" id="purchaseValue" min="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label>Assigned to</label>
+            <input type="text" id="assignedTo" />
+          </div>
+          <div class="form-group full">
+            <label>Notes</label>
+            <textarea id="notes"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='assets.html'">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveAsset()">Save Asset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API = 'http://localhost:3000/api';
+    var editingId = null;
+
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) options.headers['Content-Type'] = 'application/json';
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + '). Is /api/assets registered?'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      });
+    }
+
+    function fillForm(a) {
+      document.getElementById('name').value = a.name || '';
+      document.getElementById('category').value = a.category || 'Other';
+      document.getElementById('serialNumber').value = a.serial_number || a.serialNumber || '';
+      document.getElementById('quantity').value = a.quantity || 1;
+      document.getElementById('condition').value = a.condition || 'Good';
+      document.getElementById('status').value = a.status || 'Available';
+      document.getElementById('location').value = a.location || '';
+      document.getElementById('purchaseValue').value = a.purchase_value != null ? a.purchase_value : (a.purchaseValue || 0);
+      document.getElementById('assignedTo').value = a.assigned_to || a.assignedTo || '';
+      document.getElementById('notes').value = a.notes || '';
+    }
+
+    function saveAsset() {
+      var name = document.getElementById('name').value.trim();
+      if (!name) {
+        alert('Name is required');
+        return;
+      }
+      if (!getToken()) {
+        alert('Please login first');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      var record = {
+        id: editingId || ('AST-' + Date.now()),
+        name: name,
+        category: document.getElementById('category').value,
+        serialNumber: document.getElementById('serialNumber').value.trim(),
+        quantity: parseInt(document.getElementById('quantity').value, 10) || 1,
+        condition: document.getElementById('condition').value,
+        status: document.getElementById('status').value,
+        location: document.getElementById('location').value.trim(),
+        purchaseValue: parseFloat(document.getElementById('purchaseValue').value) || 0,
+        assignedTo: document.getElementById('assignedTo').value.trim(),
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      var path = editingId ? '/assets/' + encodeURIComponent(editingId) : '/assets';
+      var method = editingId ? 'PUT' : 'POST';
+
+      apiFetch(path, { method: method, body: JSON.stringify(record) })
+        .then(function (result) {
+          if (!result.ok) {
+            alert((result.data && result.data.error) || ('Save failed (status ' + result.status + ')'));
+            return;
+          }
+          document.getElementById('successMsg').textContent = editingId ? 'Asset updated!' : 'Asset saved!';
+          document.getElementById('successMsg').classList.add('show');
+          setTimeout(function () {
+            window.location.href = 'assets.html';
+          }, 800);
+        })
+        .catch(function (err) {
+          alert(err.message || 'Cannot reach server');
+        });
+    }
+
+    if (!getToken() || !getSession()) {
+      window.location.href = 'login.html';
+    } else {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
+      if (id) {
+        editingId = id;
+        document.getElementById('pageTitle').textContent = 'Edit Asset';
+        document.getElementById('pageSubtitle').textContent = 'Update asset details';
+        document.getElementById('saveBtn').textContent = 'Update Asset';
+        apiFetch('/assets/' + encodeURIComponent(id))
+          .then(function (result) {
+            if (result.ok && result.data) fillForm(result.data);
+            else {
+              alert('Asset not found');
+              window.location.href = 'assets.html';
+            }
+          })
+          .catch(function () {
+            alert('Could not load asset');
+            window.location.href = 'assets.html';
+          });
+      }
+    }
+  </script>
+</body>
+</html>

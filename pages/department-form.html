@@ -1,0 +1,477 @@
+// Example for members.html
+requireAccess('members');   // blocks + redirects if no permission
+applySidebarAccess();       // hides forbidden nav items
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Department Form – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+      --error: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 900px; }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem 1.5rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    label .req { color: var(--accent); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    input.error, select.error { border-color: var(--error); }
+    .field-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      display: none;
+    }
+    .field-error.show { display: block; }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .success-msg, .error-msg {
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      display: none;
+      font-size: 0.9rem;
+    }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .error-msg {
+      background: rgba(248,113,113,0.12);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item active">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="#" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="#" class="nav-item">Reports</a>
+      <a href="#" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2 id="pageTitle">Add Department</h2>
+          <p id="pageSubtitle">Create a new church department</p>
+        </div>
+      </div>
+      <div>
+        <a href="departments.html" class="btn btn-secondary">← Back to Departments</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <form id="deptForm" onsubmit="saveDept(event)" novalidate>
+        <div class="form-card">
+          <div class="section-title">Department Details</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Department ID</label>
+              <input type="text" id="deptId" readonly style="opacity:0.7;" />
+            </div>
+            <div class="form-group">
+              <label>Name <span class="req">*</span></label>
+              <input type="text" id="name" placeholder="e.g. Media, Ushering, Youth" />
+              <span class="field-error" id="errName">Name is required</span>
+            </div>
+            <div class="form-group">
+              <label>Leader Name <span class="req">*</span></label>
+              <input type="text" id="leader" placeholder="Leader full name" />
+              <span class="field-error" id="errLeader">Leader name is required</span>
+            </div>
+            <div class="form-group">
+              <label>Leader Phone</label>
+              <input type="tel" id="phone" placeholder="07XX XXX XXX" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="email" placeholder="optional@email.com" />
+            </div>
+            <div class="form-group">
+              <label>Number of Members</label>
+              <input type="number" id="members" min="0" value="0" />
+            </div>
+            <div class="form-group">
+              <label>Meeting Day</label>
+              <select id="meetingDay">
+                <option value="">Select day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Meeting Time</label>
+              <input type="text" id="meetingTime" placeholder="e.g. 6:00 PM" />
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea id="description" placeholder="What this department does..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='departments.html'">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var isEditMode = false;
+    var editingId = null;
+
+    var SAMPLE = [
+      { id: "DEP-001", name: "Media", leader: "James Otieno", phone: "0723 456 789", email: "media@jcf.or.ke", members: 12, meetingDay: "Saturday", meetingTime: "10:00", status: "Active", description: "Sound, projection, livestream" },
+      { id: "DEP-002", name: "Ushering", leader: "Grace Wanjiku", phone: "0745 678 901", email: "", members: 25, meetingDay: "Sunday", meetingTime: "07:30", status: "Active", description: "Welcome and seating" },
+      { id: "DEP-003", name: "Worship / Choir", leader: "Faith Chebet", phone: "0712 345 678", email: "", members: 18, meetingDay: "Thursday", meetingTime: "18:00", status: "Active", description: "Praise and worship team" },
+      { id: "DEP-004", name: "Youth", leader: "Peter Kamau", phone: "0756 789 012", email: "", members: 40, meetingDay: "Friday", meetingTime: "18:30", status: "Active", description: "Youth ministry" },
+      { id: "DEP-005", name: "Teens", leader: "Mary Akinyi", phone: "0734 567 890", email: "", members: 30, meetingDay: "Saturday", meetingTime: "15:00", status: "Active", description: "Teen ministry" },
+      { id: "DEP-006", name: "Sunday School", leader: "Esther Njeri", phone: "0790 123 456", email: "", members: 15, meetingDay: "Sunday", meetingTime: "08:00", status: "Active", description: "Children's ministry" },
+      { id: "DEP-007", name: "Prayer", leader: "Pastor Ruth", phone: "0778 901 234", email: "", members: 20, meetingDay: "Wednesday", meetingTime: "18:00", status: "Active", description: "Intercessory prayer team" },
+      { id: "DEP-008", name: "Outreach", leader: "John Mwangi", phone: "0711 345 678", email: "", members: 16, meetingDay: "", meetingTime: "", status: "Inactive", description: "Evangelism and community work" }
+    ];
+
+    function getAllDepts() {
+      var saved = JSON.parse(localStorage.getItem('jcf_departments') || '[]');
+      var map = {};
+      SAMPLE.forEach(function (d) { map[d.id] = d; });
+      saved.forEach(function (d) { map[d.id] = d; });
+      return Object.values(map);
+    }
+
+    function generateId() {
+      var all = getAllDepts();
+      return 'DEP-' + String(all.length + 1).padStart(3, '0');
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('show'); });
+      document.querySelectorAll('input, select').forEach(function (el) { el.classList.remove('error'); });
+      document.getElementById('errorMsg').classList.remove('show');
+    }
+
+    function validate() {
+      clearErrors();
+      var valid = true;
+      var name = document.getElementById('name').value.trim();
+      var leader = document.getElementById('leader').value.trim();
+
+      if (!name) {
+        document.getElementById('name').classList.add('error');
+        document.getElementById('errName').classList.add('show');
+        valid = false;
+      }
+      if (!leader) {
+        document.getElementById('leader').classList.add('error');
+        document.getElementById('errLeader').classList.add('show');
+        valid = false;
+      }
+      return valid;
+    }
+
+    function fillForm(d) {
+      document.getElementById('deptId').value = d.id || '';
+      document.getElementById('name').value = d.name || '';
+      document.getElementById('leader').value = d.leader || '';
+      document.getElementById('phone').value = d.phone || '';
+      document.getElementById('email').value = d.email || '';
+      document.getElementById('members').value = d.members || 0;
+      document.getElementById('meetingDay').value = d.meetingDay || '';
+      document.getElementById('meetingTime').value = d.meetingTime || '';
+      document.getElementById('status').value = d.status || 'Active';
+      document.getElementById('description').value = d.description || '';
+    }
+
+    function saveDept(ev) {
+      ev.preventDefault();
+      if (!validate()) {
+        document.getElementById('errorMsg').textContent = 'Please fix the errors above.';
+        document.getElementById('errorMsg').classList.add('show');
+        return;
+      }
+
+      var record = {
+        id: document.getElementById('deptId').value,
+        name: document.getElementById('name').value.trim(),
+        leader: document.getElementById('leader').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        members: parseInt(document.getElementById('members').value, 10) || 0,
+        meetingDay: document.getElementById('meetingDay').value,
+        meetingTime: document.getElementById('meetingTime').value.trim(),
+        status: document.getElementById('status').value,
+        description: document.getElementById('description').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      var saved = JSON.parse(localStorage.getItem('jcf_departments') || '[]');
+
+      if (isEditMode) {
+        var idx = saved.findIndex(function (d) { return d.id === editingId; });
+        if (idx !== -1) {
+          record.createdAt = saved[idx].createdAt || record.updatedAt;
+          saved[idx] = record;
+        } else {
+          record.createdAt = record.updatedAt;
+          saved.push(record);
+        }
+        document.getElementById('successMsg').textContent = 'Department updated successfully!';
+      } else {
+        record.createdAt = record.updatedAt;
+        saved.push(record);
+        document.getElementById('successMsg').textContent = 'Department "' + record.name + '" saved successfully!';
+      }
+
+      localStorage.setItem('jcf_departments', JSON.stringify(saved));
+      document.getElementById('successMsg').classList.add('show');
+      document.getElementById('errorMsg').classList.remove('show');
+
+      setTimeout(function () {
+        window.location.href = 'departments.html';
+      }, 1200);
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var editId = params.get('id');
+
+    if (editId) {
+      isEditMode = true;
+      editingId = editId;
+      document.getElementById('pageTitle').textContent = 'Edit Department';
+      document.getElementById('pageSubtitle').textContent = 'Update department details';
+      document.getElementById('saveBtn').textContent = 'Update Department';
+      document.title = 'Edit Department – JCF Connect';
+      var dept = getAllDepts().find(function (d) { return d.id === editId; });
+      if (dept) fillForm(dept);
+      else {
+        alert('Department not found');
+        window.location.href = 'departments.html';
+      }
+    } else {
+      document.getElementById('deptId').value = generateId();
+      document.getElementById('status').value = 'Active';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Form – Champs House | JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+      --error: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 700px; }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem 1.5rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    label .req { color: var(--accent); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    input.error { border-color: var(--error); }
+    .field-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      display: none;
+    }
+    .field-error.show { display: block; }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .success-msg {
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      display: none;
+      font-size: 0.9rem;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .success-msg.show { display: block; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item active">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2 id="pageTitle">Add Class</h2>
+          <p id="pageSubtitle">Create a new Champs House class</p>
+        </div>
+      </div>
+      <a href="champs-house.html" class="btn btn-secondary">← Back</a>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+
+      <form onsubmit="saveClass(event)" novalidate>
+        <div class="form-card">
+          <div class="section-title">Class Details</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Class ID</label>
+              <input type="text" id="classId" readonly style="opacity:0.7;" />
+            </div>
+            <div class="form-group">
+              <label>Class Name <span class="req">*</span></label>
+              <input type="text" id="name" placeholder="e.g. Champions Class A" />
+              <span class="field-error" id="errName">Class name is required</span>
+            </div>
+            <div class="form-group">
+              <label>Teacher <span class="req">*</span></label>
+              <input type="text" id="teacher" placeholder="Teacher full name" />
+              <span class="field-error" id="errTeacher">Teacher is required</span>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Notes</label>
+              <textarea id="notes" placeholder="Optional notes..."></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='champs-house.html'">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveBtn">Save Class</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var isEdit = false;
+    var editId = null;
+
+    var SAMPLE = [
+      { id: "CLS-001", name: "Champions Class A", teacher: "Pastor Samuel", status: "Active", notes: "Main morning class" },
+      { id: "CLS-002", name: "Champions Class B", teacher: "Pastor Ruth", status: "Active", notes: "" },
+      { id: "CLS-003", name: "Foundations", teacher: "James Otieno", status: "Active", notes: "New believers" },
+      { id: "CLS-004", name: "Alumni Mentorship", teacher: "Grace Wanjiku", status: "Inactive", notes: "Completed cohort" }
+    ];
+
+    function getAll() {
+      var saved = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
+      var map = {};
+      SAMPLE.forEach(function (c) { map[c.id] = c; });
+      saved.forEach(function (c) { map[c.id] = c; });
+      return Object.values(map);
+    }
+
+    function generateId() {
+      return 'CLS-' + String(getAll().length + 1).padStart(3, '0');
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('show'); });
+      document.querySelectorAll('input').forEach(function (el) { el.classList.remove('error'); });
+    }
+
+    function validate() {
+      clearErrors();
+      var ok = true;
+      if (!document.getElementById('name').value.trim()) {
+        document.getElementById('name').classList.add('error');
+        document.getElementById('errName').classList.add('show');
+        ok = false;
+      }
+      if (!document.getElementById('teacher').value.trim()) {
+        document.getElementById('teacher').classList.add('error');
+        document.getElementById('errTeacher').classList.add('show');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function fillForm(c) {
+      document.getElementById('classId').value = c.id || '';
+      document.getElementById('name').value = c.name || '';
+      document.getElementById('teacher').value = c.teacher || '';
+      document.getElementById('status').value = c.status || 'Active';
+      document.getElementById('notes').value = c.notes || '';
+    }
+
+    function saveClass(e) {
+      e.preventDefault();
+      if (!validate()) return;
+
+      var record = {
+        id: document.getElementById('classId').value,
+        name: document.getElementById('name').value.trim(),
+        teacher: document.getElementById('teacher').value.trim(),
+        status: document.getElementById('status').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      var saved = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
+      if (isEdit) {
+        var idx = saved.findIndex(function (c) { return c.id === editId; });
+        if (idx !== -1) saved[idx] = record;
+        else saved.push(record);
+        document.getElementById('successMsg').textContent = 'Class updated successfully!';
+      } else {
+        saved.push(record);
+        document.getElementById('successMsg').textContent = 'Class "' + record.name + '" saved!';
+      }
+      localStorage.setItem('jcf_champs_classes', JSON.stringify(saved));
+      document.getElementById('successMsg').classList.add('show');
+      setTimeout(function () { window.location.href = 'champs-house.html'; }, 1000);
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var id = params.get('id');
+    if (id) {
+      isEdit = true;
+      editId = id;
+      document.getElementById('pageTitle').textContent = 'Edit Class';
+      document.getElementById('pageSubtitle').textContent = 'Update class details';
+      document.getElementById('saveBtn').textContent = 'Update Class';
+      var found = getAll().find(function (c) { return c.id === id; });
+      if (found) fillForm(found);
+      else { alert('Class not found'); window.location.href = 'champs-house.html'; }
+    } else {
+      document.getElementById('classId').value = generateId();
+      document.getElementById('status').value = 'Active';
+    }
+  </script>
+</body>
+</html>

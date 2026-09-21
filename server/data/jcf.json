@@ -1,0 +1,167 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@jcf.rongai",
+      "password": "$2a$10$yP9gY4FgOa5W/YdSO.bOGuu3FpAAsgnk.y/9j68H7CLgHXJFn/4/q",
+      "name": "System Admin",
+      "role": "Super Admin",
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "email": "pastor@jcf.rongai",
+      "password": "$2a$10$b.K7QYeQugiQIa4eXLQ.dOH4/nOOHMcbxJVd8UowsCn4H4jxFu4eq",
+      "name": "Pastor Samuel",
+      "role": "Super Admin",
+      "status": "Active"
+    },
+    {
+      "id": 3,
+      "email": "secretary@jcf.rongai",
+      "password": "$2a$10$pF8D5M5LN/yVU0H55uDUmOiPbUOqxGUwCF92Lt7mBOiAR7dvEU7k6",
+      "name": "Mary Wanjiku",
+      "role": "Admin",
+      "status": "Active"
+    },
+    {
+      "id": 4,
+      "email": "treasurer@jcf.rongai",
+      "password": "$2a$10$GfPfFLkfxA.kxBl0ZYI33.SorgjnRLmRiAmfzxR9zNWHmo6rLuEAS",
+      "name": "James Otieno",
+      "role": "Finance",
+      "status": "Active"
+    }
+  ],
+  "members": [
+    {
+      "id": "JCF-384085",
+      "name": "Vision wave Africa",
+      "phone": "0746795323",
+      "email": "visionwaveafrica@gmail.com",
+      "gender": "Male",
+      "address": "M,Cathy house, olekasasi rd",
+      "occupation": "",
+      "dob": "",
+      "marital_status": "Married",
+      "spouse": "sam",
+      "children": "sam",
+      "date_joined": "2026-09-18",
+      "growth_group": "Growth Group 1",
+      "department": "Men Fellowship",
+      "ministry": "soud",
+      "born_again": "2025-12-12",
+      "baptism": "2026-12-12",
+      "holy_spirit": "2022-12-12",
+      "membership_class": "Completed",
+      "status": "Active",
+      "created_at": "2026-09-18T23:34:12.485Z"
+    }
+  ],
+  "visitors": [
+    {
+      "id": "VIS-402949",
+      "name": "Vision wave Africa",
+      "phone": "0746795323",
+      "email": "visionwaveafrica@gmail.com",
+      "visit_date": "2026-09-18",
+      "invited_by": "sam",
+      "status": "New",
+      "notes": "sam",
+      "created_at": "2026-09-18T23:52:55.308Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "ATT-1789997782391",
+      "date": "2026-09-21",
+      "service": "Sunday Service",
+      "men": 200,
+      "ladies": 300,
+      "youths": 250,
+      "teens": 100,
+      "sunday_school": 997,
+      "total": 1847,
+      "created_at": "2026-09-21T13:36:22.441Z"
+    }
+  ],
+  "finance": [
+    {
+      "id": "FIN-1789998939621",
+      "date": "2026-09-21",
+      "type": "income",
+      "category": "Tithe",
+      "amount": 2000,
+      "notes": "sam"
+    }
+  ],
+  "events": [],
+  "assets": [
+    {
+      "id": "AST-1790000890003",
+      "name": "samuel musyoki muasya",
+      "category": "Audio Visual",
+      "serial_number": "222",
+      "quantity": 1,
+      "condition": "Good",
+      "status": "Available",
+      "location": "2",
+      "purchase_date": "",
+      "purchase_value": 2,
+      "supplier": "",
+      "assigned_to": "2",
+      "notes": "2"
+    }
+  ],
+  "departments": [
+    {
+      "id": "DEP-1789997178720",
+      "name": "sam",
+      "leader": "amm",
+      "phone": "0746795323",
+      "email": "visionwaveafrica@gmail.com",
+      "meeting_day": "Monday",
+      "meeting_time": "2000",
+      "status": "Active",
+      "description": "media"
+    }
+  ],
+  "growth_groups": [],
+  "settings": {},
+  "groups": [
+    {
+      "id": "GG-1789996414650",
+      "name": "amai",
+      "leader": "sam",
+      "phone": "0746795323",
+      "day": "Monday",
+      "time": "2",
+      "location": "2",
+      "status": "Active",
+      "notes": "sam"
+    }
+  ],
+  "group_members": [
+    {
+      "id": "GM-1789996445298",
+      "name": "sammy",
+      "group_id": "GG-1789996414650",
+      "group_name": "amai",
+      "phone": "0719738100",
+      "status": "Active",
+      "notes": "sam"
+    }
+  ],
+  "dept_members": [
+    {
+      "id": "DM-1789997210064",
+      "name": "Vision wave Africa",
+      "dept_id": "DEP-1789997178720",
+      "dept_name": "sam",
+      "phone": "0746795323",
+      "role": "tech",
+      "status": "Active",
+      "notes": ""
+    }
+  ]
+}

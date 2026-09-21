@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .date-badge {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 500; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 960px; }
+
+    .tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: rgba(196,30,58,0.15);
+      border-color: rgba(196,30,58,0.35);
+      color: #ff6b7a;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.35rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      padding: 0.65rem 1.3rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .form-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .success-msg {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+      font-size: 0.9rem;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .success-msg.show { display: block; }
+
+    .users-table { width: 100%; border-collapse: collapse; }
+    .users-table th {
+      text-align: left;
+      padding: 0.7rem 0.85rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .users-table td {
+      padding: 0.7rem 0.85rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge.admin { background: rgba(196,30,58,0.15); color: #ff6b7a; }
+    .badge.staff { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 0.9rem; }
+    .toggle-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .slider:before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .switch input:checked + .slider { background: var(--accent); }
+    .switch input:checked + .slider:before { transform: translateX(20px); }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: block; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item active">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      JCF CONNECT<br>
+      © Joy Christian Fellowship – Rongai
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-left">
+          <h2>Settings</h2>
+          <p>Church profile, users and preferences</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="date-badge" id="currentDate"></div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">P</div>
+          <div>
+            <div class="user-name" id="userName">Pastor Samuel</div>
+            <div class="user-role" id="userRole">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('church', this)">Church Profile</button>
+        <button class="tab-btn" onclick="showTab('users', this)">Users</button>
+        <button class="tab-btn" onclick="showTab('preferences', this)">Preferences</button>
+        <button class="tab-btn" onclick="showTab('security', this)">Security</button>
+      </div>
+
+      <!-- CHURCH PROFILE -->
+      <div class="tab-panel active" id="tab-church">
+        <div class="form-card">
+          <div class="section-title">Church Information</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Church Name</label>
+              <input type="text" id="churchName" value="Joy Christian Fellowship – Rongai" />
+            </div>
+            <div class="form-group">
+              <label>Short Name / Slogan</label>
+              <input type="text" id="churchSlogan" value="City of Champions" />
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="churchPhone" value="0700 000 000" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="churchEmail" value="info@jcf.or.ke" />
+            </div>
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" id="churchWebsite" value="" placeholder="https://" />
+            </div>
+            <div class="form-group full">
+              <label>Address</label>
+              <input type="text" id="churchAddress" value="Rongai, Kajiado County, Kenya" />
+            </div>
+            <div class="form-group full">
+              <label>About / Vision</label>
+              <textarea id="churchAbout">Raising champions for Christ in Rongai and beyond.</textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" onclick="saveChurch()">Save Church Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="tab-panel" id="tab-users">
+        <div class="form-card">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>System Users</span>
+            <button type="button" class="btn btn-primary" style="padding:0.4rem 0.9rem;font-size:0.8rem;" onclick="alert('Add user will connect when backend is ready')">+ Add User</button>
+          </div>
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Pastor Samuel</strong></td>
+                <td>pastor@jcf.or.ke</td>
+                <td><span class="badge admin">Super Admin</span></td>
+                <td><span class="badge active">Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>Admin Office</strong></td>
+                <td>admin@jcf.or.ke</td>
+                <td><span class="badge staff">Admin</span></td>
+                <td><span class="badge active">Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>Media Team</strong></td>
+                <td>media@jcf.or.ke</td>
+                <td><span class="badge staff">Staff</span></td>
+                <td><span class="badge active">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem;">Demo login: pastor / admin123</p>
+        </div>
+      </div>
+
+      <!-- PREFERENCES -->
+      <div class="tab-panel" id="tab-preferences">
+        <div class="form-card">
+          <div class="section-title">Display & System</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Dark mode</div>
+              <div class="toggle-desc">Use dark theme across the system</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="prefDark" checked onchange="togglePrefTheme()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Show welcome banner</div>
+              <div class="toggle-desc">Display greeting on dashboard</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="prefBanner" checked onchange="savePrefs()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Currency format</div>
+              <div class="toggle-desc">Display amounts as KES</div>
+            </div>
+            <select id="prefCurrency" onchange="savePrefs()" style="width:auto;min-width:100px;">
+              <option value="KES" selected>KES</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save Preferences</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY -->
+      <div class="tab-panel" id="tab-security">
+        <div class="form-card">
+          <div class="section-title">Session & Security</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Auto-logout after inactivity</div>
+              <div class="toggle-desc">Logs out after idle time (dashboard)</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="prefIdle" checked onchange="savePrefs()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="form-group" style="margin-top:1rem;">
+            <label>Idle timeout (minutes)</label>
+            <input type="number" id="prefIdleMins" min="1" max="60" value="5" style="max-width:120px;" onchange="savePrefs()" />
+          </div>
+          <div class="form-actions" style="margin-top:1.25rem;">
+            <button type="button" class="btn btn-secondary" onclick="clearLocalData()">Clear Local Data</button>
+            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save Security Settings</button>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="section-title">Change Password (demo)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="curPass" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPass" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" id="confirmPass" placeholder="••••••••" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" onclick="alert('Password change will work when backend is connected.')">Update Password</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function showTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.getElementById('tab-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function showSuccess(msg) {
+      var el = document.getElementById('successMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 2500);
+    }
+
+    function saveChurch() {
+      var data = {
+        name: document.getElementById('churchName').value.trim(),
+        slogan: document.getElementById('churchSlogan').value.trim(),
+        phone: document.getElementById('churchPhone').value.trim(),
+        email: document.getElementById('churchEmail').value.trim(),
+        website: document.getElementById('churchWebsite').value.trim(),
+        address: document.getElementById('churchAddress').value.trim(),
+        about: document.getElementById('churchAbout').value.trim()
+      };
+      localStorage.setItem('jcf_church', JSON.stringify(data));
+      showSuccess('Church profile saved.');
+    }
+
+    function savePrefs() {
+      var prefs = {
+        dark: document.getElementById('prefDark').checked,
+        banner: document.getElementById('prefBanner').checked,
+        currency: document.getElementById('prefCurrency').value,
+        idle: document.getElementById('prefIdle').checked,
+        idleMins: parseInt(document.getElementById('prefIdleMins').value, 10) || 5
+      };
+      localStorage.setItem('jcf_prefs', JSON.stringify(prefs));
+      localStorage.setItem('jcf_theme', prefs.dark ? 'dark' : 'light');
+      showSuccess('Preferences saved.');
+    }
+
+    function togglePrefTheme() {
+      var dark = document.getElementById('prefDark').checked;
+      localStorage.setItem('jcf_theme', dark ? 'dark' : 'light');
+      savePrefs();
+    }
+
+    function clearLocalData() {
+      if (!confirm('Clear all local demo data? This cannot be undone.')) return;
+      localStorage.clear();
+      showSuccess('Local data cleared. Reload pages to see empty state.');
+    }
+
+    function loadSettings() {
+      var church = JSON.parse(localStorage.getItem('jcf_church') || 'null');
+      if (church) {
+        if (church.name) document.getElementById('churchName').value = church.name;
+        if (church.slogan) document.getElementById('churchSlogan').value = church.slogan;
+        if (church.phone) document.getElementById('churchPhone').value = church.phone;
+        if (church.email) document.getElementById('churchEmail').value = church.email;
+        if (church.website) document.getElementById('churchWebsite').value = church.website;
+        if (church.address) document.getElementById('churchAddress').value = church.address;
+        if (church.about) document.getElementById('churchAbout').value = church.about;
+      }
+      var prefs = JSON.parse(localStorage.getItem('jcf_prefs') || 'null');
+      if (prefs) {
+        document.getElementById('prefDark').checked = prefs.dark !== false;
+        document.getElementById('prefBanner').checked = prefs.banner !== false;
+        if (prefs.currency) document.getElementById('prefCurrency').value = prefs.currency;
+        document.getElementById('prefIdle').checked = prefs.idle !== false;
+        if (prefs.idleMins) document.getElementById('prefIdleMins').value = prefs.idleMins;
+      }
+      var theme = localStorage.getItem('jcf_theme') || 'dark';
+      document.getElementById('prefDark').checked = theme === 'dark';
+    }
+
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
+    if (session) {
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = session.name.charAt(0);
+    }
+
+    loadSettings();
+  </script>
+</body>
+</html>

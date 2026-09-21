@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
+    .sidebar-brand span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: block;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: rgba(196,30,58,0.15);
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topbar-left h2 { font-size: 1.15rem; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; max-width: 1100px; }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    label { font-size: 0.8rem; color: var(--text-muted); }
+    input, select {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    .categories {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .cat-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cat-item input { width: 100px; text-align: center; font-weight: 600; }
+    .total-box {
+      margin-top: 1.5rem;
+      border: 1px solid rgba(196,30,58,0.3);
+      background: rgba(196,30,58,0.1);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .total-box .value { font-size: 2rem; font-weight: 700; color: #ff6b7a; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 0.8rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+    th { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; }
+    .total-cell { font-weight: 700; color: #ff6b7a; }
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.55rem;
+      border-radius: 7px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.25rem;
+    }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .success-msg.show { display: block; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .categories, .meta-row, .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="attendance.html" class="nav-item active">Attendance</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">JCF CONNECT</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2>Attendance</h2>
+        <p>Record service attendance by group</p>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Last Service Total</div>
+          <div class="stat-value" id="statLastTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Average</div>
+          <div class="stat-value" id="statAvg">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Highest</div>
+          <div class="stat-value" id="statHigh">0</div>
+        </div>
+      </div>
+
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="form-card">
+        <div class="section-title" id="formTitle">Record Attendance</div>
+        <div class="meta-row">
+          <div class="form-group">
+            <label>Service Date *</label>
+            <input type="date" id="serviceDate" />
+          </div>
+          <div class="form-group">
+            <label>Service Type *</label>
+            <select id="serviceType">
+              <option value="Sunday Service">Sunday Service</option>
+              <option value="Midweek Service">Midweek Service</option>
+              <option value="Prayer Meeting">Prayer Meeting</option>
+              <option value="Special Event">Special Event</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-title">Attendance by Group</div>
+        <div class="categories">
+          <div class="cat-item">
+            <span>Men</span>
+            <input type="number" id="men" min="0" value="0" oninput="calcTotal()" />
+          </div>
+          <div class="cat-item">
+            <span>Ladies</span>
+            <input type="number" id="ladies" min="0" value="0" oninput="calcTotal()" />
+          </div>
+          <div class="cat-item">
+            <span>Youths</span>
+            <input type="number" id="youths" min="0" value="0" oninput="calcTotal()" />
+          </div>
+          <div class="cat-item">
+            <span>Teens</span>
+            <input type="number" id="teens" min="0" value="0" oninput="calcTotal()" />
+          </div>
+          <div class="cat-item">
+            <span>Sunday School</span>
+            <input type="number" id="sundaySchool" min="0" value="0" oninput="calcTotal()" />
+          </div>
+        </div>
+
+        <div class="total-box">
+          <span>Total Attendance</span>
+          <span class="value" id="totalDisplay">0</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear</button>
+          <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveAttendance()">Save Attendance</button>
+        </div>
+      </div>
+
+      <div class="form-card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+          <strong>Attendance History</strong>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Service</th>
+              <th>Men</th>
+              <th>Ladies</th>
+              <th>Youths</th>
+              <th>Teens</th>
+              <th>SS</th>
+              <th>Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+        <div style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem;" id="pageInfo">Showing 0 records</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API = 'http://localhost:3000/api';
+    var RECORDS = [];
+    var editingId = null;
+
+    function getToken() {
+      return localStorage.getItem('jcf_token') || '';
+    }
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem('jcf_user') || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function requireLogin() {
+      if (!getToken() || !getSession()) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      return true;
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) {
+        options.headers['Content-Type'] = 'application/json';
+      }
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.json().then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
+
+    function normalize(r) {
+      return {
+        id: r.id || '',
+        date: r.date || '',
+        service: r.service || '',
+        men: r.men || 0,
+        ladies: r.ladies || 0,
+        youths: r.youths || 0,
+        teens: r.teens || 0,
+        sundaySchool: r.sunday_school != null ? r.sunday_school : (r.sundaySchool || 0),
+        total: r.total || 0
+      };
+    }
+
+    function loadRecords() {
+      apiFetch('/attendance')
+        .then(function (result) {
+          RECORDS = result.ok && Array.isArray(result.data)
+            ? result.data.map(normalize)
+            : [];
+          updateStats();
+          renderHistory();
+        })
+        .catch(function () {
+          RECORDS = [];
+          updateStats();
+          renderHistory();
+        });
+    }
+
+    function calcTotal() {
+      var total =
+        (parseInt(document.getElementById('men').value, 10) || 0) +
+        (parseInt(document.getElementById('ladies').value, 10) || 0) +
+        (parseInt(document.getElementById('youths').value, 10) || 0) +
+        (parseInt(document.getElementById('teens').value, 10) || 0) +
+        (parseInt(document.getElementById('sundaySchool').value, 10) || 0);
+      document.getElementById('totalDisplay').textContent = total;
+      return total;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      var d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function renderHistory() {
+      var tbody = document.getElementById('historyTable');
+      if (!RECORDS.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:#94a3b8;">No records yet</td></tr>';
+        document.getElementById('pageInfo').textContent = 'Showing 0 records';
+        return;
+      }
+      tbody.innerHTML = RECORDS.map(function (r) {
+        return (
+          '<tr>' +
+          '<td>' + formatDate(r.date) + '</td>' +
+          '<td>' + (r.service || '-') + '</td>' +
+          '<td>' + r.men + '</td>' +
+          '<td>' + r.ladies + '</td>' +
+          '<td>' + r.youths + '</td>' +
+          '<td>' + r.teens + '</td>' +
+          '<td>' + r.sundaySchool + '</td>' +
+          '<td class="total-cell">' + r.total + '</td>' +
+          '<td>' +
+          '<button type="button" class="action-btn" onclick="editRecord(\'' + r.id + '\')">Edit</button>' +
+          '<button type="button" class="action-btn" onclick="deleteRecord(\'' + r.id + '\')">Delete</button>' +
+          '</td></tr>'
+        );
+      }).join('');
+      document.getElementById('pageInfo').textContent = 'Showing ' + RECORDS.length + ' records';
+    }
+
+    function updateStats() {
+      if (!RECORDS.length) {
+        document.getElementById('statLastTotal').textContent = '0';
+        document.getElementById('statAvg').textContent = '0';
+        document.getElementById('statHigh').textContent = '0';
+        return;
+      }
+      document.getElementById('statLastTotal').textContent = String(RECORDS[0].total || 0);
+      var sum = 0;
+      var high = 0;
+      for (var i = 0; i < RECORDS.length; i++) {
+        var t = RECORDS[i].total || 0;
+        sum += t;
+        if (t > high) high = t;
+      }
+      document.getElementById('statAvg').textContent = String(Math.round(sum / RECORDS.length));
+      document.getElementById('statHigh').textContent = String(high);
+    }
+
+    function resetForm() {
+      editingId = null;
+      document.getElementById('formTitle').textContent = 'Record Attendance';
+      document.getElementById('saveBtn').textContent = 'Save Attendance';
+      document.getElementById('serviceDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('serviceType').value = 'Sunday Service';
+      document.getElementById('men').value = 0;
+      document.getElementById('ladies').value = 0;
+      document.getElementById('youths').value = 0;
+      document.getElementById('teens').value = 0;
+      document.getElementById('sundaySchool').value = 0;
+      calcTotal();
+    }
+
+    function editRecord(id) {
+      var r = null;
+      for (var i = 0; i < RECORDS.length; i++) {
+        if (RECORDS[i].id === id) {
+          r = RECORDS[i];
+          break;
+        }
+      }
+      if (!r) return;
+      editingId = id;
+      document.getElementById('formTitle').textContent = 'Edit Attendance';
+      document.getElementById('saveBtn').textContent = 'Update Attendance';
+      document.getElementById('serviceDate').value = r.date || '';
+      document.getElementById('serviceType').value = r.service || 'Sunday Service';
+      document.getElementById('men').value = r.men;
+      document.getElementById('ladies').value = r.ladies;
+      document.getElementById('youths').value = r.youths;
+      document.getElementById('teens').value = r.teens;
+      document.getElementById('sundaySchool').value = r.sundaySchool;
+      calcTotal();
+      window.scrollTo(0, 0);
+    }
+
+    function deleteRecord(id) {
+      if (!confirm('Delete this attendance record?')) return;
+      apiFetch('/attendance/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (result) {
+          if (result.ok) {
+            if (editingId === id) resetForm();
+            showSuccess('Record deleted.');
+            loadRecords();
+          } else {
+            alert((result.data && result.data.error) || 'Delete failed');
+          }
+        })
+        .catch(function () {
+          alert('Server error');
+        });
+    }
+
+    function showSuccess(msg) {
+      var el = document.getElementById('successMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () {
+        el.classList.remove('show');
+      }, 3000);
+    }
+
+    function saveAttendance() {
+      var date = document.getElementById('serviceDate').value;
+      if (!date) {
+        alert('Please select a service date');
+        return;
+      }
+      var men = parseInt(document.getElementById('men').value, 10) || 0;
+      var ladies = parseInt(document.getElementById('ladies').value, 10) || 0;
+      var youths = parseInt(document.getElementById('youths').value, 10) || 0;
+      var teens = parseInt(document.getElementById('teens').value, 10) || 0;
+      var sundaySchool = parseInt(document.getElementById('sundaySchool').value, 10) || 0;
+      var total = men + ladies + youths + teens + sundaySchool;
+      if (total === 0) {
+        alert('Enter at least one number');
+        return;
+      }
+
+      var record = {
+        id: editingId || ('ATT-' + Date.now()),
+        date: date,
+        service: document.getElementById('serviceType').value,
+        men: men,
+        ladies: ladies,
+        youths: youths,
+        teens: teens,
+        sundaySchool: sundaySchool,
+        total: total
+      };
+
+      var path = editingId
+        ? '/attendance/' + encodeURIComponent(editingId)
+        : '/attendance';
+      var method = editingId ? 'PUT' : 'POST';
+
+      apiFetch(path, { method: method, body: JSON.stringify(record) })
+        .then(function (result) {
+          if (!result.ok) {
+            alert((result.data && result.data.error) || 'Save failed');
+            return;
+          }
+          showSuccess('Saved! Total: ' + total);
+          resetForm();
+          loadRecords();
+        })
+        .catch(function () {
+          alert('Cannot reach server. Is npm start running?');
+        });
+    }
+
+    if (!requireLogin()) {
+      /* redirect in progress */
+    } else {
+      var session = getSession();
+      if (session) {
+        document.getElementById('userName').textContent = session.name || '—';
+        document.getElementById('userRole').textContent = session.role || '—';
+        document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+      }
+      resetForm();
+      loadRecords();
+    }
+  </script>
+</body>
+</html>
