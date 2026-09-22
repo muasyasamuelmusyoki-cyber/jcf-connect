@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <title>Settings – JCF Connect</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -49,88 +49,60 @@
       background: rgba(196,30,58,0.15);
       padding: 4px;
     }
-    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
     .sidebar-brand span {
       font-size: 0.65rem;
       color: var(--gold);
-      letter-spacing: 0.08em;
       text-transform: uppercase;
       font-weight: 600;
     }
     .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      display: block;
       padding: 0.7rem 0.9rem;
       border-radius: 10px;
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
-      font-weight: 500;
       margin-bottom: 0.25rem;
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      background: rgba(196,30,58,0.15);
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
     .sidebar-footer {
-      padding: 1rem 1.25rem;
+      padding: 1rem;
       border-top: 1px solid var(--border);
       font-size: 0.7rem;
       color: var(--text-muted);
       text-align: center;
-      line-height: 1.5;
     }
-    .main {
-      flex: 1;
-      margin-left: 260px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; }
     .topbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
       padding: 0.9rem 1.75rem;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      align-items: center;
     }
-    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .topbar-right { display: flex; align-items: center; gap: 1rem; }
-    .date-badge {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      background: rgba(255,255,255,0.04);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
+    .topbar-left h2 { font-size: 1.15rem; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); }
     .user-info { display: flex; align-items: center; gap: 0.6rem; }
     .user-avatar {
       width: 36px; height: 36px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.85rem;
-    }
-    .user-name { font-size: 0.875rem; font-weight: 500; }
-    .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 960px; }
-
-    .tabs {
       display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
     }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; max-width: 1000px; }
+    .tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
@@ -138,18 +110,16 @@
       padding: 0.55rem 1.1rem;
       border-radius: 999px;
       font-size: 0.85rem;
-      font-weight: 500;
       cursor: pointer;
       font-family: inherit;
     }
-    .tab-btn.active, .tab-btn:hover {
+    .tab-btn.active {
       background: rgba(196,30,58,0.15);
       border-color: rgba(196,30,58,0.35);
       color: #ff6b7a;
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-
     .form-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -171,27 +141,20 @@
     }
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    label { font-size: 0.8rem; color: var(--text-muted); }
     input, select, textarea {
       background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.65rem 0.85rem;
       color: var(--text);
-      font-size: 0.9rem;
       font-family: inherit;
-      outline: none;
+      font-size: 0.9rem;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
-    }
-    textarea { resize: vertical; min-height: 80px; }
-
+    textarea { min-height: 80px; resize: vertical; }
     .btn {
       padding: 0.65rem 1.3rem;
       border-radius: 10px;
-      font-size: 0.9rem;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
@@ -200,7 +163,6 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
-      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
     }
     .btn-secondary {
       background: transparent;
@@ -215,33 +177,27 @@
       padding-top: 1rem;
       border-top: 1px solid var(--border);
     }
-
     .success-msg {
       padding: 0.75rem 1rem;
       border-radius: 10px;
       margin-bottom: 1rem;
       display: none;
-      font-size: 0.9rem;
       background: rgba(16,185,129,0.12);
       border: 1px solid rgba(16,185,129,0.3);
       color: #6ee7b7;
     }
     .success-msg.show { display: block; }
-
     .users-table { width: 100%; border-collapse: collapse; }
-    .users-table th {
+    .users-table th, .users-table td {
       text-align: left;
       padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .users-table th {
       font-size: 0.72rem;
-      font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
-    }
-    .users-table td {
-      padding: 0.7rem 0.85rem;
-      font-size: 0.875rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .badge {
       display: inline-block;
@@ -251,9 +207,19 @@
       font-weight: 600;
     }
     .badge.admin { background: rgba(196,30,58,0.15); color: #ff6b7a; }
-    .badge.staff { background: rgba(59,130,246,0.15); color: #60a5fa; }
     .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
-
+    .badge.suspended { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.28rem 0.5rem;
+      border-radius: 7px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.2rem;
+    }
     .toggle-row {
       display: flex;
       justify-content: space-between;
@@ -261,14 +227,8 @@
       padding: 0.85rem 0;
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-label { font-size: 0.9rem; }
-    .toggle-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
-    .switch {
-      position: relative;
-      width: 44px;
-      height: 24px;
-    }
+    .toggle-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .switch { position: relative; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute;
@@ -276,7 +236,6 @@
       background: var(--border);
       border-radius: 999px;
       cursor: pointer;
-      transition: 0.2s;
     }
     .slider:before {
       content: '';
@@ -289,27 +248,15 @@
     }
     .switch input:checked + .slider { background: var(--accent); }
     .switch input:checked + .slider:before { transform: translateX(20px); }
-
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { display: none; }
       .main { margin-left: 0; }
-      .menu-toggle { display: block; }
       .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar">
     <div class="sidebar-header">
       <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
       <div class="sidebar-brand">
@@ -331,29 +278,20 @@
       <a href="reports.html" class="nav-item">Reports</a>
       <a href="settings.html" class="nav-item active">Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      JCF CONNECT<br>
-      © Joy Christian Fellowship – Rongai
-    </div>
+    <div class="sidebar-footer">JCF CONNECT</div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-        <div class="topbar-left">
-          <h2>Settings</h2>
-          <p>Church profile, users and preferences</p>
-        </div>
+      <div class="topbar-left">
+        <h2>Settings</h2>
+        <p>Church profile, users, access and logs</p>
       </div>
-      <div class="topbar-right">
-        <div class="date-badge" id="currentDate"></div>
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">P</div>
-          <div>
-            <div class="user-name" id="userName">Pastor Samuel</div>
-            <div class="user-role" id="userRole">Super Admin</div>
-          </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
         </div>
       </div>
     </header>
@@ -362,13 +300,13 @@
       <div class="success-msg" id="successMsg"></div>
 
       <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('church', this)">Church Profile</button>
-        <button class="tab-btn" onclick="showTab('users', this)">Users</button>
-        <button class="tab-btn" onclick="showTab('preferences', this)">Preferences</button>
-        <button class="tab-btn" onclick="showTab('security', this)">Security</button>
+        <button type="button" class="tab-btn active" onclick="showTab('church', this)">Church Profile</button>
+        <button type="button" class="tab-btn" onclick="showTab('users', this)">Users</button>
+        <button type="button" class="tab-btn" onclick="showTab('preferences', this)">Preferences</button>
+        <button type="button" class="tab-btn" onclick="showTab('security', this)">Security</button>
+        <button type="button" class="tab-btn" onclick="showTab('logs', this)">Activity Logs</button>
       </div>
 
-      <!-- CHURCH PROFILE -->
       <div class="tab-panel active" id="tab-church">
         <div class="form-card">
           <div class="section-title">Church Information</div>
@@ -378,27 +316,27 @@
               <input type="text" id="churchName" value="Joy Christian Fellowship – Rongai" />
             </div>
             <div class="form-group">
-              <label>Short Name / Slogan</label>
+              <label>Slogan</label>
               <input type="text" id="churchSlogan" value="City of Champions" />
             </div>
             <div class="form-group">
               <label>Phone</label>
-              <input type="tel" id="churchPhone" value="0700 000 000" />
+              <input type="tel" id="churchPhone" />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" id="churchEmail" value="info@jcf.or.ke" />
+              <input type="email" id="churchEmail" />
             </div>
             <div class="form-group">
               <label>Website</label>
-              <input type="url" id="churchWebsite" value="" placeholder="https://" />
+              <input type="url" id="churchWebsite" placeholder="https://" />
             </div>
             <div class="form-group full">
               <label>Address</label>
               <input type="text" id="churchAddress" value="Rongai, Kajiado County, Kenya" />
             </div>
             <div class="form-group full">
-              <label>About / Vision</label>
+              <label>About</label>
               <textarea id="churchAbout">Raising champions for Christ in Rongai and beyond.</textarea>
             </div>
           </div>
@@ -408,12 +346,11 @@
         </div>
       </div>
 
-      <!-- USERS -->
       <div class="tab-panel" id="tab-users">
         <div class="form-card">
           <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
             <span>System Users</span>
-            <button type="button" class="btn btn-primary" style="padding:0.4rem 0.9rem;font-size:0.8rem;" onclick="alert('Add user will connect when backend is ready')">+ Add User</button>
+            <button type="button" class="btn btn-primary" style="padding:0.4rem 0.9rem;font-size:0.8rem;" onclick="openUserForm()">+ Add User</button>
           </div>
           <table class="users-table">
             <thead>
@@ -422,41 +359,64 @@
                 <th>Email</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Access</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>Pastor Samuel</strong></td>
-                <td>pastor@jcf.or.ke</td>
-                <td><span class="badge admin">Super Admin</span></td>
-                <td><span class="badge active">Active</span></td>
-              </tr>
-              <tr>
-                <td><strong>Admin Office</strong></td>
-                <td>admin@jcf.or.ke</td>
-                <td><span class="badge staff">Admin</span></td>
-                <td><span class="badge active">Active</span></td>
-              </tr>
-              <tr>
-                <td><strong>Media Team</strong></td>
-                <td>media@jcf.or.ke</td>
-                <td><span class="badge staff">Staff</span></td>
-                <td><span class="badge active">Active</span></td>
-              </tr>
-            </tbody>
+            <tbody id="usersTable"></tbody>
           </table>
-          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem;">Demo login: pastor / admin123</p>
+        </div>
+
+        <div class="form-card" id="userFormCard" style="display:none;">
+          <div class="section-title" id="userFormTitle">Add User</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Name *</label>
+              <input type="text" id="uName" />
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="uEmail" />
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <select id="uRole">
+                <option value="Super Admin">Super Admin</option>
+                <option value="Admin">Admin</option>
+                <option value="Finance">Finance</option>
+                <option value="Usher">Usher</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="uStatus">
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label id="uPassLabel">Password *</label>
+              <input type="password" id="uPassword" placeholder="Min 6 characters" />
+            </div>
+            <div class="form-group full">
+              <label>Module access</label>
+              <div id="accessChecks" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-top:0.4rem;"></div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeUserForm()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
+          </div>
         </div>
       </div>
 
-      <!-- PREFERENCES -->
       <div class="tab-panel" id="tab-preferences">
         <div class="form-card">
           <div class="section-title">Display & System</div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Dark mode</div>
-              <div class="toggle-desc">Use dark theme across the system</div>
+              <div>Dark mode</div>
+              <div class="toggle-desc">Use dark theme</div>
             </div>
             <label class="switch">
               <input type="checkbox" id="prefDark" checked onchange="togglePrefTheme()" />
@@ -465,8 +425,8 @@
           </div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Show welcome banner</div>
-              <div class="toggle-desc">Display greeting on dashboard</div>
+              <div>Welcome banner</div>
+              <div class="toggle-desc">Show on dashboard</div>
             </div>
             <label class="switch">
               <input type="checkbox" id="prefBanner" checked onchange="savePrefs()" />
@@ -475,10 +435,10 @@
           </div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Currency format</div>
-              <div class="toggle-desc">Display amounts as KES</div>
+              <div>Currency</div>
+              <div class="toggle-desc">Money display</div>
             </div>
-            <select id="prefCurrency" onchange="savePrefs()" style="width:auto;min-width:100px;">
+            <select id="prefCurrency" onchange="savePrefs()" style="width:auto;">
               <option value="KES" selected>KES</option>
               <option value="USD">USD</option>
             </select>
@@ -489,60 +449,101 @@
         </div>
       </div>
 
-      <!-- SECURITY -->
       <div class="tab-panel" id="tab-security">
         <div class="form-card">
-          <div class="section-title">Session & Security</div>
+          <div class="section-title">Session</div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Auto-logout after inactivity</div>
-              <div class="toggle-desc">Logs out after idle time (dashboard)</div>
+              <div>Auto-logout after inactivity</div>
+              <div class="toggle-desc">Used on dashboard</div>
             </div>
             <label class="switch">
               <input type="checkbox" id="prefIdle" checked onchange="savePrefs()" />
               <span class="slider"></span>
             </label>
           </div>
-          <div class="form-group" style="margin-top:1rem;">
-            <label>Idle timeout (minutes)</label>
-            <input type="number" id="prefIdleMins" min="1" max="60" value="5" style="max-width:120px;" onchange="savePrefs()" />
-          </div>
-          <div class="form-actions" style="margin-top:1.25rem;">
-            <button type="button" class="btn btn-secondary" onclick="clearLocalData()">Clear Local Data</button>
-            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save Security Settings</button>
-          </div>
-        </div>
-        <div class="form-card">
-          <div class="section-title">Change Password (demo)</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Current Password</label>
-              <input type="password" id="curPass" placeholder="••••••••" />
-            </div>
-            <div class="form-group">
-              <label>New Password</label>
-              <input type="password" id="newPass" placeholder="••••••••" />
-            </div>
-            <div class="form-group">
-              <label>Confirm New Password</label>
-              <input type="password" id="confirmPass" placeholder="••••••••" />
-            </div>
+          <div class="form-group" style="margin-top:1rem;max-width:140px;">
+            <label>Idle minutes</label>
+            <input type="number" id="prefIdleMins" min="1" max="60" value="5" onchange="savePrefs()" />
           </div>
           <div class="form-actions">
-            <button type="button" class="btn btn-primary" onclick="alert('Password change will work when backend is connected.')">Update Password</button>
+            <button type="button" class="btn btn-secondary" onclick="clearLocalData()">Clear Local Cache</button>
+            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save</button>
           </div>
         </div>
       </div>
 
+      <div class="tab-panel" id="tab-logs">
+        <div class="form-card">
+          <div class="section-title">Activity Logs</div>
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="logsTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    var API = 'http://localhost:3000/api';
+    var MODULES = [
+      { key: 'dashboard', label: 'Dashboard' },
+      { key: 'members', label: 'Members' },
+      { key: 'visitors', label: 'Visitors' },
+      { key: 'groups', label: 'Growth Groups' },
+      { key: 'departments', label: 'Departments' },
+      { key: 'attendance', label: 'Attendance' },
+      { key: 'champs', label: 'Champs House' },
+      { key: 'finance', label: 'Finance' },
+      { key: 'assets', label: 'Assets' },
+      { key: 'events', label: 'Events' },
+      { key: 'reports', label: 'Reports' },
+      { key: 'settings', label: 'Settings' }
+    ];
+    var USERS = [];
+    var editingUserId = null;
+
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) options.headers['Content-Type'] = 'application/json';
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) { logout(); return Promise.reject(new Error('Unauthorized')); }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) { return Promise.reject(new Error('Bad response ' + res.status)); }
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
+
     function showTab(id, btn) {
       document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
       document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
       document.getElementById('tab-' + id).classList.add('active');
       if (btn) btn.classList.add('active');
+      if (id === 'users') loadUsers();
+      if (id === 'logs') loadLogs();
     }
 
     function showSuccess(msg) {
@@ -553,7 +554,7 @@
     }
 
     function saveChurch() {
-      var data = {
+      var church = {
         name: document.getElementById('churchName').value.trim(),
         slogan: document.getElementById('churchSlogan').value.trim(),
         phone: document.getElementById('churchPhone').value.trim(),
@@ -562,8 +563,14 @@
         address: document.getElementById('churchAddress').value.trim(),
         about: document.getElementById('churchAbout').value.trim()
       };
-      localStorage.setItem('jcf_church', JSON.stringify(data));
-      showSuccess('Church profile saved.');
+      apiFetch('/settings', { method: 'PUT', body: JSON.stringify({ church: church }) })
+        .then(function (r) {
+          if (r.ok) {
+            localStorage.setItem('jcf_church', JSON.stringify(church));
+            showSuccess('Church profile saved.');
+          } else alert((r.data && r.data.error) || 'Save failed');
+        })
+        .catch(function (e) { alert(e.message); });
     }
 
     function savePrefs() {
@@ -580,18 +587,189 @@
     }
 
     function togglePrefTheme() {
-      var dark = document.getElementById('prefDark').checked;
-      localStorage.setItem('jcf_theme', dark ? 'dark' : 'light');
+      localStorage.setItem('jcf_theme', document.getElementById('prefDark').checked ? 'dark' : 'light');
       savePrefs();
     }
 
     function clearLocalData() {
-      if (!confirm('Clear all local demo data? This cannot be undone.')) return;
+      if (!confirm('Clear browser cache? (Keeps login)')) return;
+      var token = getToken();
+      var user = localStorage.getItem('jcf_user');
       localStorage.clear();
-      showSuccess('Local data cleared. Reload pages to see empty state.');
+      if (token) localStorage.setItem('jcf_token', token);
+      if (user) localStorage.setItem('jcf_user', user);
+      showSuccess('Local cache cleared.');
     }
 
-    function loadSettings() {
+    function buildAccessChecks(selected) {
+      selected = selected || [];
+      document.getElementById('accessChecks').innerHTML = MODULES.map(function (m) {
+        var checked = selected.indexOf('*') !== -1 || selected.indexOf(m.key) !== -1 ? ' checked' : '';
+        return '<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.35rem;">' +
+          '<input type="checkbox" class="access-cb" value="' + m.key + '"' + checked + ' /> ' + m.label +
+          '</label>';
+      }).join('');
+    }
+
+    function getSelectedAccess() {
+      var list = [];
+      document.querySelectorAll('.access-cb:checked').forEach(function (cb) { list.push(cb.value); });
+      return list;
+    }
+
+    function loadUsers() {
+      apiFetch('/users')
+        .then(function (r) {
+          USERS = r.ok && Array.isArray(r.data) ? r.data : [];
+          renderUsers();
+        })
+        .catch(function () { USERS = []; renderUsers(); });
+    }
+
+    function renderUsers() {
+      var tbody = document.getElementById('usersTable');
+      if (!USERS.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">No users</td></tr>';
+        return;
+      }
+      tbody.innerHTML = USERS.map(function (u) {
+        var access = (u.access || []).indexOf('*') !== -1
+          ? 'All'
+          : ((u.access || []).length ? (u.access || []).length + ' modules' : 'Role default');
+        var stClass = u.status === 'Active' ? 'active' : 'suspended';
+        return '<tr>' +
+          '<td><strong>' + (u.name || '-') + '</strong></td>' +
+          '<td>' + (u.email || '-') + '</td>' +
+          '<td><span class="badge admin">' + (u.role || '-') + '</span></td>' +
+          '<td><span class="badge ' + stClass + '">' + (u.status || '-') + '</span></td>' +
+          '<td>' + access + '</td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editUser(\'' + u.id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="toggleSuspend(\'' + u.id + '\')">' +
+              (u.status === 'Suspended' ? 'Activate' : 'Suspend') + '</button>' +
+            '<button type="button" class="action-btn" onclick="deleteUser(\'' + u.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    function openUserForm() {
+      editingUserId = null;
+      document.getElementById('userFormTitle').textContent = 'Add User';
+      document.getElementById('uPassLabel').textContent = 'Password *';
+      document.getElementById('uName').value = '';
+      document.getElementById('uEmail').value = '';
+      document.getElementById('uEmail').disabled = false;
+      document.getElementById('uRole').value = 'Admin';
+      document.getElementById('uStatus').value = 'Active';
+      document.getElementById('uPassword').value = '';
+      buildAccessChecks([]);
+      document.getElementById('userFormCard').style.display = 'block';
+    }
+
+    function closeUserForm() {
+      document.getElementById('userFormCard').style.display = 'none';
+      editingUserId = null;
+    }
+
+    function editUser(id) {
+      var u = USERS.find(function (x) { return String(x.id) === String(id); });
+      if (!u) return;
+      editingUserId = u.id;
+      document.getElementById('userFormTitle').textContent = 'Edit User';
+      document.getElementById('uPassLabel').textContent = 'New password (optional)';
+      document.getElementById('uName').value = u.name || '';
+      document.getElementById('uEmail').value = u.email || '';
+      document.getElementById('uEmail').disabled = true;
+      document.getElementById('uRole').value = u.role || 'Admin';
+      document.getElementById('uStatus').value = u.status || 'Active';
+      document.getElementById('uPassword').value = '';
+      buildAccessChecks(u.access || []);
+      document.getElementById('userFormCard').style.display = 'block';
+    }
+
+    function saveUser() {
+      var name = document.getElementById('uName').value.trim();
+      var email = document.getElementById('uEmail').value.trim().toLowerCase();
+      var password = document.getElementById('uPassword').value;
+      if (!name || !email) { alert('Name and email required'); return; }
+      if (!editingUserId && password.length < 6) { alert('Password min 6 characters'); return; }
+
+      var body = {
+        name: name,
+        email: email,
+        role: document.getElementById('uRole').value,
+        status: document.getElementById('uStatus').value,
+        access: getSelectedAccess()
+      };
+      if (password) body.password = password;
+
+      var path = editingUserId ? '/users/' + encodeURIComponent(editingUserId) : '/users';
+      var method = editingUserId ? 'PUT' : 'POST';
+
+      apiFetch(path, { method: method, body: JSON.stringify(body) })
+        .then(function (r) {
+          if (!r.ok) { alert((r.data && r.data.error) || 'Save failed'); return; }
+          showSuccess(editingUserId ? 'User updated.' : 'User created.');
+          closeUserForm();
+          loadUsers();
+        })
+        .catch(function (e) { alert(e.message); });
+    }
+
+    function toggleSuspend(id) {
+      var u = USERS.find(function (x) { return String(x.id) === String(id); });
+      if (!u) return;
+      var next = u.status === 'Suspended' ? 'Active' : 'Suspended';
+      if (!confirm((next === 'Suspended' ? 'Suspend' : 'Activate') + ' ' + u.email + '?')) return;
+      apiFetch('/users/' + encodeURIComponent(id), {
+        method: 'PUT',
+        body: JSON.stringify({ status: next })
+      }).then(function (r) {
+        if (r.ok) { showSuccess('User ' + next.toLowerCase() + '.'); loadUsers(); }
+        else alert((r.data && r.data.error) || 'Failed');
+      }).catch(function (e) { alert(e.message); });
+    }
+
+    function deleteUser(id) {
+      var u = USERS.find(function (x) { return String(x.id) === String(id); });
+      if (!u) return;
+      if (!confirm('Delete user ' + u.email + '?')) return;
+      apiFetch('/users/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (r) {
+          if (r.ok) { showSuccess('User deleted.'); loadUsers(); }
+          else alert((r.data && r.data.error) || 'Delete failed');
+        })
+        .catch(function (e) { alert(e.message); });
+    }
+
+    function loadLogs() {
+      apiFetch('/users/logs')
+        .then(function (r) {
+          var logs = r.ok && Array.isArray(r.data) ? r.data : [];
+          var tbody = document.getElementById('logsTable');
+          if (!logs.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">No logs yet</td></tr>';
+            return;
+          }
+          tbody.innerHTML = logs.map(function (l) {
+            var t = l.at ? new Date(l.at).toLocaleString('en-GB') : '-';
+            return '<tr><td>' + t + '</td><td>' + (l.actor || '-') + '</td><td>' + (l.action || '-') + '</td><td>' + (l.detail || '-') + '</td></tr>';
+          }).join('');
+        })
+        .catch(function () {
+          document.getElementById('logsTable').innerHTML =
+            '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">Could not load logs</td></tr>';
+        });
+    }
+
+    if (!getToken() || !getSession()) {
+      window.location.href = 'login.html';
+    } else {
+      var session = getSession();
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+
       var church = JSON.parse(localStorage.getItem('jcf_church') || 'null');
       if (church) {
         if (church.name) document.getElementById('churchName').value = church.name;
@@ -610,22 +788,8 @@
         document.getElementById('prefIdle').checked = prefs.idle !== false;
         if (prefs.idleMins) document.getElementById('prefIdleMins').value = prefs.idleMins;
       }
-      var theme = localStorage.getItem('jcf_theme') || 'dark';
-      document.getElementById('prefDark').checked = theme === 'dark';
     }
-
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-    });
-
-    var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
-    if (session) {
-      document.getElementById('userName').textContent = session.name;
-      document.getElementById('userRole').textContent = session.role;
-      document.getElementById('userAvatar').textContent = session.name.charAt(0);
-    }
-
-    loadSettings();
   </script>
+  <script src="js/access.js"></script>
 </body>
 </html>

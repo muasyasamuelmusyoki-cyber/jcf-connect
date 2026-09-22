@@ -6,15 +6,17 @@
       "password": "$2a$10$yP9gY4FgOa5W/YdSO.bOGuu3FpAAsgnk.y/9j68H7CLgHXJFn/4/q",
       "name": "System Admin",
       "role": "Super Admin",
-      "status": "Active"
+      "status": "Active",
+      "resetCode": "346484",
+      "resetExpires": 1790090648836
     },
     {
       "id": 2,
       "email": "pastor@jcf.rongai",
-      "password": "$2a$10$b.K7QYeQugiQIa4eXLQ.dOH4/nOOHMcbxJVd8UowsCn4H4jxFu4eq",
+      "password": "$2a$10$BOKBXoO44KGh6Ii0DMQom.ZkOrla40VjoBdHhFuiDy8o8924iFAN.",
       "name": "Pastor Samuel",
       "role": "Super Admin",
-      "status": "Active"
+      "status": "Suspended"
     },
     {
       "id": 3,
@@ -22,7 +24,7 @@
       "password": "$2a$10$pF8D5M5LN/yVU0H55uDUmOiPbUOqxGUwCF92Lt7mBOiAR7dvEU7k6",
       "name": "Mary Wanjiku",
       "role": "Admin",
-      "status": "Active"
+      "status": "Suspended"
     },
     {
       "id": 4,
@@ -30,7 +32,20 @@
       "password": "$2a$10$GfPfFLkfxA.kxBl0ZYI33.SorgjnRLmRiAmfzxR9zNWHmo6rLuEAS",
       "name": "James Otieno",
       "role": "Finance",
-      "status": "Active"
+      "status": "Suspended"
+    },
+    {
+      "id": 1790088167039,
+      "email": "visionwaveafrica@gmail.com",
+      "name": "sam",
+      "role": "Admin",
+      "status": "Active",
+      "password": "$2a$10$77N0Ht/uYnb.Zx7KWY3TVOmR69ZWH0ClovrXaMbzrcYsNmF9GYRPG",
+      "access": [
+        "dashboard"
+      ],
+      "resetCode": "863774",
+      "resetExpires": 1790089959730
     }
   ],
   "members": [
@@ -127,7 +142,17 @@
     }
   ],
   "growth_groups": [],
-  "settings": {},
+  "settings": {
+    "church": {
+      "name": "Joy Christian Fellowship – Rongai",
+      "slogan": "City of Champions",
+      "phone": "",
+      "email": "pastor@jcf.rongai",
+      "website": "",
+      "address": "Rongai, Kajiado County, Kenya",
+      "about": "Raising champions for Christ in Rongai and beyond."
+    }
+  },
   "groups": [
     {
       "id": "GG-1789996414650",
@@ -162,6 +187,78 @@
       "role": "tech",
       "status": "Active",
       "notes": ""
+    }
+  ],
+  "logs": [
+    {
+      "id": "LOG-1790088167141",
+      "at": "2026-09-22T14:42:47.141Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.create",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790088143018",
+      "at": "2026-09-22T14:42:23.018Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.delete",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790088069200",
+      "at": "2026-09-22T14:41:09.200Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.update",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790088030352",
+      "at": "2026-09-22T14:40:30.352Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.update",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790087576378",
+      "at": "2026-09-22T14:32:56.378Z",
+      "actor": "visionwaveafrica@gmail.com",
+      "action": "user.update",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790086635234",
+      "at": "2026-09-22T14:17:15.234Z",
+      "actor": "visionwaveafrica@gmail.com",
+      "action": "user.update",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790086537663",
+      "at": "2026-09-22T14:15:37.663Z",
+      "actor": "pastor@jcf.rongai",
+      "action": "user.create",
+      "detail": "visionwaveafrica@gmail.com"
+    },
+    {
+      "id": "LOG-1790086489125",
+      "at": "2026-09-22T14:14:49.125Z",
+      "actor": "pastor@jcf.rongai",
+      "action": "user.update",
+      "detail": "treasurer@jcf.rongai"
+    },
+    {
+      "id": "LOG-1790086484925",
+      "at": "2026-09-22T14:14:44.925Z",
+      "actor": "pastor@jcf.rongai",
+      "action": "user.update",
+      "detail": "secretary@jcf.rongai"
+    },
+    {
+      "id": "LOG-1790086477577",
+      "at": "2026-09-22T14:14:37.578Z",
+      "actor": "pastor@jcf.rongai",
+      "action": "user.update",
+      "detail": "pastor@jcf.rongai"
     }
   ]
 }

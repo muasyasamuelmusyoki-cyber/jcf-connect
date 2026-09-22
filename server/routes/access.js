@@ -30,11 +30,8 @@ var PAGE_MODULE = {
 };
 
 function getSession() {
-  try {
-    return JSON.parse(localStorage.getItem('jcf_user') || 'null');
-  } catch (e) {
-    return null;
-  }
+  try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+  catch (e) { return null; }
 }
 
 function getUserAccess() {
@@ -74,23 +71,3 @@ function applySidebarAccess() {
     }
   }
 }
-
-/** Auto-protect current page from filename */
-function protectCurrentPage() {
-  var file = (window.location.pathname.split('/').pop() || '').split('?')[0];
-  var key = PAGE_MODULE[file];
-  if (!key) {
-    if (!localStorage.getItem('jcf_token') || !getSession()) {
-      window.location.href = 'login.html';
-      return false;
-    }
-    applySidebarAccess();
-    return true;
-  }
-  if (!requireAccess(key)) return false;
-  applySidebarAccess();
-  return true;
-}
-
-// Run automatically when this script loads
-protectCurrentPage();

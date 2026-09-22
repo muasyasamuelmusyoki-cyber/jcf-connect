@@ -214,17 +214,6 @@
       line-height: 1.7;
     }
     .footer strong { color: #cbd5e1; font-weight: 600; }
-    .demo-hint {
-      margin-top: 1.2rem;
-      padding: 0.8rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .demo-hint strong { color: #cbd5e1; }
   </style>
 </head>
 <body>
@@ -277,14 +266,6 @@
           <span class="spinner"></span>
         </button>
       </form>
-
-      <div class="demo-hint">
-        <strong>Demo Credentials:</strong><br>
-        admin@jcf.rongai / Admin@2026<br>
-        pastor@jcf.rongai / Pastor@2026<br>
-        secretary@jcf.rongai / Secretary@1<br>
-        treasurer@jcf.rongai / Treasurer@1
-      </div>
 
       <div class="footer">
         <strong>JCF CONNECT</strong><br>
@@ -376,6 +357,12 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
+      var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
+      var token = localStorage.getItem('jcf_token');
+      if (session && token) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
       var remembered = localStorage.getItem('jcf_remember');
       if (remembered) {
         document.getElementById('email').value = remembered;

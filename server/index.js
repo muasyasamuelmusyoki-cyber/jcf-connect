@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -17,6 +18,8 @@ const assetsRoutes = require('./routes/assets');
 const eventsRoutes = require('./routes/events');
 const champsClassesRoutes = require('./routes/champs-classes');
 const champsStudentsRoutes = require('./routes/champs-students');
+const usersRoutes = require('./routes/users');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +40,8 @@ app.use('/api/assets', assetsRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/champs-classes', champsClassesRoutes);
 app.use('/api/champs-students', champsStudentsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.use(express.static(path.join(__dirname, '..')));
 app.use('/pages', express.static(path.join(__dirname, '..', 'pages')));
@@ -48,5 +53,4 @@ app.get('/api/health', (req, res) => {
 
 app.listen(PORT, () => {
   console.log('JCF Connect API running on http://localhost:' + PORT);
-  console.log('Login: POST http://localhost:' + PORT + '/api/auth/login');
 });
