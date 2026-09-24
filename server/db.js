@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
@@ -59,48 +59,39 @@ let store = load();
 
 function seedUsers() {
   store = load();
+
+  // Never create default accounts with passwords hard-coded in source code.
+  // Existing databases with users are left untouched.
   if (store.users && store.users.length > 0) return;
-  const hash = (p) => bcrypt.hashSync(p, 10);
+
+  const email = (process.env.BOOTSTRAP_ADMIN_EMAIL || '').trim().toLowerCase();
+  const password = process.env.BOOTSTRAP_ADMIN_PASSWORD || '';
+  const name = (process.env.BOOTSTRAP_ADMIN_NAME || 'System Admin').trim();
+
+  if (!email || !password) {
+    console.log('No bootstrap admin configured. No default users were created.');
+    return;
+  }
+
+  if (password.length < 12) {
+    throw new Error('BOOTSTRAP_ADMIN_PASSWORD must be at least 12 characters.');
+  }
+
   store.users = [
     {
       id: 1,
-      email: 'admin@jcf.rongai',
-      password: hash('Admin@2026'),
-      name: 'System Admin',
+      email,
+      password: bcrypt.hashSync(password, 10),
+      name,
       role: 'Super Admin',
       status: 'Active',
       access: ['*']
-    },
-    {
-      id: 2,
-      email: 'pastor@jcf.rongai',
-      password: hash('Pastor@2026'),
-      name: 'Pastor Samuel',
-      role: 'Super Admin',
-      status: 'Active',
-      access: ['*']
-    },
-    {
-      id: 3,
-      email: 'secretary@jcf.rongai',
-      password: hash('Secretary@1'),
-      name: 'Mary Wanjiku',
-      role: 'Admin',
-      status: 'Active'
-    },
-    {
-      id: 4,
-      email: 'treasurer@jcf.rongai',
-      password: hash('Treasurer@1'),
-      name: 'James Otieno',
-      role: 'Finance',
-      status: 'Active'
     }
   ];
-  save(store);
-  console.log('Default users seeded.');
-}
 
+  save(store);
+  console.log('Bootstrap administrator created.');
+}
 seedUsers();
 
 const db = {
