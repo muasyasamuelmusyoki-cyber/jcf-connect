@@ -32,7 +32,8 @@
     "productName": "JCF Connect",
     "icon": "electron/icons/icon.ico",
     "files": [
-      "**/*"
+      "electron/**/*",
+      "package.json"
     ],
     "win": {
       "target": "nsis",
