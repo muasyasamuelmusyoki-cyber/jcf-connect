@@ -3,6 +3,7 @@ const { verifyRecaptcha } = require('../recaptcha');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { randomInt } = require('crypto');
 const speakeasy = require('speakeasy');
 const db = require('../db');
 const { JWT_SECRET, authRequired } = require('../middleware/auth');
@@ -218,9 +219,7 @@ router.post('/forgot-password', async (req, res) => {
     return res.json(safeReply);
   }
 
-  const code = String(
-    Math.floor(100000 + Math.random() * 900000)
-  );
+  const code = String(randomInt(100000, 1000000));
 
   const store = db.getStore();
   const u = store.users.find((x) => x.id === user.id);
