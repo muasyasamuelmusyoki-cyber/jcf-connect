@@ -1,4 +1,5 @@
 const { verifyRecaptcha } = require('../recaptcha');
+
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -26,40 +27,75 @@ function publicUser(user) {
   };
 }
 
-router.post('/login', (req, res) => {
+// LOGIN
+router.post('/login', async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const password = req.body.password || '';
+  const recaptchaToken = req.body.recaptchaToken || '';
+
+  // Verify Google reCAPTCHA
+  const recaptchaOk = await verifyRecaptcha(recaptchaToken);
+
+  if (!recaptchaOk) {
+    return res.status(400).json({
+      error: 'reCAPTCHA verification failed. Please try again.'
+    });
+  }
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password required' });
+    return res.status(400).json({
+      error: 'Email and password required'
+    });
   }
 
   const user = db.findUserByEmail(email);
+
   if (!user) {
-    return res.status(401).json({ error: 'Invalid email or password' });
+    return res.status(401).json({
+      error: 'Invalid email or password'
+    });
   }
 
   const hash = user.passwordHash || user.password;
+
   if (!hash || !bcrypt.compareSync(password, hash)) {
-    return res.status(401).json({ error: 'Invalid email or password' });
+    return res.status(401).json({
+      error: 'Invalid email or password'
+    });
   }
 
+  // TWO-FACTOR AUTHENTICATION
   if (user.twoFactorEnabled && user.twoFactorSecret) {
     const pendingToken = jwt.sign(
-      { id: user.id, email: user.email, purpose: '2fa' },
+      {
+        id: user.id,
+        email: user.email,
+        purpose: '2fa'
+      },
       JWT_SECRET,
-      { expiresIn: '5m' }
+      {
+        expiresIn: '5m'
+      }
     );
+
     return res.json({
       requires2FA: true,
       pendingToken: pendingToken
     });
   }
 
+  // Normal login
   const token = jwt.sign(
-    { id: user.id, email: user.email, name: user.name, role: user.role },
+    {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    },
     JWT_SECRET,
-    { expiresIn: '8h' }
+    {
+      expiresIn: '8h'
+    }
   );
 
   res.json({
@@ -68,29 +104,43 @@ router.post('/login', (req, res) => {
   });
 });
 
+// VERIFY 2FA
 router.post('/verify-2fa', (req, res) => {
   const pendingToken = req.body.pendingToken || '';
   const code = String(req.body.code || '').trim();
 
   if (!pendingToken || !code) {
-    return res.status(400).json({ error: 'Code required' });
+    return res.status(400).json({
+      error: 'Code required'
+    });
   }
 
   let payload;
+
   try {
     payload = jwt.verify(pendingToken, JWT_SECRET);
   } catch (e) {
-    return res.status(401).json({ error: 'Session expired. Login again.' });
+    return res.status(401).json({
+      error: 'Session expired. Login again.'
+    });
   }
 
   if (payload.purpose !== '2fa') {
-    return res.status(401).json({ error: 'Invalid session' });
+    return res.status(401).json({
+      error: 'Invalid session'
+    });
   }
 
   const store = db.getStore();
-  const user = (store.users || []).find((u) => String(u.id) === String(payload.id));
+
+  const user = (store.users || []).find(
+    (u) => String(u.id) === String(payload.id)
+  );
+
   if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
-    return res.status(400).json({ error: '2FA not available' });
+    return res.status(400).json({
+      error: '2FA not available'
+    });
   }
 
   const ok = speakeasy.totp.verify({
@@ -101,13 +151,22 @@ router.post('/verify-2fa', (req, res) => {
   });
 
   if (!ok) {
-    return res.status(401).json({ error: 'Invalid authentication code' });
+    return res.status(401).json({
+      error: 'Invalid authentication code'
+    });
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, name: user.name, role: user.role },
+    {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    },
     JWT_SECRET,
-    { expiresIn: '8h' }
+    {
+      expiresIn: '8h'
+    }
   );
 
   res.json({
@@ -116,20 +175,36 @@ router.post('/verify-2fa', (req, res) => {
   });
 });
 
+// CURRENT USER
 router.get('/me', authRequired, (req, res) => {
   const user = db.findUserById(req.user.id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json({ user: publicUser(user) });
+
+  if (!user) {
+    return res.status(404).json({
+      error: 'User not found'
+    });
+  }
+
+  res.json({
+    user: publicUser(user)
+  });
 });
 
+// LOGOUT
 router.post('/logout', authRequired, (req, res) => {
-  res.json({ ok: true });
+  res.json({
+    ok: true
+  });
 });
 
+// FORGOT PASSWORD
 router.post('/forgot-password', async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
+
   if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
+    return res.status(400).json({
+      error: 'Email is required'
+    });
   }
 
   const safeReply = {
@@ -138,13 +213,18 @@ router.post('/forgot-password', async (req, res) => {
   };
 
   const user = db.findUserByEmail(email);
+
   if (!user) {
     return res.json(safeReply);
   }
 
-  const code = String(Math.floor(100000 + Math.random() * 900000));
+  const code = String(
+    Math.floor(100000 + Math.random() * 900000)
+  );
+
   const store = db.getStore();
   const u = store.users.find((x) => x.id === user.id);
+
   if (u) {
     u.resetCode = code;
     u.resetExpires = Date.now() + 10 * 60 * 1000;
@@ -153,48 +233,72 @@ router.post('/forgot-password', async (req, res) => {
 
   try {
     await sendResetCode(user.email, code, user.name);
+
     return res.json(safeReply);
   } catch (err) {
     console.error('Email send failed:', err.message);
+
     return res.status(500).json({
       error: 'Could not send email. Check SMTP settings in .env'
     });
   }
 });
 
+// RESET PASSWORD
 router.post('/reset-password', (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const code = (req.body.code || '').trim();
   const newPassword = req.body.newPassword || '';
 
   if (!email || !code || !newPassword) {
-    return res.status(400).json({ error: 'Email, code and new password are required' });
+    return res.status(400).json({
+      error: 'Email, code and new password are required'
+    });
   }
+
   if (newPassword.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    return res.status(400).json({
+      error: 'Password must be at least 6 characters'
+    });
   }
 
   const store = db.getStore();
+
   const user = store.users.find(
-    (u) => (u.email || '').toLowerCase() === email && u.status === 'Active'
+    (u) =>
+      (u.email || '').toLowerCase() === email &&
+      u.status === 'Active'
   );
 
   if (!user || !user.resetCode || !user.resetExpires) {
-    return res.status(400).json({ error: 'Invalid or expired reset code' });
+    return res.status(400).json({
+      error: 'Invalid or expired reset code'
+    });
   }
+
   if (Date.now() > user.resetExpires) {
-    return res.status(400).json({ error: 'Reset code has expired. Request a new one.' });
+    return res.status(400).json({
+      error: 'Reset code has expired. Request a new one.'
+    });
   }
+
   if (String(user.resetCode) !== code) {
-    return res.status(400).json({ error: 'Invalid reset code' });
+    return res.status(400).json({
+      error: 'Invalid reset code'
+    });
   }
 
   user.password = bcrypt.hashSync(newPassword, 10);
+
   delete user.resetCode;
   delete user.resetExpires;
+
   db.saveStore();
 
-  res.json({ ok: true, message: 'Password updated. You can sign in now.' });
+  res.json({
+    ok: true,
+    message: 'Password updated. You can sign in now.'
+  });
 });
 
 module.exports = router;
