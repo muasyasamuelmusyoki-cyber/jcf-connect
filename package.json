@@ -2,10 +2,12 @@
   "name": "jcf-connect",
   "version": "1.0.0",
   "description": "JCF Connect – Joy Christian Fellowship Rongai",
-  "main": "server/index.js",
+  "main": "electron/main.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "desktop": "electron .",
+    "desktop:build": "electron-builder"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -16,5 +18,28 @@
     "nodemailer": "^10.0.10",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4"
+  },
+  "build": {
+    "appId": "com.jcf.connect",
+    "productName": "JCF Connect",
+    "icon": "electron/icons/icon.ico",
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "electron/icons/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false
+    }
   }
 }
