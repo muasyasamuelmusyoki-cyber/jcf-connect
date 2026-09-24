@@ -13,30 +13,6 @@
       "twoFactorEnabled": true
     },
     {
-      "id": 2,
-      "email": "pastor@jcf.rongai",
-      "password": "$2a$10$BOKBXoO44KGh6Ii0DMQom.ZkOrla40VjoBdHhFuiDy8o8924iFAN.",
-      "name": "Pastor Samuel",
-      "role": "Super Admin",
-      "status": "Suspended"
-    },
-    {
-      "id": 3,
-      "email": "secretary@jcf.rongai",
-      "password": "$2a$10$pF8D5M5LN/yVU0H55uDUmOiPbUOqxGUwCF92Lt7mBOiAR7dvEU7k6",
-      "name": "Mary Wanjiku",
-      "role": "Admin",
-      "status": "Suspended"
-    },
-    {
-      "id": 4,
-      "email": "treasurer@jcf.rongai",
-      "password": "$2a$10$GfPfFLkfxA.kxBl0ZYI33.SorgjnRLmRiAmfzxR9zNWHmo6rLuEAS",
-      "name": "James Otieno",
-      "role": "Finance",
-      "status": "Suspended"
-    },
-    {
       "id": 1790088167039,
       "email": "visionwaveafrica@gmail.com",
       "name": "sam",
@@ -48,17 +24,6 @@
       ],
       "resetCode": "863774",
       "resetExpires": 1790089959730
-    },
-    {
-      "id": 1790091090084,
-      "email": "holyboy1908@gmail.com",
-      "name": "RICO",
-      "role": "Admin",
-      "status": "Active",
-      "password": "$2a$10$MdnJ3wZtKslJ/XrhHrozcu/ztx9zz0.v7HjYBODwbgAdxEHHT7tb2",
-      "access": [
-        "dashboard"
-      ]
     }
   ],
   "members": [
@@ -231,6 +196,34 @@
     }
   ],
   "logs": [
+    {
+      "id": "LOG-1790250257641",
+      "at": "2026-09-24T11:44:17.641Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.delete",
+      "detail": "holyboy1908@gmail.com"
+    },
+    {
+      "id": "LOG-1790250254799",
+      "at": "2026-09-24T11:44:14.800Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.delete",
+      "detail": "treasurer@jcf.rongai"
+    },
+    {
+      "id": "LOG-1790250248809",
+      "at": "2026-09-24T11:44:08.809Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.delete",
+      "detail": "secretary@jcf.rongai"
+    },
+    {
+      "id": "LOG-1790250245041",
+      "at": "2026-09-24T11:44:05.041Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.delete",
+      "detail": "pastor@jcf.rongai"
+    },
     {
       "id": "LOG-1790091090187",
       "at": "2026-09-22T15:31:30.187Z",
