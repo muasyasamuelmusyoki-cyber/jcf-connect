@@ -234,6 +234,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
   if (u) {
     u.resetCode = code;
     u.resetExpires = Date.now() + 10 * 60 * 1000;
+    u.resetAttempts = 0;
     db.saveStore();
   }
 
@@ -289,6 +290,21 @@ router.post('/reset-password', passwordResetLimiter, (req, res) => {
   }
 
   if (String(user.resetCode) !== code) {
+    user.resetAttempts = (Number(user.resetAttempts) || 0) + 1;
+
+    if (user.resetAttempts >= 5) {
+      delete user.resetCode;
+      delete user.resetExpires;
+      delete user.resetAttempts;
+      db.saveStore();
+
+      return res.status(400).json({
+        error: 'Too many invalid reset-code attempts. Request a new code.'
+      });
+    }
+
+    db.saveStore();
+
     return res.status(400).json({
       error: 'Invalid reset code'
     });
@@ -298,6 +314,7 @@ router.post('/reset-password', passwordResetLimiter, (req, res) => {
 
   delete user.resetCode;
   delete user.resetExpires;
+  delete user.resetAttempts;
 
   db.saveStore();
 
