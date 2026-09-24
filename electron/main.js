@@ -1,5 +1,17 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
+
+const ALLOWED_URL = 'https://jcf-connect.onrender.com';
+
+function isAllowedURL(url) {
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'https:' &&
+               parsed.hostname === 'jcf-connect.onrender.com';
+    } catch {
+        return false;
+    }
+}
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -13,11 +25,29 @@ function createWindow() {
 
         webPreferences: {
             contextIsolation: true,
-            nodeIntegration: false
+            nodeIntegration: false,
+            sandbox: true,
+            webSecurity: true
         }
     });
 
-    win.loadURL('https://jcf-connect.onrender.com/pages/login.html');
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if (isAllowedURL(url)) {
+            return { action: 'allow' };
+        }
+
+        shell.openExternal(url);
+        return { action: 'deny' };
+    });
+
+    win.webContents.on('will-navigate', (event, url) => {
+        if (!isAllowedURL(url)) {
+            event.preventDefault();
+            shell.openExternal(url);
+        }
+    });
+
+    win.loadURL(`${ALLOWED_URL}/pages/login.html`);
 }
 
 app.whenReady().then(() => {
