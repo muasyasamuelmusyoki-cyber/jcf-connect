@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 
 require('./db');
@@ -26,6 +27,7 @@ const reportsRoutes = require('./routes/reports');
 const backupRoutes = require('./routes/backup');
 
 const app = express();
+app.use(helmet());
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({ origin: 'https://jcf-connect.onrender.com' }));
