@@ -51,7 +51,7 @@ app.use('/api/leaders', leadersRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/backup', backupRoutes);
 
-app.use(express.static(path.join(__dirname, '..')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'index.html')));
 app.use('/pages', express.static(path.join(__dirname, '..', 'pages')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
