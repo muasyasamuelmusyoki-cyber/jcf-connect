@@ -1,6 +1,7 @@
 const { verifyRecaptcha } = require('../recaptcha');
 
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { randomInt } = require('crypto');
@@ -10,6 +11,12 @@ const { JWT_SECRET, authRequired } = require('../middleware/auth');
 const { sendResetCode } = require('../mail');
 
 const router = express.Router();
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many login attempts. Please try again later.' } });
+
+const twoFactorLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many verification attempts. Please try again later.' } });
+
+const passwordResetLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many password reset requests. Please try again later.' } });
 
 function userAccess(user) {
   if (Array.isArray(user.access) && user.access.length) return user.access;
@@ -29,7 +36,7 @@ function publicUser(user) {
 }
 
 // LOGIN
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const password = req.body.password || '';
   const recaptchaToken = req.body.recaptchaToken || '';
@@ -106,7 +113,7 @@ router.post('/login', async (req, res) => {
 });
 
 // VERIFY 2FA
-router.post('/verify-2fa', (req, res) => {
+router.post('/verify-2fa', twoFactorLimiter, (req, res) => {
   const pendingToken = req.body.pendingToken || '';
   const code = String(req.body.code || '').trim();
 
@@ -199,7 +206,7 @@ router.post('/logout', authRequired, (req, res) => {
 });
 
 // FORGOT PASSWORD
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
 
   if (!email) {
@@ -244,7 +251,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // RESET PASSWORD
-router.post('/reset-password', (req, res) => {
+router.post('/reset-password', passwordResetLimiter, (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const code = (req.body.code || '').trim();
   const newPassword = req.body.newPassword || '';
