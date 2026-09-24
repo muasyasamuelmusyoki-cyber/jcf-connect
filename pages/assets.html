@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Assets – JCF Connect</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -17,8 +19,9 @@
       --border: #1e3352;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -33,9 +36,10 @@
       display: flex;
       flex-direction: column;
       z-index: 100;
+      transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 1.4rem 1.25rem;
+      padding: 1.25rem 1.1rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -50,20 +54,23 @@
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
     .sidebar-brand span {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--gold);
       text-transform: uppercase;
       font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .nav-item {
-      display: block;
-      padding: 0.7rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.72rem 0.85rem;
       border-radius: 10px;
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
+      min-height: 44px;
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
@@ -71,25 +78,51 @@
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
+    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
     .sidebar-footer {
       padding: 1rem;
       border-top: 1px solid var(--border);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       text-align: center;
     }
-    .main { flex: 1; margin-left: 260px; min-height: 100vh; }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; min-width: 0; }
     .topbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.75rem;
+      padding: 0.85rem 1.25rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .topbar-left h2 { font-size: 1.15rem; }
-    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); }
-    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.45rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar-left h2 { font-size: 1.1rem; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
     .user-avatar {
       width: 36px; height: 36px;
       border-radius: 50%;
@@ -100,37 +133,37 @@
       font-weight: 600;
     }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.5rem 1.75rem; }
+    .content { padding: 1.25rem; }
     .stats-row {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
     }
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.1rem;
+      padding: 1rem;
     }
     .stat-label { font-size: 0.75rem; color: var(--text-muted); }
-    .stat-value { font-size: 1.35rem; font-weight: 700; }
+    .stat-value { font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem; }
     .toolbar {
       display: flex;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
+      gap: 0.85rem;
+      margin-bottom: 1.15rem;
       flex-wrap: wrap;
     }
-    .filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .filters { display: flex; gap: 0.55rem; flex-wrap: wrap; flex: 1; }
     .search-box, .filter-select {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 0.55rem 0.9rem;
+      padding: 0.55rem 0.85rem;
       color: var(--text);
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 16px;
     }
     .search-box input {
       background: transparent;
@@ -138,19 +171,22 @@
       color: var(--text);
       outline: none;
       font-family: inherit;
-      width: 180px;
+      width: 160px;
+      font-size: 16px;
     }
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
+      padding: 0.65rem 1.15rem;
       border-radius: 10px;
       font-weight: 600;
       text-decoration: none;
       font-family: inherit;
       display: inline-flex;
       align-items: center;
+      min-height: 44px;
+      white-space: nowrap;
     }
     .table-card {
       background: var(--card);
@@ -158,16 +194,21 @@
       border-radius: 14px;
       overflow: hidden;
     }
-    table { width: 100%; border-collapse: collapse; }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
     th, td {
-      padding: 0.8rem 1rem;
+      padding: 0.75rem 0.9rem;
       text-align: left;
       border-bottom: 1px solid var(--border);
-      font-size: 0.875rem;
+      font-size: 0.85rem;
     }
     th {
       color: var(--text-muted);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
     }
     .badge {
@@ -185,24 +226,39 @@
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.3rem 0.55rem;
+      padding: 0.4rem 0.55rem;
       border-radius: 7px;
       font-size: 0.72rem;
       cursor: pointer;
       font-family: inherit;
       margin-right: 0.25rem;
+      min-height: 36px;
     }
+
     @media (max-width: 1100px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .stats-row { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 900px) {
-      .sidebar { display: none; }
+      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
+      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
       .main { margin-left: 0; }
+      .menu-toggle { display: flex; }
+      .topbar-left p { display: none; }
+      .user-info span, .user-info #userName, .user-info #userRole { display: none; }
+      .user-info div:last-child { display: none; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: 0.9rem; }
+      .search-box input { width: 120px; }
+    }
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <aside class="sidebar">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
       <div class="sidebar-brand">
@@ -211,26 +267,31 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item">Dashboard</a>
-      <a href="members.html" class="nav-item">Members</a>
-      <a href="visitors.html" class="nav-item">Visitors</a>
-      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
-      <a href="departments.html" class="nav-item">Departments</a>
-      <a href="attendance.html" class="nav-item">Attendance</a>
-      <a href="champs-house.html" class="nav-item">Champs House</a>
-      <a href="finance.html" class="nav-item">Finance</a>
-      <a href="assets.html" class="nav-item active">Assets</a>
-      <a href="events.html" class="nav-item">Events</a>
-      <a href="settings.html" class="nav-item">Settings</a>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="members.html" class="nav-item"><span class="nav-icon">👥</span> Members</a>
+      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
+      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
+      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
+      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span> Attendance</a>
+      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
+      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
+      <a href="assets.html" class="nav-item active"><span class="nav-icon">📦</span> Assets</a>
+      <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
-    <div class="sidebar-footer">JCF CONNECT</div>
+    <div class="sidebar-footer">JCF CONNECT<br>© Joy Christian Fellowship – Rongai</div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <h2>Assets</h2>
-        <p>Church equipment and inventory</p>
+        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+        <div>
+          <h2>Assets</h2>
+          <p>Church equipment and inventory</p>
+        </div>
       </div>
       <div class="user-info">
         <div class="user-avatar" id="userAvatar">?</div>
@@ -293,22 +354,24 @@
       </div>
 
       <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Qty</th>
-              <th>Condition</th>
-              <th>Status</th>
-              <th>Location</th>
-              <th>Value</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="assetsTable"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Qty</th>
+                <th>Condition</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Value</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assetsTable"></tbody>
+          </table>
+        </div>
         <div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;" id="pageInfo">Showing 0 assets</div>
       </div>
     </div>
@@ -317,6 +380,17 @@
   <script>
     var API = '/api';
     var ASSETS = [];
+
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
 
     function getToken() {
       return localStorage.getItem('jcf_token') || '';
@@ -357,7 +431,7 @@
           try {
             data = text ? JSON.parse(text) : null;
           } catch (e) {
-            return Promise.reject(new Error('Bad response status ' + res.status + '. Is /api/assets registered?'));
+            return Promise.reject(new Error('Bad response status ' + res.status));
           }
           return { ok: res.ok, data: data };
         });
@@ -389,8 +463,7 @@
           updateStats();
           filterAssets();
         })
-        .catch(function (err) {
-          console.error(err);
+        .catch(function () {
           ASSETS = [];
           updateStats();
           filterAssets();

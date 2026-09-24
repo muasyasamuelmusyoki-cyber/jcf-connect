@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – JCF Connect</title>
@@ -471,6 +473,26 @@
             <button type="button" class="btn btn-primary" onclick="savePrefs()">Save</button>
           </div>
         </div>
+
+        <div class="form-card">
+          <div class="section-title">Two-Factor Authentication</div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;" id="twoFactorStatus">Checking...</p>
+          <div id="twoFactorSetup" style="display:none;">
+            <p style="font-size:0.85rem;margin-bottom:0.75rem;">Scan this QR with Google Authenticator or Microsoft Authenticator, then enter the code:</p>
+            <img id="twoFactorQR" alt="QR" style="max-width:200px;border-radius:8px;margin-bottom:1rem;background:#fff;padding:8px;" />
+            <div class="form-group" style="max-width:220px;">
+              <label>Code from app</label>
+              <input type="text" id="twoFactorCode" maxlength="6" placeholder="123456" />
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" onclick="confirm2FA()">Enable 2FA</button>
+            </div>
+          </div>
+          <div class="form-actions" id="twoFactorActions">
+            <button type="button" class="btn btn-primary" id="btnStart2FA" onclick="start2FA()">Set up 2FA</button>
+            <button type="button" class="btn btn-secondary" id="btnDisable2FA" style="display:none;" onclick="disable2FA()">Disable 2FA</button>
+          </div>
+        </div>
       </div>
 
       <div class="tab-panel" id="tab-logs">
@@ -544,6 +566,7 @@
       if (btn) btn.classList.add('active');
       if (id === 'users') loadUsers();
       if (id === 'logs') loadLogs();
+      if (id === 'security') load2FAStatus();
     }
 
     function showSuccess(msg) {
@@ -599,6 +622,63 @@
       if (token) localStorage.setItem('jcf_token', token);
       if (user) localStorage.setItem('jcf_user', user);
       showSuccess('Local cache cleared.');
+    }
+
+    function load2FAStatus() {
+      apiFetch('/2fa/status').then(function (r) {
+        var on = r.ok && r.data && r.data.enabled;
+        document.getElementById('twoFactorStatus').textContent = on
+          ? '2FA is enabled on your account.'
+          : '2FA is not enabled.';
+        document.getElementById('btnStart2FA').style.display = on ? 'none' : 'inline-block';
+        document.getElementById('btnDisable2FA').style.display = on ? 'inline-block' : 'none';
+        document.getElementById('twoFactorSetup').style.display = 'none';
+      }).catch(function () {
+        document.getElementById('twoFactorStatus').textContent = 'Could not load 2FA status. Is /api/2fa registered?';
+      });
+    }
+
+    function start2FA() {
+      apiFetch('/2fa/setup', { method: 'POST' }).then(function (r) {
+        if (!r.ok) {
+          alert((r.data && r.data.error) || 'Setup failed');
+          return;
+        }
+        document.getElementById('twoFactorQR').src = r.data.qr;
+        document.getElementById('twoFactorSetup').style.display = 'block';
+      }).catch(function (e) { alert(e.message); });
+    }
+
+    function confirm2FA() {
+      var code = document.getElementById('twoFactorCode').value.trim();
+      if (!code) { alert('Enter the code from your app'); return; }
+      apiFetch('/2fa/enable', {
+        method: 'POST',
+        body: JSON.stringify({ code: code })
+      }).then(function (r) {
+        if (!r.ok) {
+          alert((r.data && r.data.error) || 'Invalid code');
+          return;
+        }
+        showSuccess('2FA enabled.');
+        load2FAStatus();
+      }).catch(function (e) { alert(e.message); });
+    }
+
+    function disable2FA() {
+      var code = prompt('Enter current authenticator code to disable 2FA:');
+      if (!code) return;
+      apiFetch('/2fa/disable', {
+        method: 'POST',
+        body: JSON.stringify({ code: code })
+      }).then(function (r) {
+        if (!r.ok) {
+          alert((r.data && r.data.error) || 'Failed');
+          return;
+        }
+        showSuccess('2FA disabled.');
+        load2FAStatus();
+      }).catch(function (e) { alert(e.message); });
     }
 
     function buildAccessChecks(selected) {

@@ -27,6 +27,7 @@ var PAGE_MODULE = {
   'event-form.html': 'events',
   'reports.html': 'reports',
   'settings.html': 'settings'
+  'leaders.html': 'leaders',
 };
 
 function getSession() {

@@ -7,8 +7,10 @@
       "name": "System Admin",
       "role": "Super Admin",
       "status": "Active",
-      "resetCode": "346484",
-      "resetExpires": 1790090648836
+      "resetCode": "591693",
+      "resetExpires": 1790091368181,
+      "twoFactorSecret": "M52TG7KXLZHXK4JYOESVAUKYHY7G2W3V",
+      "twoFactorEnabled": true
     },
     {
       "id": 2,
@@ -46,6 +48,17 @@
       ],
       "resetCode": "863774",
       "resetExpires": 1790089959730
+    },
+    {
+      "id": 1790091090084,
+      "email": "holyboy1908@gmail.com",
+      "name": "RICO",
+      "role": "Admin",
+      "status": "Active",
+      "password": "$2a$10$MdnJ3wZtKslJ/XrhHrozcu/ztx9zz0.v7HjYBODwbgAdxEHHT7tb2",
+      "access": [
+        "dashboard"
+      ]
     }
   ],
   "members": [
@@ -98,6 +111,18 @@
       "sunday_school": 997,
       "total": 1847,
       "created_at": "2026-09-21T13:36:22.441Z"
+    },
+    {
+      "id": "ATT-1790244514374",
+      "date": "2026-09-24",
+      "service": "Midweek Service",
+      "men": 20,
+      "ladies": 10,
+      "youths": 65,
+      "teens": 10,
+      "sunday_school": 10,
+      "total": 115,
+      "created_at": "2026-09-24T10:08:34.383Z"
     }
   ],
   "finance": [
@@ -107,6 +132,22 @@
       "type": "income",
       "category": "Tithe",
       "amount": 2000,
+      "notes": "sam"
+    },
+    {
+      "id": "FIN-1790244475679",
+      "date": "2026-09-24",
+      "type": "income",
+      "category": "Tithe",
+      "amount": 20000,
+      "notes": "kkhkh"
+    },
+    {
+      "id": "FIN-1790244546965",
+      "date": "2026-09-24",
+      "type": "expense",
+      "category": "Equipment",
+      "amount": 10000,
       "notes": "sam"
     }
   ],
@@ -191,6 +232,13 @@
   ],
   "logs": [
     {
+      "id": "LOG-1790091090187",
+      "at": "2026-09-22T15:31:30.187Z",
+      "actor": "admin@jcf.rongai",
+      "action": "user.create",
+      "detail": "holyboy1908@gmail.com"
+    },
+    {
       "id": "LOG-1790088167141",
       "at": "2026-09-22T14:42:47.141Z",
       "actor": "admin@jcf.rongai",
@@ -260,5 +308,22 @@
       "action": "user.update",
       "detail": "pastor@jcf.rongai"
     }
-  ]
+  ],
+  "leaders": [
+    {
+      "id": "LDR-001",
+      "name": "Vision wave Africa",
+      "title": "222",
+      "phone": "0746795323",
+      "email": "visionwaveafrica@gmail.com",
+      "department": "22",
+      "memberId": "",
+      "status": "Active",
+      "notes": "222",
+      "createdAt": "2026-09-24T09:39:29.337Z",
+      "updatedAt": "2026-09-24T09:39:36.877Z"
+    }
+  ],
+  "champs_classes": [],
+  "champs_students": []
 }

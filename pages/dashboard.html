@@ -4,189 +4,108 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root, [data-theme="dark"] {
-      --accent: #c41e3a;
-      --gold: #d4a017;
-      --bg: #080f18;
-      --sidebar: #0c1524;
-      --card: #111c2e;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #1e3352;
-      --success: #10b981;
-      --info: #3b82f6;
+      --accent: #c41e3a; --gold: #d4a017; --bg: #080f18; --sidebar: #0c1524;
+      --card: #111c2e; --text: #f1f5f9; --text-muted: #94a3b8; --border: #1e3352;
+      --success: #10b981; --info: #3b82f6;
     }
     [data-theme="light"] {
-      --bg: #f1f5f9;
-      --sidebar: #ffffff;
-      --card: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
+      --bg: #f1f5f9; --sidebar: #ffffff; --card: #ffffff; --text: #0f172a;
+      --text-muted: #64748b; --border: #e2e8f0;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      transition: background 0.25s, color 0.25s;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      display: flex; transition: background 0.25s, color 0.25s;
     }
     .sidebar {
-      width: 260px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-      transition: transform 0.3s ease;
+      width: 260px; background: var(--sidebar); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 100; transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 1.4rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      padding: 1.4rem 1.25rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem;
     }
     .sidebar-logo {
-      width: 42px; height: 42px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: rgba(196,30,58,0.15);
-      padding: 4px;
+      width: 42px; height: 42px; object-fit: contain; border-radius: 50%;
+      background: rgba(196,30,58,0.15); padding: 4px;
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
     .sidebar-brand span {
-      font-size: 0.65rem;
-      color: var(--gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 600;
+      font-size: 0.65rem; color: var(--gold); letter-spacing: 0.08em;
+      text-transform: uppercase; font-weight: 600;
     }
     .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.7rem 0.9rem;
-      border-radius: 10px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 0.9rem; border-radius: 10px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.25rem;
     }
     .nav-item:hover { background: rgba(196,30,58,0.08); color: var(--text); }
     .nav-item.active {
       background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
-      color: #ff6b7a;
-      border: 1px solid rgba(196,30,58,0.25);
+      color: #ff6b7a; border: 1px solid rgba(196,30,58,0.25);
     }
+    .nav-icon { width: 1.25rem; text-align: center; font-size: 1rem; }
     .sidebar-footer {
-      padding: 1rem 1.25rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.5;
+      padding: 1rem 1.25rem; border-top: 1px solid var(--border);
+      font-size: 0.7rem; color: var(--text-muted); text-align: center; line-height: 1.5;
     }
-    .main {
-      flex: 1;
-      margin-left: 260px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
     .topbar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 50;
     }
     .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
     .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
     .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
     .date-badge {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      background: rgba(128,128,128,0.08);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--text-muted); background: rgba(128,128,128,0.08);
+      padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);
     }
     .session-timer {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      background: rgba(196,30,58,0.1);
-      border: 1px solid rgba(196,30,58,0.25);
-      padding: 0.35rem 0.7rem;
-      border-radius: 8px;
-      font-weight: 500;
+      font-size: 0.75rem; color: var(--text-muted); background: rgba(196,30,58,0.1);
+      border: 1px solid rgba(196,30,58,0.25); padding: 0.35rem 0.7rem;
+      border-radius: 8px; font-weight: 500;
     }
     .session-timer.warn { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.1); }
     .icon-btn {
-      width: 38px; height: 38px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
+      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
     .icon-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(196,30,58,0.08); }
     .user-info { display: flex; align-items: center; gap: 0.6rem; }
     .user-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
+      width: 36px; height: 36px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       display: flex; align-items: center; justify-content: center;
-      font-weight: 600; font-size: 0.85rem;
-      color: #fff;
+      font-weight: 600; font-size: 0.85rem; color: #fff;
     }
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
     .content { padding: 1.75rem; flex: 1; }
-
     .welcome-banner {
       background: linear-gradient(135deg, rgba(196,30,58,0.15), rgba(196,30,58,0.05));
-      border: 1px solid rgba(196,30,58,0.25);
-      border-radius: 14px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      border: 1px solid rgba(196,30,58,0.25); border-radius: 14px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
     }
     .welcome-banner h3 { font-size: 1.1rem; font-weight: 600; }
     .welcome-banner p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
-
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.75rem;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.75rem;
     }
     .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem;
     }
     .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.5rem; }
     .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
@@ -195,130 +114,69 @@
     .stat-card.blue .stat-value { color: #60a5fa; }
     .stat-card.gold .stat-value { color: var(--gold); }
     .stat-card.purple .stat-value { color: #a78bfa; }
-
     .middle-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 320px;
-      gap: 1.25rem;
-      margin-bottom: 1.75rem;
+      display: grid; grid-template-columns: 1fr 1fr 320px; gap: 1.25rem; margin-bottom: 1.75rem;
     }
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.35rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.35rem;
     }
     .card-header { display: flex; justify-content: space-between; margin-bottom: 1.1rem; }
     .card-title { font-size: 0.95rem; font-weight: 600; }
     .card-subtitle { font-size: 0.75rem; color: var(--text-muted); }
     .chart-wrap { position: relative; height: 220px; }
-
-    .mini-stat {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.65rem 0;
-      font-size: 0.85rem;
-    }
+    .mini-stat { display: flex; justify-content: space-between; padding: 0.65rem 0; font-size: 0.85rem; }
     .mini-stat .label { color: var(--text-muted); }
     .mini-stat .val { font-weight: 600; }
     .mini-stat .val.green { color: #34d399; }
     .mini-stat .val.red { color: #ff6b7a; }
     .mini-stat .val.gold { color: var(--gold); }
-
     .activity-list { list-style: none; max-height: 280px; overflow-y: auto; }
     .activity-item {
-      display: flex;
-      gap: 0.75rem;
-      padding: 0.7rem 0;
-      border-bottom: 1px solid var(--border);
+      display: flex; gap: 0.75rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border);
     }
     .activity-item:last-child { border-bottom: none; }
-    .activity-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
     .activity-dot.red { background: var(--accent); }
     .activity-dot.green { background: var(--success); }
     .activity-dot.blue { background: var(--info); }
     .activity-dot.gold { background: var(--gold); }
     .activity-text { font-size: 0.82rem; line-height: 1.4; }
     .activity-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 0.9rem;
-    }
+    .quick-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.9rem; }
     .action-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.1rem 0.75rem;
-      text-align: center;
-      text-decoration: none;
-      color: var(--text);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.1rem 0.75rem; text-align: center; text-decoration: none; color: var(--text);
       transition: all 0.15s;
     }
     .action-btn:hover {
-      border-color: var(--accent);
-      background: rgba(196,30,58,0.08);
-      transform: translateY(-2px);
+      border-color: var(--accent); background: rgba(196,30,58,0.08); transform: translateY(-2px);
     }
     .action-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
     .action-label { font-size: 0.78rem; font-weight: 500; }
-
     .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
+      display: none; background: none; border: none; color: var(--text); font-size: 1.4rem; cursor: pointer;
     }
     .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 90;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
     }
     .sidebar-overlay.show { display: block; }
-
     .session-warning {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--card);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 1.15rem 1.35rem;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-      z-index: 200;
-      display: none;
-      max-width: 340px;
+      position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--card);
+      border: 1px solid var(--accent); border-radius: 12px; padding: 1.15rem 1.35rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35); z-index: 200; display: none; max-width: 340px;
     }
     .session-warning.show { display: block; }
     .session-warning h4 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #ff6b7a; }
     .session-warning p { font-size: 0.85rem; margin-bottom: 0.9rem; color: var(--text-muted); line-height: 1.45; }
     .session-warning .btn-row { display: flex; gap: 0.5rem; }
     .session-warning button {
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
+      border: none; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; font-family: inherit;
     }
     .session-warning .btn-stay { background: var(--accent); color: #fff; }
     .session-warning .btn-logout {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
+      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
     }
-
     @media (max-width: 1200px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
       .middle-row { grid-template-columns: 1fr 1fr; }
@@ -341,7 +199,6 @@
   </style>
 </head>
 <body>
-
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <aside class="sidebar" id="sidebar">
@@ -353,18 +210,19 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item active">Dashboard</a>
-      <a href="members.html" class="nav-item">Members</a>
-      <a href="visitors.html" class="nav-item">Visitors</a>
-      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
-      <a href="departments.html" class="nav-item">Departments</a>
-      <a href="attendance.html" class="nav-item">Attendance</a>
-      <a href="champs-house.html" class="nav-item">Champs House</a>
-      <a href="finance.html" class="nav-item">Finance</a>
-      <a href="assets.html" class="nav-item">Assets</a>
-      <a href="events.html" class="nav-item">Events</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="settings.html" class="nav-item">Settings</a>
+      <a href="dashboard.html" class="nav-item active"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="members.html" class="nav-item"><span class="nav-icon">👥</span> Members</a>
+      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
+      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
+      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
+      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span> Attendance</a>
+      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
+      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
+      <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
+      <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
     <div class="sidebar-footer">
       JCF CONNECT<br>
@@ -375,7 +233,7 @@
   <div class="main">
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="menu-toggle" onclick="openSidebar()">☰</button>
+        <button class="menu-toggle" onclick="openSidebar()" aria-label="Menu">☰</button>
         <div class="topbar-left">
           <h2>Dashboard</h2>
           <p>Welcome back. Here’s what’s happening today.</p>
@@ -397,7 +255,6 @@
     </header>
 
     <div class="content">
-
       <div class="welcome-banner">
         <div>
           <h3 id="welcomeText">Welcome back!</h3>
@@ -439,12 +296,10 @@
           <div class="card-header">
             <div>
               <div class="card-title">Attendance Trend</div>
-              <div class="card-subtitle">Last 6 services</div>
+              <div class="card-subtitle">Recent services</div>
             </div>
           </div>
-          <div class="chart-wrap">
-            <canvas id="attendanceChart"></canvas>
-          </div>
+          <div class="chart-wrap"><canvas id="attendanceChart"></canvas></div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -453,30 +308,21 @@
               <div class="card-subtitle">Income vs Expenses</div>
             </div>
           </div>
-          <div class="chart-wrap">
-            <canvas id="financeChart"></canvas>
-          </div>
+          <div class="chart-wrap"><canvas id="financeChart"></canvas></div>
         </div>
         <div class="card">
           <div class="card-header">
             <div>
               <div class="card-title">Recent Activities</div>
-              <div class="card-subtitle">Latest system actions</div>
+              <div class="card-subtitle">Latest actions</div>
             </div>
           </div>
-          <ul class="activity-list">
+          <ul class="activity-list" id="activityList">
             <li class="activity-item">
               <div class="activity-dot green"></div>
               <div>
                 <div class="activity-text">Logged in successfully</div>
                 <div class="activity-time">Just now</div>
-              </div>
-            </li>
-            <li class="activity-item">
-              <div class="activity-dot blue"></div>
-              <div>
-                <div class="activity-text">Server connected · API ready</div>
-                <div class="activity-time">Today</div>
               </div>
             </li>
           </ul>
@@ -512,60 +358,36 @@
       </div>
 
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Quick Actions</div>
-        </div>
+        <div class="card-header"><div class="card-title">Quick Actions</div></div>
         <div class="quick-actions">
-          <a href="member-form.html" class="action-btn">
-            <div class="action-icon">👤</div>
-            <div class="action-label">Add Member</div>
-          </a>
-          <a href="visitor-form.html" class="action-btn">
-            <div class="action-icon">👋</div>
-            <div class="action-label">Add Visitor</div>
-          </a>
-          <a href="attendance.html" class="action-btn">
-            <div class="action-icon">📋</div>
-            <div class="action-label">Attendance</div>
-          </a>
-          <a href="finance.html" class="action-btn">
-            <div class="action-icon">💰</div>
-            <div class="action-label">Finance</div>
-          </a>
-          <a href="events.html" class="action-btn">
-            <div class="action-icon">📅</div>
-            <div class="action-label">Events</div>
-          </a>
-          <a href="reports.html" class="action-btn">
-            <div class="action-icon">📊</div>
-            <div class="action-label">Reports</div>
-          </a>
+          <a href="member-form.html" class="action-btn"><div class="action-icon">👤</div><div class="action-label">Add Member</div></a>
+          <a href="visitor-form.html" class="action-btn"><div class="action-icon">👋</div><div class="action-label">Add Visitor</div></a>
+          <a href="attendance.html" class="action-btn"><div class="action-icon">📋</div><div class="action-label">Attendance</div></a>
+          <a href="finance.html" class="action-btn"><div class="action-icon">💰</div><div class="action-label">Finance</div></a>
+          <a href="leaders.html" class="action-btn"><div class="action-icon">⭐</div><div class="action-label">Leaders</div></a>
+          <a href="reports.html" class="action-btn"><div class="action-icon">📊</div><div class="action-label">Reports</div></a>
         </div>
       </div>
-
     </div>
   </div>
 
   <div class="session-warning" id="sessionWarning">
     <h4>⚠ Session expiring soon</h4>
-    <p>You will be logged out in <strong id="warnSeconds">60</strong> seconds due to inactivity. Click below to stay signed in.</p>
+    <p>You will be logged out in <strong id="warnSeconds">60</strong> seconds due to inactivity.</p>
     <div class="btn-row">
-      <button class="btn-stay" onclick="resetIdleTimer()">Stay Logged In</button>
-      <button class="btn-logout" onclick="logout()">Logout now</button>
+      <button type="button" class="btn-stay" onclick="resetIdleTimer()">Stay Logged In</button>
+      <button type="button" class="btn-logout" onclick="logout()">Logout now</button>
     </div>
   </div>
 
   <script>
     var API = '/api';
 
-    /* ========== AUTH (token + role) ========== */
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
       catch (e) { return null; }
     }
-    function getToken() {
-      return localStorage.getItem('jcf_token') || '';
-    }
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
     function logout() {
       localStorage.removeItem('jcf_token');
       localStorage.removeItem('jcf_user');
@@ -590,7 +412,6 @@
         'Welcome back, ' + (session.name || 'User').split(' ')[0] + '!';
     }
 
-    /* ========== THEME ========== */
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('jcf_theme', theme);
@@ -605,7 +426,6 @@
     var savedTheme = localStorage.getItem('jcf_theme') || 'dark';
     applyTheme(savedTheme);
 
-    /* ========== MOBILE SIDEBAR ========== */
     function openSidebar() {
       document.getElementById('sidebar').classList.add('open');
       document.getElementById('sidebarOverlay').classList.add('show');
@@ -616,20 +436,11 @@
       document.getElementById('sidebarOverlay').classList.remove('show');
       document.body.style.overflow = '';
     }
-    document.querySelectorAll('.nav-item').forEach(function (link) {
-      link.addEventListener('click', function () {
-        if (window.innerWidth <= 900) closeSidebar();
-      });
-    });
 
-    /* ========== AUTO LOGOUT (5 MIN IDLE) ========== */
+    /* Auto logout – 5 min */
     var IDLE_MS = 5 * 60 * 1000;
     var WARN_BEFORE_MS = 60 * 1000;
-    var idleTimer = null;
-    var warnTimer = null;
-    var countdownInterval = null;
-    var displayInterval = null;
-    var remainingMs = IDLE_MS;
+    var idleTimer = null, warnTimer = null, countdownInterval = null;
     var lastActivity = Date.now();
 
     function formatTime(ms) {
@@ -638,25 +449,21 @@
       var sec = s % 60;
       return m + ':' + (sec < 10 ? '0' : '') + sec;
     }
-
     function updateTimerDisplay() {
-      remainingMs = IDLE_MS - (Date.now() - lastActivity);
+      var remainingMs = IDLE_MS - (Date.now() - lastActivity);
       var el = document.getElementById('sessionTimer');
       if (!el) return;
       el.textContent = '⏱ ' + formatTime(remainingMs);
       if (remainingMs <= WARN_BEFORE_MS) el.classList.add('warn');
       else el.classList.remove('warn');
     }
-
     function resetIdleTimer() {
       document.getElementById('sessionWarning').classList.remove('show');
       clearTimeout(idleTimer);
       clearTimeout(warnTimer);
       clearInterval(countdownInterval);
       lastActivity = Date.now();
-      remainingMs = IDLE_MS;
       updateTimerDisplay();
-
       warnTimer = setTimeout(function () {
         document.getElementById('sessionWarning').classList.add('show');
         var secsLeft = 60;
@@ -667,18 +474,15 @@
           if (secsLeft <= 0) clearInterval(countdownInterval);
         }, 1000);
       }, IDLE_MS - WARN_BEFORE_MS);
-
       idleTimer = setTimeout(function () {
-        alert('You have been logged out due to 5 minutes of inactivity.');
+        alert('You have been logged out due to inactivity.');
         logout();
       }, IDLE_MS);
     }
-
     ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'].forEach(function (evt) {
       document.addEventListener(evt, resetIdleTimer, { passive: true });
     });
 
-    /* ========== DATE ========== */
     var dateStr = new Date().toLocaleDateString('en-GB', {
       weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
     });
@@ -689,22 +493,78 @@
       return 'KES ' + Number(n || 0).toLocaleString('en-KE');
     }
 
-    /* ========== STATS FROM LOCALSTORAGE ========== */
-    try {
-      var members = JSON.parse(localStorage.getItem('jcf_members') || '[]');
-      document.getElementById('statMembers').textContent = members.length;
-      document.getElementById('statActive').textContent =
-        members.filter(function (m) { return m.status === 'Active'; }).length;
+    function apiFetch(path) {
+      return fetch(API + path, {
+        headers: { Authorization: 'Bearer ' + getToken() }
+      }).then(function (res) {
+        if (res.status === 401) { logout(); return Promise.reject(); }
+        return res.json().then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
 
-      var visitors = JSON.parse(localStorage.getItem('jcf_visitors') || '[]');
-      document.getElementById('statVisitors').textContent = visitors.length;
+    /* Load live summary from API */
+    function loadSummary() {
+      apiFetch('/reports/summary').then(function (r) {
+        if (!r.ok || !r.data) return loadFromModules();
+        var d = r.data;
+        if (d.members) {
+          document.getElementById('statMembers').textContent = d.members.total || 0;
+          document.getElementById('statActive').textContent = d.members.active || 0;
+        }
+        if (d.visitors) document.getElementById('statVisitors').textContent = d.visitors.total || 0;
+        if (d.groups != null) document.getElementById('statGroups').textContent = d.groups;
+        if (d.attendance) document.getElementById('statAttendance').textContent = d.attendance.latestTotal || 0;
+        if (d.finance) {
+          document.getElementById('finIncome').textContent = formatMoney(d.finance.income);
+          document.getElementById('finExpense').textContent = formatMoney(d.finance.expense);
+          document.getElementById('finBalance').textContent = formatMoney(d.finance.balance);
+          document.getElementById('finTithe').textContent = formatMoney(d.finance.tithe);
+        }
+      }).catch(function () {
+        loadFromModules();
+      });
+    }
 
-      var groups = JSON.parse(localStorage.getItem('jcf_groups') || '[]');
-      document.getElementById('statGroups').textContent =
-        groups.filter(function (g) { return g.status === 'Active'; }).length || groups.length;
-    } catch (e) {}
+    function loadFromModules() {
+      Promise.all([
+        apiFetch('/members').catch(function () { return { ok: false }; }),
+        apiFetch('/visitors').catch(function () { return { ok: false }; }),
+        apiFetch('/groups').catch(function () { return { ok: false }; }),
+        apiFetch('/attendance').catch(function () { return { ok: false }; }),
+        apiFetch('/finance').catch(function () { return { ok: false }; })
+      ]).then(function (results) {
+        var members = results[0].ok && Array.isArray(results[0].data) ? results[0].data : [];
+        var visitors = results[1].ok && Array.isArray(results[1].data) ? results[1].data : [];
+        var groups = results[2].ok && Array.isArray(results[2].data) ? results[2].data : [];
+        var att = results[3].ok && Array.isArray(results[3].data) ? results[3].data : [];
+        var fin = results[4].ok && Array.isArray(results[4].data) ? results[4].data : [];
 
-    /* ========== CHARTS ========== */
+        document.getElementById('statMembers').textContent = members.length;
+        document.getElementById('statActive').textContent =
+          members.filter(function (m) { return m.status === 'Active'; }).length;
+        document.getElementById('statVisitors').textContent = visitors.length;
+        document.getElementById('statGroups').textContent =
+          groups.filter(function (g) { return g.status === 'Active'; }).length || groups.length;
+        if (att[0]) document.getElementById('statAttendance').textContent = att[0].total || 0;
+
+        var income = fin.filter(function (t) { return t.type === 'income'; })
+          .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
+        var expense = fin.filter(function (t) { return t.type === 'expense'; })
+          .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
+        var tithe = fin.filter(function (t) {
+          return t.type === 'income' && (t.category === 'Tithe' || t.category === 'tithe');
+        }).reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
+        document.getElementById('finIncome').textContent = formatMoney(income);
+        document.getElementById('finExpense').textContent = formatMoney(expense);
+        document.getElementById('finBalance').textContent = formatMoney(income - expense);
+        document.getElementById('finTithe').textContent = formatMoney(tithe);
+
+        buildCharts(savedTheme, att, fin);
+      });
+    }
+
     var attendanceChart = null;
     var financeChart = null;
 
@@ -717,21 +577,21 @@
       };
     }
 
-    function buildCharts(theme) {
+    function buildCharts(theme, att, fin) {
+      att = att || [];
+      fin = fin || [];
       var c = getChartColors(theme);
       var attLabels = ['No data'];
       var attData = [0];
-      try {
-        var att = JSON.parse(localStorage.getItem('jcf_attendance') || '[]');
-        if (att.length) {
-          var recent = att.slice(0, 6).reverse();
-          attLabels = recent.map(function (r) {
+      if (att.length) {
+        var recent = att.slice(0, 6).reverse();
+        attLabels = recent.map(function (r) {
+          try {
             return new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-          });
-          attData = recent.map(function (r) { return r.total || 0; });
-          if (att[0]) document.getElementById('statAttendance').textContent = att[0].total || 0;
-        }
-      } catch (e) {}
+          } catch (e) { return r.date || ''; }
+        });
+        attData = recent.map(function (r) { return r.total || 0; });
+      }
 
       if (attendanceChart) attendanceChart.destroy();
       attendanceChart = new Chart(document.getElementById('attendanceChart'), {
@@ -760,38 +620,27 @@
         }
       });
 
-      var finLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-      var incomeData = [0, 0, 0, 0];
-      var expenseData = [0, 0, 0, 0];
-      try {
-        var fin = JSON.parse(localStorage.getItem('jcf_finance') || '[]');
-        if (fin.length) {
-          var income = fin.filter(function (t) { return t.type === 'income'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
-          var expense = fin.filter(function (t) { return t.type === 'expense'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
-          var tithe = fin.filter(function (t) { return t.type === 'income' && t.category === 'Tithe'; }).reduce(function (s, t) { return s + (t.amount || 0); }, 0);
-          document.getElementById('finIncome').textContent = formatMoney(income);
-          document.getElementById('finExpense').textContent = formatMoney(expense);
-          document.getElementById('finBalance').textContent = formatMoney(income - expense);
-          document.getElementById('finTithe').textContent = formatMoney(tithe);
-        }
-      } catch (e) {}
+      var income = fin.filter(function (t) { return t.type === 'income'; })
+        .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
+      var expense = fin.filter(function (t) { return t.type === 'expense'; })
+        .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
 
       if (financeChart) financeChart.destroy();
       financeChart = new Chart(document.getElementById('financeChart'), {
         type: 'bar',
         data: {
-          labels: finLabels,
-          datasets: [
-            { label: 'Income', data: incomeData, backgroundColor: 'rgba(52,211,153,0.7)', borderRadius: 6 },
-            { label: 'Expenses', data: expenseData, backgroundColor: 'rgba(196,30,58,0.7)', borderRadius: 6 }
-          ]
+          labels: ['Income', 'Expenses'],
+          datasets: [{
+            label: 'KES',
+            data: [income, expense],
+            backgroundColor: ['rgba(52,211,153,0.7)', 'rgba(196,30,58,0.7)'],
+            borderRadius: 6
+          }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { color: c.text, boxWidth: 12, font: { size: 11 } } }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             x: { ticks: { color: c.text }, grid: { color: c.grid } },
             y: {
@@ -808,12 +657,12 @@
     }
 
     function updateChartColors(theme) {
-      if (document.getElementById('attendanceChart')) buildCharts(theme);
+      loadFromModules();
     }
 
-    buildCharts(savedTheme);
+    loadSummary();
     resetIdleTimer();
-    displayInterval = setInterval(updateTimerDisplay, 1000);
+    setInterval(updateTimerDisplay, 1000);
   </script>
   <script src="js/access.js"></script>
 </body>

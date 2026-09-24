@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaders – JCF Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px; background: var(--sidebar); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.4rem 1.25rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px; object-fit: contain; border-radius: 50%;
+      background: rgba(196,30,58,0.15); padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
+    .sidebar-brand span { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; font-weight: 600; }
+    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: block; padding: 0.7rem 0.9rem; border-radius: 10px;
+      color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-bottom: 0.25rem;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: rgba(196,30,58,0.15); color: #ff6b7a; border: 1px solid rgba(196,30,58,0.25);
+    }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; }
+    .topbar {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.75rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    .topbar-left h2 { font-size: 1.15rem; }
+    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); }
+    .user-info { display: flex; align-items: center; gap: 0.6rem; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      display: flex; align-items: center; justify-content: center; font-weight: 600;
+    }
+    .user-role { font-size: 0.7rem; color: var(--text-muted); }
+    .content { padding: 1.5rem 1.75rem; }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.25rem;
+    }
+    .stat-card .label { font-size: 0.75rem; color: var(--text-muted); }
+    .stat-card .value { font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; }
+    .toolbar {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center;
+    }
+    .toolbar input, .toolbar select {
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.6rem 0.85rem; color: var(--text); font-family: inherit; font-size: 0.9rem;
+    }
+    .toolbar input { min-width: 220px; flex: 1; }
+    .btn {
+      padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 600; font-family: inherit;
+      cursor: pointer; border: none; font-size: 0.85rem;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #9b1b2e); color: white; }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    th { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; background: rgba(0,0,0,0.15); }
+    .badge {
+      display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600;
+    }
+    .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
+    .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .action-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 0.28rem 0.5rem; border-radius: 7px; font-size: 0.72rem; cursor: pointer;
+      font-family: inherit; margin-right: 0.2rem;
+    }
+    .form-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.5rem; margin-bottom: 1.25rem; display: none;
+    }
+    .form-card.show { display: block; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; color: var(--text-muted); }
+    input, select, textarea {
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.65rem 0.85rem; color: var(--text); font-family: inherit; font-size: 0.9rem;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .form-actions {
+      display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.25rem;
+      padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .success-msg {
+      padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem; display: none;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7;
+    }
+    .success-msg.show { display: block; }
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .stats { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="members.html" class="nav-item">Members</a>
+      <a href="visitors.html" class="nav-item">Visitors</a>
+      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
+      <a href="departments.html" class="nav-item">Departments</a>
+      <a href="leaders.html" class="nav-item active">Leaders</a>
+      <a href="attendance.html" class="nav-item">Attendance</a>
+      <a href="champs-house.html" class="nav-item">Champs House</a>
+      <a href="finance.html" class="nav-item">Finance</a>
+      <a href="assets.html" class="nav-item">Assets</a>
+      <a href="events.html" class="nav-item">Events</a>
+      <a href="reports.html" class="nav-item">Reports</a>
+      <a href="settings.html" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">JCF CONNECT</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2>Leaders</h2>
+        <p>Church leadership directory</p>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="stats">
+        <div class="stat-card"><div class="label">Total leaders</div><div class="value" id="statTotal">0</div></div>
+        <div class="stat-card"><div class="label">Active</div><div class="value" id="statActive">0</div></div>
+        <div class="stat-card"><div class="label">Inactive</div><div class="value" id="statInactive">0</div></div>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="searchInput" placeholder="Search name, title, department..." oninput="filterLeaders()" />
+        <select id="filterStatus" onchange="filterLeaders()">
+          <option value="">All status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <button type="button" class="btn btn-primary" onclick="openForm()">+ Add Leader</button>
+      </div>
+
+      <div class="form-card" id="formCard">
+        <div style="font-weight:600;margin-bottom:1rem;" id="formTitle">Add Leader</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full name *</label>
+            <input type="text" id="lName" />
+          </div>
+          <div class="form-group">
+            <label>Title / Position *</label>
+            <input type="text" id="lTitle" placeholder="e.g. Pastor, Elder, Deacon" />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="lPhone" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="lEmail" />
+          </div>
+          <div class="form-group">
+            <label>Department / Ministry</label>
+            <input type="text" id="lDept" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="lStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Notes</label>
+            <textarea id="lNotes"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeForm()">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveLeader()">Save Leader</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadersTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API = '/api';
+    var LEADERS = [];
+    var editingId = null;
+
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
+    }
+    function logout() {
+      localStorage.removeItem('jcf_token');
+      localStorage.removeItem('jcf_user');
+      window.location.href = 'login.html';
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers['Authorization'] = 'Bearer ' + getToken();
+      if (options.body) options.headers['Content-Type'] = 'application/json';
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401) { logout(); return Promise.reject(new Error('Unauthorized')); }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) { return Promise.reject(new Error('Bad response ' + res.status)); }
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
+
+    function showSuccess(msg) {
+      var el = document.getElementById('successMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 2500);
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = LEADERS.length;
+      document.getElementById('statActive').textContent = LEADERS.filter(function (l) { return l.status === 'Active'; }).length;
+      document.getElementById('statInactive').textContent = LEADERS.filter(function (l) { return l.status !== 'Active'; }).length;
+    }
+
+    function renderTable(list) {
+      var tbody = document.getElementById('leadersTable');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">No leaders yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(function (l) {
+        var st = l.status === 'Active' ? 'active' : 'inactive';
+        return '<tr>' +
+          '<td><strong>' + (l.name || '-') + '</strong></td>' +
+          '<td>' + (l.title || '-') + '</td>' +
+          '<td>' + (l.phone || '-') + '</td>' +
+          '<td>' + (l.department || '-') + '</td>' +
+          '<td><span class="badge ' + st + '">' + (l.status || '-') + '</span></td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editLeader(\'' + l.id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteLeader(\'' + l.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    function filterLeaders() {
+      var q = (document.getElementById('searchInput').value || '').toLowerCase();
+      var st = document.getElementById('filterStatus').value;
+      var filtered = LEADERS.filter(function (l) {
+        var matchQ = !q ||
+          (l.name || '').toLowerCase().includes(q) ||
+          (l.title || '').toLowerCase().includes(q) ||
+          (l.department || '').toLowerCase().includes(q) ||
+          (l.phone || '').includes(q);
+        var matchSt = !st || l.status === st;
+        return matchQ && matchSt;
+      });
+      renderTable(filtered);
+    }
+
+    function loadLeaders() {
+      apiFetch('/leaders').then(function (r) {
+        LEADERS = r.ok && Array.isArray(r.data) ? r.data : [];
+        updateStats();
+        filterLeaders();
+      }).catch(function () {
+        LEADERS = [];
+        updateStats();
+        renderTable([]);
+      });
+    }
+
+    function openForm() {
+      editingId = null;
+      document.getElementById('formTitle').textContent = 'Add Leader';
+      document.getElementById('lName').value = '';
+      document.getElementById('lTitle').value = '';
+      document.getElementById('lPhone').value = '';
+      document.getElementById('lEmail').value = '';
+      document.getElementById('lDept').value = '';
+      document.getElementById('lStatus').value = 'Active';
+      document.getElementById('lNotes').value = '';
+      document.getElementById('formCard').classList.add('show');
+    }
+
+    function closeForm() {
+      document.getElementById('formCard').classList.remove('show');
+      editingId = null;
+    }
+
+    function editLeader(id) {
+      var l = LEADERS.find(function (x) { return x.id === id; });
+      if (!l) return;
+      editingId = id;
+      document.getElementById('formTitle').textContent = 'Edit Leader';
+      document.getElementById('lName').value = l.name || '';
+      document.getElementById('lTitle').value = l.title || '';
+      document.getElementById('lPhone').value = l.phone || '';
+      document.getElementById('lEmail').value = l.email || '';
+      document.getElementById('lDept').value = l.department || '';
+      document.getElementById('lStatus').value = l.status || 'Active';
+      document.getElementById('lNotes').value = l.notes || '';
+      document.getElementById('formCard').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function saveLeader() {
+      var name = document.getElementById('lName').value.trim();
+      var title = document.getElementById('lTitle').value.trim();
+      if (!name || !title) {
+        alert('Name and title are required');
+        return;
+      }
+      var body = {
+        name: name,
+        title: title,
+        phone: document.getElementById('lPhone').value.trim(),
+        email: document.getElementById('lEmail').value.trim(),
+        department: document.getElementById('lDept').value.trim(),
+        status: document.getElementById('lStatus').value,
+        notes: document.getElementById('lNotes').value.trim()
+      };
+      var path = editingId ? '/leaders/' + encodeURIComponent(editingId) : '/leaders';
+      var method = editingId ? 'PUT' : 'POST';
+
+      apiFetch(path, { method: method, body: JSON.stringify(body) })
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Save failed');
+            return;
+          }
+          showSuccess(editingId ? 'Leader updated.' : 'Leader added.');
+          closeForm();
+          loadLeaders();
+        })
+        .catch(function (e) { alert(e.message); });
+    }
+
+    function deleteLeader(id) {
+      if (!confirm('Delete this leader?')) return;
+      apiFetch('/leaders/' + encodeURIComponent(id), { method: 'DELETE' })
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Delete failed');
+            return;
+          }
+          showSuccess('Leader deleted.');
+          loadLeaders();
+        })
+        .catch(function (e) { alert(e.message); });
+    }
+
+    if (!getToken() || !getSession()) {
+      window.location.href = 'login.html';
+    } else {
+      var session = getSession();
+      document.getElementById('userName').textContent = session.name;
+      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+      loadLeaders();
+    }
+  </script>
+  <script src="js/access.js"></script>
+</body>
+</html>

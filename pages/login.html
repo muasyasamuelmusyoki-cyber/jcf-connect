@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JCF Connect – Login | Joy Christian Fellowship – Rongai</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <title>JCF Connect – Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     :root {
       --accent: #c41e3a;
@@ -28,31 +27,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow-x: hidden;
     }
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 15% 10%, rgba(196, 30, 58, 0.12) 0%, transparent 55%),
-        radial-gradient(ellipse 70% 60% at 85% 90%, rgba(30, 58, 95, 0.18) 0%, transparent 55%);
+        radial-gradient(ellipse 80% 50% at 15% 10%, rgba(196,30,58,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 85% 90%, rgba(30,58,95,0.18) 0%, transparent 55%);
       pointer-events: none;
-      z-index: 0;
     }
-    .login-container {
-      width: 100%;
-      max-width: 440px;
-      padding: 1.5rem;
-      position: relative;
-      z-index: 1;
-      animation: fadeUp 0.55s ease-out;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .login-container { width: 100%; max-width: 440px; padding: 1.5rem; position: relative; z-index: 1; }
     .login-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -63,157 +48,63 @@
     .logo-section { text-align: center; margin-bottom: 2rem; }
     .logo-wrapper {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100px;
-      height: 100px;
+      width: 100px; height: 100px;
       border-radius: 50%;
       background: linear-gradient(145deg, rgba(196,30,58,0.15), rgba(30,58,95,0.2));
-      border: 1px solid rgba(196, 30, 58, 0.25);
+      border: 1px solid rgba(196,30,58,0.25);
+      align-items: center; justify-content: center;
       margin-bottom: 1rem;
     }
     .logo { width: 70px; height: 70px; object-fit: contain; }
-    .church-name { font-size: 1.15rem; font-weight: 700; line-height: 1.35; }
-    .slogan {
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      margin-top: 0.35rem;
-    }
+    .church-name { font-size: 1.15rem; font-weight: 700; }
+    .slogan { font-size: 0.76rem; font-weight: 600; color: var(--gold); letter-spacing: 0.13em; text-transform: uppercase; margin-top: 0.35rem; }
     .system-name {
-      display: inline-block;
-      margin-top: 0.85rem;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      background: rgba(255,255,255,0.04);
-      padding: 0.28rem 0.7rem;
-      border-radius: 999px;
+      display: inline-block; margin-top: 0.85rem; font-size: 0.7rem; color: var(--text-muted);
+      background: rgba(255,255,255,0.04); padding: 0.28rem 0.7rem; border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.06);
     }
     .form-group { margin-bottom: 1.15rem; }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-    }
+    label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.4rem; }
     .input-wrapper { position: relative; }
-    input[type="email"], input[type="password"], input[type="text"] {
-      width: 100%;
-      padding: 0.88rem 1rem;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    input {
+      width: 100%; padding: 0.88rem 1rem; background: var(--input-bg);
+      border: 1px solid var(--border); border-radius: 11px; color: var(--text);
+      font-size: 0.95rem; font-family: inherit;
     }
-    input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.18);
-    }
+    input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,30,58,0.18); }
     .password-toggle {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding: 4px 6px;
-      border-radius: 5px;
-      font-family: inherit;
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 0.8rem; font-family: inherit;
     }
-    .password-toggle:hover { color: var(--text); background: rgba(255,255,255,0.06); }
     .options-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      font-size: 0.85rem;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; font-size: 0.85rem;
     }
-    .remember {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
+    .remember { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); cursor: pointer; }
     .remember input { width: 15px; height: 15px; accent-color: var(--accent); }
-    .forgot {
-      color: var(--accent-hover);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .forgot:hover { text-decoration: underline; }
+    .forgot { color: var(--accent-hover); text-decoration: none; font-weight: 500; }
     .btn-login {
-      width: 100%;
-      padding: 0.95rem;
-      background: linear-gradient(135deg, var(--accent) 0%, #9b1b2e 100%);
-      color: white;
-      border: none;
-      border-radius: 11px;
-      font-size: 1rem;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(196, 30, 58, 0.4);
-      transition: transform 0.15s, box-shadow 0.2s;
-    }
-    .btn-login:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(196, 30, 58, 0.5);
+      width: 100%; padding: 0.95rem;
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white; border: none; border-radius: 11px; font-size: 1rem;
+      font-weight: 600; font-family: inherit; cursor: pointer;
     }
     .btn-login:disabled { opacity: 0.75; cursor: not-allowed; }
-    .btn-login .spinner {
-      display: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn-login.loading .btn-text { display: none; }
-    .btn-login.loading .spinner { display: block; }
     .error-msg, .success-msg {
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      margin-bottom: 1.2rem;
-      display: none;
-      align-items: center;
-      gap: 0.5rem;
+      padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.85rem;
+      margin-bottom: 1.2rem; display: none; align-items: center; gap: 0.5rem;
     }
-    .error-msg {
-      background: rgba(196, 30, 58, 0.12);
-      border: 1px solid rgba(196, 30, 58, 0.3);
-      color: #fca5a5;
-    }
-    .success-msg {
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #6ee7b7;
-    }
+    .error-msg { background: rgba(196,30,58,0.12); border: 1px solid rgba(196,30,58,0.3); color: #fca5a5; }
+    .success-msg { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
     .error-msg.show, .success-msg.show { display: flex; }
-    .footer {
-      text-align: center;
-      margin-top: 1.8rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.7;
+    .footer { text-align: center; margin-top: 1.8rem; font-size: 0.75rem; color: var(--text-muted); line-height: 1.7; }
+    .hint { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5; }
+    .captcha-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.25rem;
     }
-    .footer strong { color: #cbd5e1; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -228,14 +119,8 @@
         <div class="system-name">JCF CONNECT</div>
       </div>
 
-      <div class="error-msg" id="errorMsg">
-        <span>⚠</span>
-        <span id="errorText">Invalid email or password.</span>
-      </div>
-      <div class="success-msg" id="successMsg">
-        <span>✓</span>
-        <span>Login successful. Redirecting...</span>
-      </div>
+      <div class="error-msg" id="errorMsg"><span>⚠</span><span id="errorText">Error</span></div>
+      <div class="success-msg" id="successMsg"><span>✓</span><span>Login successful. Redirecting...</span></div>
 
       <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
         <div class="form-group">
@@ -244,7 +129,6 @@
             <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" autofocus />
           </div>
         </div>
-
         <div class="form-group">
           <label for="password">Password</label>
           <div class="input-wrapper">
@@ -252,31 +136,43 @@
             <button type="button" class="password-toggle" onclick="togglePassword()">Show</button>
           </div>
         </div>
-
         <div class="options-row">
           <label class="remember">
-            <input type="checkbox" id="remember" />
-            Remember me
+            <input type="checkbox" id="remember" /> Remember me
           </label>
           <a href="forgot-password.html" class="forgot">Forgot password?</a>
         </div>
 
+        <!-- Paste YOUR Site Key from Google if this one is different -->
+        <div class="captcha-wrap">
+          <div class="g-recaptcha" data-sitekey="6LeYeswtAAAAAC3rYUllOWkll8EHqUZs3NgUSN6I"></div>
+        </div>
+
         <button type="submit" class="btn-login" id="loginBtn">
           <span class="btn-text">Sign In</span>
-          <span class="spinner"></span>
         </button>
       </form>
 
+      <div id="twoFactorBox" style="display:none;">
+        <p class="hint">Enter the 6-digit code from your authenticator app.</p>
+        <div class="form-group">
+          <label for="otpCode">Authentication code</label>
+          <input type="text" id="otpCode" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
+        </div>
+        <button type="button" class="btn-login" onclick="verify2FA()">Verify</button>
+        <button type="button" class="btn-login" style="margin-top:0.75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);box-shadow:none;" onclick="backToLogin()">Back</button>
+      </div>
+
       <div class="footer">
         <strong>JCF CONNECT</strong><br>
-        © Joy Christian Fellowship – Rongai<br>
-        City of Champions
+        © Joy Christian Fellowship – Rongai
       </div>
     </div>
   </div>
 
   <script>
     var API = '/api';
+    window._pending2FA = null;
 
     function togglePassword() {
       var input = document.getElementById('password');
@@ -308,13 +204,23 @@
         return;
       }
 
+      var recaptchaToken = (window.grecaptcha && grecaptcha.getResponse()) || '';
+      if (!recaptchaToken) {
+        errorText.textContent = 'Please tick “I\'m not a robot”.';
+        error.classList.add('show');
+        return;
+      }
+
       btn.disabled = true;
-      btn.classList.add('loading');
 
       fetch(API + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, password: password })
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          recaptchaToken: recaptchaToken
+        })
       })
         .then(function (res) {
           return res.json().then(function (data) {
@@ -322,38 +228,87 @@
           });
         })
         .then(function (result) {
-          btn.classList.remove('loading');
           btn.disabled = false;
-
           if (!result.ok) {
             errorText.textContent = (result.data && result.data.error) || 'Invalid email or password.';
             error.classList.add('show');
+            if (window.grecaptcha) grecaptcha.reset();
             return;
           }
 
-          localStorage.setItem('jcf_token', result.data.token);
-          localStorage.setItem('jcf_user', JSON.stringify(result.data.user));
-
-          if (document.getElementById('remember').checked) {
-            localStorage.setItem('jcf_remember', email);
-          } else {
-            localStorage.removeItem('jcf_remember');
+          if (result.data.requires2FA) {
+            window._pending2FA = result.data.pendingToken;
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('twoFactorBox').style.display = 'block';
+            document.getElementById('otpCode').focus();
+            return;
           }
 
-          success.classList.add('show');
-          btn.querySelector('.btn-text').textContent = 'Welcome!';
-
-          setTimeout(function () {
-            window.location.href = 'dashboard.html';
-          }, 800);
+          finishLogin(result.data);
         })
-        .catch(function (err) {
-          btn.classList.remove('loading');
+        .catch(function () {
           btn.disabled = false;
+          if (window.grecaptcha) grecaptcha.reset();
           errorText.textContent = 'Cannot reach server. Keep npm start running.';
           error.classList.add('show');
-          console.error(err);
         });
+    }
+
+    function finishLogin(data) {
+      localStorage.setItem('jcf_token', data.token);
+      localStorage.setItem('jcf_user', JSON.stringify(data.user));
+      if (document.getElementById('remember').checked) {
+        localStorage.setItem('jcf_remember', document.getElementById('email').value.trim().toLowerCase());
+      } else {
+        localStorage.removeItem('jcf_remember');
+      }
+      document.getElementById('successMsg').classList.add('show');
+      setTimeout(function () {
+        window.location.href = 'dashboard.html';
+      }, 700);
+    }
+
+    function verify2FA() {
+      var code = document.getElementById('otpCode').value.trim();
+      var error = document.getElementById('errorMsg');
+      var errorText = document.getElementById('errorText');
+
+      if (!code || !window._pending2FA) {
+        errorText.textContent = 'Enter the 6-digit code.';
+        error.classList.add('show');
+        return;
+      }
+
+      fetch(API + '/auth/verify-2fa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pendingToken: window._pending2FA, code: code })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            errorText.textContent = (result.data && result.data.error) || 'Invalid code';
+            error.classList.add('show');
+            return;
+          }
+          finishLogin(result.data);
+        })
+        .catch(function () {
+          errorText.textContent = 'Cannot reach server.';
+          error.classList.add('show');
+        });
+    }
+
+    function backToLogin() {
+      window._pending2FA = null;
+      document.getElementById('twoFactorBox').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('errorMsg').classList.remove('show');
+      if (window.grecaptcha) grecaptcha.reset();
     }
 
     window.addEventListener('DOMContentLoaded', function () {

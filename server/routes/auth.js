@@ -1,6 +1,8 @@
+const { verifyRecaptcha } = require('../recaptcha');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const speakeasy = require('speakeasy');
 const db = require('../db');
 const { JWT_SECRET, authRequired } = require('../middleware/auth');
 const { sendResetCode } = require('../mail');
@@ -42,6 +44,18 @@ router.post('/login', (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
 
+  if (user.twoFactorEnabled && user.twoFactorSecret) {
+    const pendingToken = jwt.sign(
+      { id: user.id, email: user.email, purpose: '2fa' },
+      JWT_SECRET,
+      { expiresIn: '5m' }
+    );
+    return res.json({
+      requires2FA: true,
+      pendingToken: pendingToken
+    });
+  }
+
   const token = jwt.sign(
     { id: user.id, email: user.email, name: user.name, role: user.role },
     JWT_SECRET,
@@ -49,7 +63,55 @@ router.post('/login', (req, res) => {
   );
 
   res.json({
-    token,
+    token: token,
+    user: publicUser(user)
+  });
+});
+
+router.post('/verify-2fa', (req, res) => {
+  const pendingToken = req.body.pendingToken || '';
+  const code = String(req.body.code || '').trim();
+
+  if (!pendingToken || !code) {
+    return res.status(400).json({ error: 'Code required' });
+  }
+
+  let payload;
+  try {
+    payload = jwt.verify(pendingToken, JWT_SECRET);
+  } catch (e) {
+    return res.status(401).json({ error: 'Session expired. Login again.' });
+  }
+
+  if (payload.purpose !== '2fa') {
+    return res.status(401).json({ error: 'Invalid session' });
+  }
+
+  const store = db.getStore();
+  const user = (store.users || []).find((u) => String(u.id) === String(payload.id));
+  if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+    return res.status(400).json({ error: '2FA not available' });
+  }
+
+  const ok = speakeasy.totp.verify({
+    secret: user.twoFactorSecret,
+    encoding: 'base32',
+    token: code,
+    window: 1
+  });
+
+  if (!ok) {
+    return res.status(401).json({ error: 'Invalid authentication code' });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, email: user.email, name: user.name, role: user.role },
+    JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+
+  res.json({
+    token: token,
     user: publicUser(user)
   });
 });
