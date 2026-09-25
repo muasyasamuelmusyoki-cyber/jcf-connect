@@ -122,7 +122,7 @@
       <div class="error-msg" id="errorMsg"><span>⚠</span><span id="errorText">Error</span></div>
       <div class="success-msg" id="successMsg"><span>✓</span><span>Login successful. Redirecting...</span></div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+      <form id="loginForm" novalidate>
         <div class="form-group">
           <label for="email">Email Address</label>
           <div class="input-wrapper">
@@ -133,7 +133,7 @@
           <label for="password">Password</label>
           <div class="input-wrapper">
             <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password" />
-            <button type="button" class="password-toggle" onclick="togglePassword()">Show</button>
+            <button type="button" class="password-toggle" id="passwordToggle">Show</button>
           </div>
         </div>
         <div class="options-row">
@@ -159,8 +159,8 @@
           <label for="otpCode">Authentication code</label>
           <input type="text" id="otpCode" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
         </div>
-        <button type="button" class="btn-login" onclick="verify2FA()">Verify</button>
-        <button type="button" class="btn-login" style="margin-top:0.75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);box-shadow:none;" onclick="backToLogin()">Back</button>
+        <button type="button" class="btn-login" id="verify2FABtn">Verify</button>
+       <button type="button" class="btn-login" id="backToLoginBtn" style="margin-top:0.75rem;background:transparent;border:1px solid var(--text-muted);box-shadow:none;">Back</button>
       </div>
 
       <div class="footer">
@@ -303,27 +303,18 @@
         });
     }
 
-    function backToLogin() {
-      window._pending2FA = null;
-      document.getElementById('twoFactorBox').style.display = 'none';
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('errorMsg').classList.remove('show');
-      if (window.grecaptcha) grecaptcha.reset();
-    }
+   function backToLogin() {
+  window._pending2FA = null;
+  document.getElementById('twoFactorBox').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('errorMsg').classList.remove('show');
+  if (window.grecaptcha) grecaptcha.reset();
+}
 
-    window.addEventListener('DOMContentLoaded', function () {
-      var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
-      var token = localStorage.getItem('jcf_token');
-      if (session && token) {
-        window.location.href = 'dashboard.html';
-        return;
-      }
-      var remembered = localStorage.getItem('jcf_remember');
-      if (remembered) {
-        document.getElementById('email').value = remembered;
-        document.getElementById('remember').checked = true;
-      }
-    });
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
+document.getElementById('passwordToggle').addEventListener('click', togglePassword);
+document.getElementById('verify2FABtn').addEventListener('click', verify2FA);
+document.getElementById('backToLoginBtn').addEventListener('click', backToLogin);
   </script>
 </body>
 </html>
