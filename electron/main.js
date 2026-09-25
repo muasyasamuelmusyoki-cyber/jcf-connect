@@ -47,6 +47,8 @@ function createWindow() {
         }
     });
 
+    
+
     win.loadURL(`${ALLOWED_URL}/pages/login.html`);
 }
 
