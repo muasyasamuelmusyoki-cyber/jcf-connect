@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
-  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Reports – JCF Connect | Joy Christian Fellowship – Rongai</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
@@ -20,8 +20,9 @@
       --border: #1e3352;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -36,9 +37,10 @@
       position: fixed;
       top: 0; left: 0; bottom: 0;
       z-index: 100;
+      transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 1.4rem 1.25rem;
+      padding: 1.25rem 1.1rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -53,24 +55,24 @@
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
     .sidebar-brand span {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--gold);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.7rem 0.9rem;
+      gap: 0.7rem;
+      padding: 0.72rem 0.85rem;
       border-radius: 10px;
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
+      min-height: 44px;
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
@@ -78,35 +80,59 @@
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
+    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
     .sidebar-footer {
-      padding: 1rem 1.25rem;
+      padding: 1rem;
       border-top: 1px solid var(--border);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       text-align: center;
       line-height: 1.5;
     }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
     .main {
       flex: 1;
       margin-left: 260px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .topbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.75rem;
+      padding: 0.85rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.75rem;
       position: sticky;
       top: 0;
       z-index: 50;
     }
-    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.45rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
     .date-badge {
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -125,43 +151,45 @@
     }
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.5rem 1.75rem; flex: 1; }
+    .content { padding: 1.25rem; flex: 1; }
 
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
       flex-wrap: wrap;
     }
     .btn-print {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
+      padding: 0.6rem 1.15rem;
       border-radius: 10px;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
+      min-height: 44px;
       box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+      white-space: nowrap;
     }
 
     .stats-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
     }
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.15rem 1.25rem;
+      padding: 1.1rem 1.15rem;
     }
     .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
-    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    .stat-value { font-size: 1.35rem; font-weight: 700; }
     .stat-card.green .stat-value { color: #34d399; }
     .stat-card.blue .stat-value { color: #60a5fa; }
     .stat-card.gold .stat-value { color: var(--gold); }
@@ -170,27 +198,32 @@
     .reports-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
+      gap: 1.15rem;
+      margin-bottom: 1.25rem;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 1.35rem;
+      padding: 1.25rem;
     }
     .card.full { grid-column: 1 / -1; }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.1rem;
+      margin-bottom: 1rem;
     }
     .card-title { font-size: 0.95rem; font-weight: 600; }
     .card-subtitle { font-size: 0.75rem; color: var(--text-muted); }
     .chart-wrap { position: relative; height: 220px; }
 
-    .report-table { width: 100%; border-collapse: collapse; }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .report-table { width: 100%; border-collapse: collapse; min-width: 480px; }
     .report-table th {
       text-align: left;
       padding: 0.65rem 0.75rem;
@@ -209,9 +242,8 @@
 
     .section-nav {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
-      margin-bottom: 0;
     }
     .section-btn {
       background: var(--card);
@@ -223,6 +255,7 @@
       font-weight: 500;
       cursor: pointer;
       font-family: inherit;
+      min-height: 40px;
     }
     .section-btn.active, .section-btn:hover {
       background: rgba(196,30,58,0.15);
@@ -232,26 +265,27 @@
     .report-section { display: none; }
     .report-section.active { display: block; }
 
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
     @media (max-width: 1100px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .reports-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
+      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
       .main { margin-left: 0; }
-      .menu-toggle { display: block; }
+      .menu-toggle { display: flex; }
+      .topbar-left p { display: none; }
+      .date-badge { display: none; }
+      .user-info > div:last-child { display: none; }
+      .content { padding: 0.9rem; }
+    }
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .btn-print { width: 100%; }
     }
     @media print {
-      .sidebar, .topbar, .toolbar, .section-nav, .menu-toggle { display: none !important; }
+      .sidebar, .sidebar-overlay, .topbar, .toolbar, .section-nav, .menu-toggle { display: none !important; }
       .main { margin-left: 0; }
       body { background: #fff; color: #000; }
       .card, .stat-card { border: 1px solid #ccc; background: #fff; }
@@ -259,6 +293,7 @@
   </style>
 </head>
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -269,18 +304,19 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item">Dashboard</a>
-      <a href="members.html" class="nav-item">Members</a>
-      <a href="visitors.html" class="nav-item">Visitors</a>
-      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
-      <a href="departments.html" class="nav-item">Departments</a>
-      <a href="attendance.html" class="nav-item">Attendance</a>
-      <a href="champs-house.html" class="nav-item">Champs House</a>
-      <a href="finance.html" class="nav-item">Finance</a>
-      <a href="assets.html" class="nav-item">Assets</a>
-      <a href="events.html" class="nav-item">Events</a>
-      <a href="reports.html" class="nav-item active">Reports</a>
-      <a href="settings.html" class="nav-item">Settings</a>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="members.html" class="nav-item"><span class="nav-icon">👥</span> Members</a>
+      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
+      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
+      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
+      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span> Attendance</a>
+      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
+      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
+      <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
+      <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
+      <a href="reports.html" class="nav-item active"><span class="nav-icon">📊</span> Reports</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
     <div class="sidebar-footer">
       JCF CONNECT<br>
@@ -290,9 +326,9 @@
 
   <div class="main">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-        <div class="topbar-left">
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+        <div>
           <h2>Reports</h2>
           <p>Summaries from Members, Attendance, Finance & more</p>
         </div>
@@ -300,29 +336,27 @@
       <div class="topbar-right">
         <div class="date-badge" id="currentDate"></div>
         <div class="user-info">
-          <div class="user-avatar" id="userAvatar">P</div>
+          <div class="user-avatar" id="userAvatar">?</div>
           <div>
-            <div class="user-name" id="userName">Pastor Samuel</div>
-            <div class="user-role" id="userRole">Super Admin</div>
+            <div class="user-name" id="userName">—</div>
+            <div class="user-role" id="userRole">—</div>
           </div>
         </div>
       </div>
     </header>
 
     <div class="content">
-
       <div class="toolbar">
         <div class="section-nav">
-          <button class="section-btn active" onclick="showSection('overview', this)">Overview</button>
-          <button class="section-btn" onclick="showSection('attendance', this)">Attendance</button>
-          <button class="section-btn" onclick="showSection('finance', this)">Finance</button>
-          <button class="section-btn" onclick="showSection('members', this)">Members</button>
-          <button class="section-btn" onclick="showSection('events', this)">Events</button>
+          <button type="button" class="section-btn active" onclick="showSection('overview', this)">Overview</button>
+          <button type="button" class="section-btn" onclick="showSection('attendance', this)">Attendance</button>
+          <button type="button" class="section-btn" onclick="showSection('finance', this)">Finance</button>
+          <button type="button" class="section-btn" onclick="showSection('members', this)">Members</button>
+          <button type="button" class="section-btn" onclick="showSection('events', this)">Events</button>
         </div>
-        <button class="btn-print" onclick="window.print()">🖨 Print Report</button>
+        <button type="button" class="btn-print" onclick="window.print()">🖨 Print Report</button>
       </div>
 
-      <!-- OVERVIEW -->
       <div class="report-section active" id="sec-overview">
         <div class="stats-row">
           <div class="stat-card">
@@ -342,7 +376,6 @@
             <div class="stat-value" id="ovFinance">KES 0</div>
           </div>
         </div>
-
         <div class="reports-grid">
           <div class="card">
             <div class="card-header">
@@ -351,9 +384,7 @@
                 <div class="card-subtitle">Recent services</div>
               </div>
             </div>
-            <div class="chart-wrap">
-              <canvas id="chartAttOverview"></canvas>
-            </div>
+            <div class="chart-wrap"><canvas id="chartAttOverview"></canvas></div>
           </div>
           <div class="card">
             <div class="card-header">
@@ -362,48 +393,28 @@
                 <div class="card-subtitle">Income vs Expenses</div>
               </div>
             </div>
-            <div class="chart-wrap">
-              <canvas id="chartFinOverview"></canvas>
-            </div>
+            <div class="chart-wrap"><canvas id="chartFinOverview"></canvas></div>
           </div>
         </div>
-
         <div class="card full">
-          <div class="card-header">
-            <div class="card-title">Module Snapshot</div>
+          <div class="card-header"><div class="card-title">Module Snapshot</div></div>
+          <div class="table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr><th>Module</th><th>Records</th><th>Key Metric</th></tr>
+              </thead>
+              <tbody id="snapshotTable"></tbody>
+            </table>
           </div>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>Module</th>
-                <th>Records</th>
-                <th>Key Metric</th>
-              </tr>
-            </thead>
-            <tbody id="snapshotTable"></tbody>
-          </table>
         </div>
       </div>
 
-      <!-- ATTENDANCE -->
       <div class="report-section" id="sec-attendance">
         <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-label">Records</div>
-            <div class="stat-value" id="attRecords">0</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Highest Total</div>
-            <div class="stat-value" id="attHigh">0</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-label">Average</div>
-            <div class="stat-value" id="attAvg">0</div>
-          </div>
-          <div class="stat-card gold">
-            <div class="stat-label">Last Total</div>
-            <div class="stat-value" id="attLast">0</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">Records</div><div class="stat-value" id="attRecords">0</div></div>
+          <div class="stat-card green"><div class="stat-label">Highest Total</div><div class="stat-value" id="attHigh">0</div></div>
+          <div class="stat-card blue"><div class="stat-label">Average</div><div class="stat-value" id="attAvg">0</div></div>
+          <div class="stat-card gold"><div class="stat-label">Last Total</div><div class="stat-value" id="attLast">0</div></div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -412,153 +423,100 @@
               <div class="card-subtitle">By group totals</div>
             </div>
           </div>
-          <div class="chart-wrap" style="height:260px;">
-            <canvas id="chartAttDetail"></canvas>
-          </div>
-          <table class="report-table" style="margin-top:1.25rem;">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Men</th>
-                <th>Ladies</th>
-                <th>Youths</th>
-                <th>Teens</th>
-                <th>S. School</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody id="attTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- FINANCE -->
-      <div class="report-section" id="sec-finance">
-        <div class="stats-row">
-          <div class="stat-card green">
-            <div class="stat-label">Total Income</div>
-            <div class="stat-value" id="finIncome">KES 0</div>
-          </div>
-          <div class="stat-card red">
-            <div class="stat-label">Total Expenses</div>
-            <div class="stat-value" id="finExpense">KES 0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Balance</div>
-            <div class="stat-value" id="finBalance">KES 0</div>
-          </div>
-          <div class="stat-card gold">
-            <div class="stat-label">Tithe</div>
-            <div class="stat-value" id="finTithe">KES 0</div>
-          </div>
-        </div>
-        <div class="reports-grid">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Income by Category</div>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="chartFinIncome"></canvas>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Recent Transactions</div>
-            </div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartAttDetail"></canvas></div>
+          <div class="table-wrap" style="margin-top:1.15rem;">
             <table class="report-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Category</th>
-                  <th>Amount</th>
+                  <th>Date</th><th>Men</th><th>Ladies</th><th>Youths</th><th>Teens</th><th>S. School</th><th>Total</th>
                 </tr>
               </thead>
-              <tbody id="finTable"></tbody>
+              <tbody id="attTable"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- MEMBERS -->
+      <div class="report-section" id="sec-finance">
+        <div class="stats-row">
+          <div class="stat-card green"><div class="stat-label">Total Income</div><div class="stat-value" id="finIncome">KES 0</div></div>
+          <div class="stat-card red"><div class="stat-label">Total Expenses</div><div class="stat-value" id="finExpense">KES 0</div></div>
+          <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value" id="finBalance">KES 0</div></div>
+          <div class="stat-card gold"><div class="stat-label">Tithe</div><div class="stat-value" id="finTithe">KES 0</div></div>
+        </div>
+        <div class="reports-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Income by Category</div></div>
+            <div class="chart-wrap"><canvas id="chartFinIncome"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Transactions</div></div>
+            <div class="table-wrap">
+              <table class="report-table">
+                <thead>
+                  <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr>
+                </thead>
+                <tbody id="finTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="report-section" id="sec-members">
         <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-label">Total Members</div>
-            <div class="stat-value" id="memTotal">0</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Active</div>
-            <div class="stat-value" id="memActive">0</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-label">Visitors Tracked</div>
-            <div class="stat-value" id="memVisitors">0</div>
-          </div>
-          <div class="stat-card gold">
-            <div class="stat-label">Growth Groups</div>
-            <div class="stat-value" id="memGroups">0</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">Total Members</div><div class="stat-value" id="memTotal">0</div></div>
+          <div class="stat-card green"><div class="stat-label">Active</div><div class="stat-value" id="memActive">0</div></div>
+          <div class="stat-card blue"><div class="stat-label">Visitors Tracked</div><div class="stat-value" id="memVisitors">0</div></div>
+          <div class="stat-card gold"><div class="stat-label">Growth Groups</div><div class="stat-value" id="memGroups">0</div></div>
         </div>
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">Membership Summary</div>
+          <div class="card-header"><div class="card-title">Membership Summary</div></div>
+          <div class="table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr><th>Metric</th><th>Count</th></tr>
+              </thead>
+              <tbody id="memTable"></tbody>
+            </table>
           </div>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody id="memTable"></tbody>
-          </table>
         </div>
       </div>
 
-      <!-- EVENTS -->
       <div class="report-section" id="sec-events">
         <div class="stats-row">
-          <div class="stat-card blue">
-            <div class="stat-label">Upcoming</div>
-            <div class="stat-value" id="evtUpcoming">0</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Completed</div>
-            <div class="stat-value" id="evtCompleted">0</div>
-          </div>
-          <div class="stat-card gold">
-            <div class="stat-label">This Month</div>
-            <div class="stat-value" id="evtMonth">0</div>
-          </div>
-          <div class="stat-card red">
-            <div class="stat-label">Cancelled</div>
-            <div class="stat-value" id="evtCancelled">0</div>
-          </div>
+          <div class="stat-card blue"><div class="stat-label">Upcoming</div><div class="stat-value" id="evtUpcoming">0</div></div>
+          <div class="stat-card green"><div class="stat-label">Completed</div><div class="stat-value" id="evtCompleted">0</div></div>
+          <div class="stat-card gold"><div class="stat-label">This Month</div><div class="stat-value" id="evtMonth">0</div></div>
+          <div class="stat-card red"><div class="stat-label">Cancelled</div><div class="stat-value" id="evtCancelled">0</div></div>
         </div>
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">Upcoming Events</div>
+          <div class="card-header"><div class="card-title">Upcoming Events</div></div>
+          <div class="table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr><th>Date</th><th>Title</th><th>Type</th><th>Venue</th><th>Status</th></tr>
+              </thead>
+              <tbody id="evtTable"></tbody>
+            </table>
           </div>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Venue</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="evtTable"></tbody>
-          </table>
         </div>
       </div>
-
     </div>
   </div>
 
   <script>
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
     function formatMoney(n) {
       return 'KES ' + Number(n || 0).toLocaleString('en-KE');
     }
@@ -584,7 +542,7 @@
     if (session) {
       document.getElementById('userName').textContent = session.name;
       document.getElementById('userRole').textContent = session.role;
-      document.getElementById('userAvatar').textContent = session.name.charAt(0);
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
     }
 
     var members = JSON.parse(localStorage.getItem('jcf_members') || '[]');

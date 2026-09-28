@@ -1,18 +1,6 @@
 {
   "users": [
     {
-      "id": 1,
-      "email": "admin@jcf.rongai",
-      "password": "$2a$10$NPBTqL3ic84B.DggiOq8KOq3iEerz5UW1qNCGT3u2eAB.YsAFzZQC",
-      "name": "System Admin",
-      "role": "Super Admin",
-      "status": "Active",
-      "resetCode": "591693",
-      "resetExpires": 1790091368181,
-      "twoFactorSecret": "M52TG7KXLZHXK4JYOESVAUKYHY7G2W3V",
-      "twoFactorEnabled": true
-    },
-    {
       "id": 1790088167039,
       "email": "visionwaveafrica@gmail.com",
       "name": "sam",
@@ -24,6 +12,18 @@
       ],
       "resetCode": "863774",
       "resetExpires": 1790089959730
+    },
+    {
+      "id": 1,
+      "email": "admin@jcf.rongai",
+      "name": "System Admin",
+      "role": "Super Admin",
+      "status": "Active",
+      "access": [
+        "*"
+      ],
+      "password": "$2a$10$9SByDxRZCpU34EHGDOLOFOdX1V.t5X36d1B1O2rEIv.e3lx/XW4jK",
+      "passwordHash": "$2a$10$9SByDxRZCpU34EHGDOLOFOdX1V.t5X36d1B1O2rEIv.e3lx/XW4jK"
     }
   ],
   "members": [

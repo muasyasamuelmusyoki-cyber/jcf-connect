@@ -1,11 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Event Form – JCF Connect</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #c41e3a;
+      --gold: #d4a017;
+      --bg: #080f18;
+      --sidebar: #0c1524;
+      --card: #111c2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e3352;
+      --input-bg: #0c1524;
+      --error: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-header {
+      padding: 1.25rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .sidebar-logo {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(196,30,58,0.15);
+      padding: 4px;
+    }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
+    .sidebar-brand span {
+      font-size: 0.62rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.72rem 0.85rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+      min-height: 44px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: rgba(196,30,58,0.15);
+      color: #ff6b7a;
+      border: 1px solid rgba(196,30,58,0.25);
+    }
+    .nav-icon { width: 1.35rem; text-align: center; }
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; min-width: 0; }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.45rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .topbar-left h2 { font-size: 1.1rem; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
+    .content { padding: 1.25rem; max-width: 720px; }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem 1.15rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.8rem; color: var(--text-muted); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 16px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .btn {
+      padding: 0.65rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      min-height: 44px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9b1b2e);
+      color: white;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .form-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 1.15rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .success-msg, .error-msg {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .error-msg {
+      background: rgba(248,113,113,0.12);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .form-grid { grid-template-columns: 1fr; }
+      .content { padding: 0.9rem; }
+      .form-actions { justify-content: stretch; }
+      .form-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
+      <div class="sidebar-brand">
+        <h1>JCF Connect</h1>
+        <span>City of Champions</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="members.html" class="nav-item"><span class="nav-icon">👥</span> Members</a>
+      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
+      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
+      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
+      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span> Attendance</a>
+      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
+      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
+      <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
+      <a href="events.html" class="nav-item active"><span class="nav-icon">📅</span> Events</a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+    </nav>
+    <div class="sidebar-footer">JCF CONNECT</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" onclick="openSidebar()">☰</button>
+        <div>
+          <h2 id="pageTitle">Add Event</h2>
+          <p id="pageSubtitle">Create a new church event</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="form-card">
+        <div class="section-title">Event Details</div>
+        <form id="eventForm" onsubmit="return saveEvent(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Event ID</label>
+              <input type="text" id="eventId" readonly />
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="status">
+                <option value="Planned">Planned</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Title *</label>
+              <input type="text" id="title" required placeholder="e.g. Sunday Service, Youth Rally" />
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select id="type">
+                <option value="Service">Service</option>
+                <option value="Meeting">Meeting</option>
+                <option value="Conference">Conference</option>
+                <option value="Outreach">Outreach</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Funeral">Funeral</option>
+                <option value="Special">Special</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date *</label>
+              <input type="date" id="date" required />
+            </div>
+            <div class="form-group">
+              <label>Start time</label>
+              <input type="time" id="startTime" />
+            </div>
+            <div class="form-group">
+              <label>End time</label>
+              <input type="time" id="endTime" />
+            </div>
+            <div class="form-group full">
+              <label>Venue</label>
+              <input type="text" id="venue" placeholder="Main Sanctuary, Hall B..." />
+            </div>
+            <div class="form-group full">
+              <label>Description / notes</label>
+              <textarea id="notes" placeholder="Optional details"></textarea>
+            </div>
+            <div class="form-group full">
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                <input type="checkbox" id="isRecurring" onchange="toggleRecurrence()" />
+                Recurring event
+              </label>
+            </div>
+            <div class="form-group full" id="recurrenceGroup" style="display:none;">
+              <label>Recurrence</label>
+              <select id="recurrence">
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='events.html'">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveBtn">Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     var API = '/api';
     var isEditMode = false;
     var editingId = null;
 
-    function getToken() {
-      return localStorage.getItem('jcf_token') || '';
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
     }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
       catch (e) { return null; }
@@ -29,7 +374,7 @@
           var data = null;
           try { data = text ? JSON.parse(text) : null; }
           catch (e) {
-            return Promise.reject(new Error('Bad response (status ' + res.status + '). Is /api/events registered?'));
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
           }
           return { ok: res.ok, status: res.status, data: data };
         });
@@ -38,111 +383,85 @@
 
     function toggleRecurrence() {
       var show = document.getElementById('isRecurring').checked;
-      document.getElementById('recurrenceGroup').style.display = show ? 'flex' : 'none';
-    }
-
-    function clearErrors() {
-      document.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('show'); });
-      document.querySelectorAll('input, select').forEach(function (el) { el.classList.remove('error'); });
-      document.getElementById('errorMsg').classList.remove('show');
-    }
-
-    function validate() {
-      clearErrors();
-      var valid = true;
-      var title = document.getElementById('title').value.trim();
-      var date = document.getElementById('date').value;
-      if (!title) {
-        document.getElementById('title').classList.add('error');
-        document.getElementById('errTitle').classList.add('show');
-        valid = false;
-      }
-      if (!date) {
-        document.getElementById('date').classList.add('error');
-        document.getElementById('errDate').classList.add('show');
-        valid = false;
-      }
-      return valid;
+      document.getElementById('recurrenceGroup').style.display = show ? 'block' : 'none';
     }
 
     function fillForm(e) {
       document.getElementById('eventId').value = e.id || '';
       document.getElementById('title').value = e.title || '';
-      document.getElementById('type').value = e.type || 'Sunday Service';
-      document.getElementById('status').value = e.status || 'Planned';
+      document.getElementById('type').value = e.type || 'Service';
       document.getElementById('date').value = e.date || '';
-      document.getElementById('endDate').value = e.end_date || e.endDate || '';
-      document.getElementById('startTime').value = e.start_time || e.startTime || '';
-      document.getElementById('endTime').value = e.end_time || e.endTime || '';
+      document.getElementById('startTime').value = e.startTime || '';
+      document.getElementById('endTime').value = e.endTime || '';
       document.getElementById('venue').value = e.venue || '';
-      document.getElementById('organizer').value = e.organizer || '';
-      document.getElementById('department').value = e.department || '';
-      document.getElementById('expectedAttendance').value = e.expected_attendance != null
-        ? e.expected_attendance
-        : (e.expectedAttendance || 0);
-      document.getElementById('description').value = e.description || '';
-      document.getElementById('notes').value = e.notes || '';
-      document.getElementById('isRecurring').checked = !!(e.is_recurring || e.isRecurring);
-      document.getElementById('recurrence').value = e.recurrence || '';
+      document.getElementById('notes').value = e.notes || e.description || '';
+      document.getElementById('status').value = e.status || 'Planned';
+      document.getElementById('isRecurring').checked = !!e.isRecurring;
+      document.getElementById('recurrence').value = e.recurrence || 'Weekly';
       toggleRecurrence();
     }
 
     function saveEvent(ev) {
-      ev.preventDefault();
-      if (!validate()) {
-        document.getElementById('errorMsg').textContent = 'Please fix the errors above.';
+      if (ev) ev.preventDefault();
+      document.getElementById('errorMsg').classList.remove('show');
+      document.getElementById('successMsg').classList.remove('show');
+
+      var title = document.getElementById('title').value.trim();
+      var date = document.getElementById('date').value;
+      if (!title || !date) {
+        document.getElementById('errorMsg').textContent = 'Title and date are required.';
         document.getElementById('errorMsg').classList.add('show');
-        return;
-      }
-      if (!getToken()) {
-        alert('Please login first');
-        window.location.href = 'login.html';
-        return;
+        return false;
       }
 
       var record = {
         id: document.getElementById('eventId').value || ('EVT-' + Date.now()),
-        title: document.getElementById('title').value.trim(),
+        title: title,
         type: document.getElementById('type').value,
-        status: document.getElementById('status').value,
-        date: document.getElementById('date').value,
-        endDate: document.getElementById('endDate').value,
+        date: date,
         startTime: document.getElementById('startTime').value,
         endTime: document.getElementById('endTime').value,
         venue: document.getElementById('venue').value.trim(),
-        organizer: document.getElementById('organizer').value.trim(),
-        department: document.getElementById('department').value.trim(),
-        expectedAttendance: parseInt(document.getElementById('expectedAttendance').value, 10) || 0,
-        description: document.getElementById('description').value.trim(),
-        notes: document.getElementById('notes').value.trim()
+        notes: document.getElementById('notes').value.trim(),
+        status: document.getElementById('status').value,
+        isRecurring: document.getElementById('isRecurring').checked,
+        recurrence: document.getElementById('isRecurring').checked
+          ? document.getElementById('recurrence').value
+          : '',
+        updatedAt: new Date().toISOString()
       };
 
       var path = isEditMode
         ? '/events/' + encodeURIComponent(editingId)
         : '/events';
       var method = isEditMode ? 'PUT' : 'POST';
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
 
       apiFetch(path, { method: method, body: JSON.stringify(record) })
         .then(function (result) {
+          btn.disabled = false;
           if (!result.ok) {
             document.getElementById('errorMsg').textContent =
-              (result.data && result.data.error) || ('Save failed (status ' + result.status + ')');
+              (result.data && result.data.error) || 'Save failed';
             document.getElementById('errorMsg').classList.add('show');
             return;
           }
           document.getElementById('successMsg').textContent = isEditMode
             ? 'Event updated successfully!'
-            : 'Event "' + record.title + '" saved successfully!';
+            : 'Event "' + record.title + '" saved!';
           document.getElementById('successMsg').classList.add('show');
-          document.getElementById('errorMsg').classList.remove('show');
           setTimeout(function () {
             window.location.href = 'events.html';
           }, 900);
         })
         .catch(function (err) {
-          document.getElementById('errorMsg').textContent = err.message || 'Cannot reach server';
+          btn.disabled = false;
+          document.getElementById('errorMsg').textContent =
+            err.message || 'Cannot reach server. Is npm start running?';
           document.getElementById('errorMsg').classList.add('show');
         });
+      return false;
     }
 
     if (!getToken() || !getSession()) {
@@ -161,9 +480,8 @@
 
         apiFetch('/events/' + encodeURIComponent(editId))
           .then(function (result) {
-            if (result.ok && result.data) {
-              fillForm(result.data);
-            } else {
+            if (result.ok && result.data) fillForm(result.data);
+            else {
               alert('Event not found');
               window.location.href = 'events.html';
             }
@@ -179,3 +497,6 @@
       }
     }
   </script>
+  <script src="js/access.js"></script>
+</body>
+</html>

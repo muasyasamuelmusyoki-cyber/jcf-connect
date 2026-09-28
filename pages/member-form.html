@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
-  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Member Form – JCF Connect</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
+  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -20,8 +20,9 @@
       --input-bg: #0c1524;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -36,9 +37,10 @@
       position: fixed;
       top: 0; left: 0; bottom: 0;
       z-index: 100;
+      transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 1.4rem 1.25rem;
+      padding: 1.25rem 1.1rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -53,24 +55,24 @@
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
     .sidebar-brand span {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--gold);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.7rem 0.9rem;
+      gap: 0.7rem;
+      padding: 0.72rem 0.85rem;
       border-radius: 10px;
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
+      min-height: 44px;
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
@@ -78,54 +80,79 @@
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
+    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
     .sidebar-footer {
-      padding: 1rem 1.25rem;
+      padding: 1rem;
       border-top: 1px solid var(--border);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       text-align: center;
       line-height: 1.5;
     }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
     .main {
       flex: 1;
       margin-left: 260px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .topbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.75rem;
+      padding: 0.85rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.75rem;
       position: sticky;
       top: 0;
       z-index: 50;
+      flex-wrap: wrap;
     }
-    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .content { padding: 1.5rem 1.75rem; flex: 1; max-width: 1100px; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.45rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .content { padding: 1.25rem; flex: 1; max-width: 1100px; }
 
     .form-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 1.75rem;
-      margin-bottom: 1.5rem;
+      padding: 1.35rem;
+      margin-bottom: 1.15rem;
     }
     .section-title {
       font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid var(--border);
     }
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.1rem 1.5rem;
+      gap: 1rem 1.25rem;
     }
     .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
@@ -137,9 +164,10 @@
       border-radius: 10px;
       padding: 0.7rem 0.9rem;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 16px;
       font-family: inherit;
       outline: none;
+      max-width: 100%;
     }
     input:focus, select:focus {
       border-color: var(--accent);
@@ -149,18 +177,21 @@
       display: flex;
       gap: 0.75rem;
       justify-content: flex-end;
-      margin-top: 1.5rem;
-      padding-top: 1.25rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+      padding-top: 1.15rem;
       border-top: 1px solid var(--border);
     }
     .btn {
-      padding: 0.7rem 1.4rem;
+      padding: 0.7rem 1.3rem;
       border-radius: 10px;
       font-size: 0.9rem;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       border: none;
+      min-height: 44px;
+      touch-action: manipulation;
     }
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
@@ -179,7 +210,7 @@
     .success-msg, .error-msg {
       padding: 0.8rem 1rem;
       border-radius: 10px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
       display: none;
     }
     .success-msg {
@@ -193,24 +224,22 @@
       color: #fca5a5;
     }
     .success-msg.show, .error-msg.show { display: block; }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
+
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
+      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
       .main { margin-left: 0; }
-      .menu-toggle { display: block; }
+      .menu-toggle { display: flex; }
+      .topbar-left p { display: none; }
       .form-grid, .form-grid.three { grid-template-columns: 1fr; }
+      .content { padding: 0.9rem; }
+      .form-actions { justify-content: stretch; }
+      .form-actions .btn { flex: 1; justify-content: center; }
     }
   </style>
 </head>
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -221,18 +250,19 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item">Dashboard</a>
-      <a href="members.html" class="nav-item active">Members</a>
-      <a href="visitors.html" class="nav-item">Visitors</a>
-      <a href="growth-groups.html" class="nav-item">Growth Groups</a>
-      <a href="departments.html" class="nav-item">Departments</a>
-      <a href="attendance.html" class="nav-item">Attendance</a>
-      <a href="champs-house.html" class="nav-item">Champs House</a>
-      <a href="finance.html" class="nav-item">Finance</a>
-      <a href="assets.html" class="nav-item">Assets</a>
-      <a href="events.html" class="nav-item">Events</a>
-      <a href="reports.html" class="nav-item">Reports</a>
-      <a href="settings.html" class="nav-item">Settings</a>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="members.html" class="nav-item active"><span class="nav-icon">👥</span> Members</a>
+      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
+      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
+      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
+      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span> Attendance</a>
+      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
+      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
+      <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
+      <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
     <div class="sidebar-footer">
       JCF CONNECT<br>
@@ -242,16 +272,14 @@
 
   <div class="main">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-        <div class="topbar-left">
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+        <div>
           <h2 id="pageTitle">Add New Member</h2>
           <p id="pageSubtitle">Fill in the member details below</p>
         </div>
       </div>
-      <div>
-        <a href="members.html" class="btn btn-secondary">← Back to Members</a>
-      </div>
+      <a href="members.html" class="btn btn-secondary">← Back</a>
     </header>
 
     <div class="content">
@@ -419,6 +447,17 @@
     var API = '/api';
     var isEditMode = false;
     var editingId = null;
+
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
 
     function getToken() {
       return localStorage.getItem('jcf_token') || '';
