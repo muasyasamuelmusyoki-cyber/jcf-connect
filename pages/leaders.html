@@ -152,7 +152,6 @@
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
     .content { padding: 1.25rem; flex: 1; }
-
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -167,7 +166,6 @@
     }
     .stat-card .label { font-size: 0.75rem; color: var(--text-muted); }
     .stat-card .value { font-size: 1.45rem; font-weight: 700; margin-top: 0.25rem; }
-
     .toolbar {
       display: flex;
       gap: 0.65rem;
@@ -304,7 +302,12 @@
       color: #6ee7b7;
     }
     .success-msg.show { display: block; }
-
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+    }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
       .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
@@ -433,7 +436,7 @@
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeForm()">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="saveLeader()">Save Leader</button>
+          <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveLeader()">Save Leader</button>
         </div>
       </div>
 
@@ -453,6 +456,7 @@
             <tbody id="leadersTable"></tbody>
           </table>
         </div>
+        <div class="hint" id="pageHint">Loading...</div>
       </div>
     </div>
   </div>
@@ -494,9 +498,12 @@
           var data = null;
           try { data = text ? JSON.parse(text) : null; }
           catch (e) { return Promise.reject(new Error('Bad response ' + res.status)); }
-          return { ok: res.ok, data: data };
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
+    }
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
     function showSuccess(msg) {
@@ -515,10 +522,11 @@
     function renderTable(list) {
       var tbody = document.getElementById('leadersTable');
       if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2rem;">No leaders yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2rem;">No leaders yet. Click + Add Leader.</td></tr>';
         return;
       }
       tbody.innerHTML = list.map(function (l) {
+        var id = esc(l.id);
         var st = l.status === 'Active' ? 'active' : 'inactive';
         return '<tr>' +
           '<td><strong>' + (l.name || '-') + '</strong></td>' +
@@ -527,8 +535,8 @@
           '<td>' + (l.department || '-') + '</td>' +
           '<td><span class="badge ' + st + '">' + (l.status || '-') + '</span></td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editLeader(\'' + l.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteLeader(\'' + l.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editLeader(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteLeader(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
     }
@@ -549,12 +557,22 @@
     }
 
     function loadLeaders() {
+      document.getElementById('pageHint').textContent = 'Loading...';
       apiFetch('/leaders').then(function (r) {
-        LEADERS = r.ok && Array.isArray(r.data) ? r.data : [];
+        if (!r.ok) {
+          LEADERS = [];
+          document.getElementById('pageHint').textContent =
+            'Could not load leaders (status ' + r.status + '). Is /api/leaders registered?';
+        } else {
+          LEADERS = Array.isArray(r.data) ? r.data : [];
+          document.getElementById('pageHint').textContent = 'Showing ' + LEADERS.length + ' leaders';
+        }
         updateStats();
         filterLeaders();
-      }).catch(function () {
+      }).catch(function (e) {
         LEADERS = [];
+        document.getElementById('pageHint').textContent =
+          'Server error. Is npm start running? ' + (e.message || '');
         updateStats();
         renderTable([]);
       });
@@ -580,7 +598,7 @@
     }
 
     function editLeader(id) {
-      var l = LEADERS.find(function (x) { return x.id === id; });
+      var l = LEADERS.find(function (x) { return String(x.id) === String(id); });
       if (!l) return;
       editingId = id;
       document.getElementById('formTitle').textContent = 'Edit Leader';
@@ -613,18 +631,24 @@
       };
       var path = editingId ? '/leaders/' + encodeURIComponent(editingId) : '/leaders';
       var method = editingId ? 'PUT' : 'POST';
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
 
       apiFetch(path, { method: method, body: JSON.stringify(body) })
         .then(function (r) {
+          btn.disabled = false;
           if (!r.ok) {
-            alert((r.data && r.data.error) || 'Save failed');
+            alert((r.data && r.data.error) || ('Save failed (status ' + r.status + ')'));
             return;
           }
           showSuccess(editingId ? 'Leader updated.' : 'Leader added.');
           closeForm();
           loadLeaders();
         })
-        .catch(function (e) { alert(e.message); });
+        .catch(function (e) {
+          btn.disabled = false;
+          alert(e.message || 'Cannot reach server');
+        });
     }
 
     function deleteLeader(id) {

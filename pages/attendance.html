@@ -1,683 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Attendance – JCF Connect</title>
-  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
-  <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --accent: #c41e3a;
-      --gold: #d4a017;
-      --bg: #080f18;
-      --sidebar: #0c1524;
-      --card: #111c2e;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #1e3352;
-      --input-bg: #0c1524;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-    }
-    .sidebar {
-      width: 260px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-      transition: transform 0.3s ease;
-    }
-    .sidebar-header {
-      padding: 1.25rem 1.1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .sidebar-logo {
-      width: 42px; height: 42px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: rgba(196,30,58,0.15);
-      padding: 4px;
-    }
-    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
-    .sidebar-brand span {
-      font-size: 0.62rem;
-      color: var(--gold);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 0.72rem 0.85rem;
-      border-radius: 10px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      margin-bottom: 0.2rem;
-      min-height: 44px;
-    }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-    .nav-item.active {
-      background: rgba(196,30,58,0.15);
-      color: #ff6b7a;
-      border: 1px solid rgba(196,30,58,0.25);
-    }
-    .nav-icon { width: 1.35rem; text-align: center; }
-    .sidebar-footer {
-      padding: 1rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 90;
-    }
-    .sidebar-overlay.show { display: block; }
-    .main { flex: 1; margin-left: 260px; min-height: 100vh; min-width: 0; }
-    .topbar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0.85rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.45rem;
-      cursor: pointer;
-      min-width: 44px;
-      min-height: 44px;
-    }
-    .topbar-left h2 { font-size: 1.1rem; }
-    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
-    .user-info { display: flex; align-items: center; gap: 0.6rem; }
-    .user-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), #9b1b2e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-    .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.25rem; max-width: 1000px; }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.85rem;
-      margin-bottom: 1.25rem;
-    }
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-    }
-    .stat-card .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; }
-    .stat-card .value { font-size: 1.35rem; font-weight: 700; margin-top: 0.25rem; }
-    .form-card, .history-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
-      margin-bottom: 1.15rem;
-    }
-    .section-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      padding-bottom: 0.7rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.9rem 1.15rem;
-    }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 0.8rem; color: var(--text-muted); }
-    input, select {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.65rem 0.85rem;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 16px;
-    }
-    .counts {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.75rem;
-      margin-top: 0.5rem;
-    }
-    .count-box {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.75rem;
-      text-align: center;
-    }
-    .count-box label { display: block; margin-bottom: 0.35rem; }
-    .count-box input { width: 100%; text-align: center; }
-    .total-box {
-      margin-top: 1rem;
-      padding: 0.85rem 1rem;
-      background: rgba(196,30,58,0.12);
-      border: 1px solid rgba(196,30,58,0.25);
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    .btn {
-      padding: 0.65rem 1.2rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      min-height: 44px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #9b1b2e);
-      color: white;
-    }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
-    .form-actions {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      margin-top: 1.15rem;
-    }
-    .success-msg {
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      display: none;
-      background: rgba(16,185,129,0.12);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: #6ee7b7;
-    }
-    .success-msg.show { display: block; }
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; min-width: 640px; }
-    th, td {
-      text-align: left;
-      padding: 0.65rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-    }
-    th { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; }
-    .action-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.3rem 0.5rem;
-      border-radius: 7px;
-      font-size: 0.72rem;
-      cursor: pointer;
-      font-family: inherit;
-      margin-right: 0.2rem;
-    }
-    @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .menu-toggle { display: flex; align-items: center; justify-content: center; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      .form-grid, .counts { grid-template-columns: 1fr 1fr; }
-      .content { padding: 0.9rem; }
-      .user-info > div:last-child { display: none; }
-    }
-    @media (max-width: 640px) {
-      .counts { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
-      <div class="sidebar-brand">
-        <h1>JCF Connect</h1>
-        <span>City of Champions</span>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
-      <a href="members.html" class="nav-item"><span class="nav-icon">👥</span> Members</a>
-      <a href="visitors.html" class="nav-item"><span class="nav-icon">👋</span> Visitors</a>
-      <a href="growth-groups.html" class="nav-item"><span class="nav-icon">🌿</span> Growth Groups</a>
-      <a href="departments.html" class="nav-item"><span class="nav-icon">🏛️</span> Departments</a>
-      <a href="leaders.html" class="nav-item"><span class="nav-icon">⭐</span> Leaders</a>
-      <a href="attendance.html" class="nav-item active"><span class="nav-icon">📋</span> Attendance</a>
-      <a href="champs-house.html" class="nav-item"><span class="nav-icon">🎓</span> Champs House</a>
-      <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
-      <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
-      <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
-      <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
-      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-    </nav>
-    <div class="sidebar-footer">JCF CONNECT</div>
-  </aside>
+const express = require('express');
+const db = require('../db');
+const { authRequired } = require('../middleware/auth');
 
-  <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <button type="button" class="menu-toggle" onclick="openSidebar()">☰</button>
-        <div>
-          <h2>Attendance</h2>
-          <p id="currentDate">—</p>
-        </div>
-      </div>
-      <div class="user-info">
-        <div class="user-avatar" id="userAvatar">?</div>
-        <div>
-          <div id="userName">—</div>
-          <div class="user-role" id="userRole">—</div>
-        </div>
-      </div>
-    </header>
+const router = express.Router();
+router.use(authRequired);
 
-    <div class="content">
-      <div class="success-msg" id="successMsg"></div>
+function store() {
+  return db.getStore();
+}
 
-      <div class="stats">
-        <div class="stat-card"><div class="label">Records</div><div class="value" id="statRecords">0</div></div>
-        <div class="stat-card"><div class="label">Latest total</div><div class="value" id="statLatest">0</div></div>
-        <div class="stat-card"><div class="label">This month avg</div><div class="value" id="statAvg">0</div></div>
-        <div class="stat-card"><div class="label">Highest</div><div class="value" id="statHigh">0</div></div>
-      </div>
+function ensure(s) {
+  if (!Array.isArray(s.attendance)) s.attendance = [];
+}
 
-      <div class="form-card">
-        <div class="section-title" id="formTitle">Record Attendance</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Date *</label>
-            <input type="date" id="serviceDate" />
-          </div>
-          <div class="form-group">
-            <label>Service type *</label>
-            <select id="serviceType" onchange="onServiceTypeChange()">
-              <option value="Sunday Service">Sunday Service</option>
-              <option value="Midweek">Midweek</option>
-              <option value="Prayer Meeting">Prayer Meeting</option>
-              <option value="Special">Special Event</option>
-            </select>
-          </div>
-          <div class="form-group full" id="specialNameGroup" style="display:none;">
-            <label>Special event name *</label>
-            <input type="text" id="eventName" placeholder="e.g. Easter Convention, Youth Camp 2026" />
-          </div>
-        </div>
+function normalize(row) {
+  const men = Number(row.men) || 0;
+  const ladies = Number(row.ladies) || 0;
+  const youths = Number(row.youths) || 0;
+  const teens = Number(row.teens) || 0;
+  const sundaySchool =
+    Number(row.sundaySchool) || Number(row.sunday_school) || 0;
+  return {
+    id: row.id,
+    date: row.date || '',
+    service: row.service || 'Sunday Service',
+    eventName: row.eventName || row.event_name || '',
+    men,
+    ladies,
+    youths,
+    teens,
+    sundaySchool,
+    sunday_school: sundaySchool,
+    total:
+      Number(row.total) ||
+      men + ladies + youths + teens + sundaySchool,
+    createdAt: row.createdAt || row.created_at || null,
+    updatedAt: row.updatedAt || null
+  };
+}
 
-        <div class="counts">
-          <div class="count-box">
-            <label>Men</label>
-            <input type="number" id="men" min="0" value="0" oninput="calcTotal()" />
-          </div>
-          <div class="count-box">
-            <label>Ladies</label>
-            <input type="number" id="ladies" min="0" value="0" oninput="calcTotal()" />
-          </div>
-          <div class="count-box">
-            <label>Youths</label>
-            <input type="number" id="youths" min="0" value="0" oninput="calcTotal()" />
-          </div>
-          <div class="count-box">
-            <label>Teens</label>
-            <input type="number" id="teens" min="0" value="0" oninput="calcTotal()" />
-          </div>
-          <div class="count-box">
-            <label>Sunday School</label>
-            <input type="number" id="sundaySchool" min="0" value="0" oninput="calcTotal()" />
-          </div>
-        </div>
+router.get('/', (req, res) => {
+  const s = store();
+  ensure(s);
+  const list = s.attendance
+    .map(normalize)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  res.json(list);
+});
 
-        <div class="total-box">Total attendance: <span id="totalDisplay">0</span></div>
+router.get('/:id', (req, res) => {
+  const s = store();
+  ensure(s);
+  const row = s.attendance.find((x) => String(x.id) === String(req.params.id));
+  if (!row) return res.status(404).json({ error: 'Record not found' });
+  res.json(normalize(row));
+});
 
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-          <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveAttendance()">Save Attendance</button>
-        </div>
-      </div>
+router.post('/', (req, res) => {
+  const s = store();
+  ensure(s);
+  const b = req.body || {};
+  const service = b.service || 'Sunday Service';
+  const eventName = (b.eventName || b.event_name || '').trim();
 
-      <div class="history-card">
-        <div class="section-title">History</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Service / Event</th>
-                <th>Men</th>
-                <th>Ladies</th>
-                <th>Youths</th>
-                <th>Teens</th>
-                <th>S.School</th>
-                <th>Total</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  if (service === 'Special' && !eventName) {
+    return res.status(400).json({ error: 'Special event name is required' });
+  }
 
-  <script>
-    var API = '/api';
-    var RECORDS = [];
-    var editingId = null;
+  const men = Number(b.men) || 0;
+  const ladies = Number(b.ladies) || 0;
+  const youths = Number(b.youths) || 0;
+  const teens = Number(b.teens) || 0;
+  const sundaySchool =
+    Number(b.sundaySchool) || Number(b.sunday_school) || 0;
+  const total = men + ladies + youths + teens + sundaySchool;
 
-    function openSidebar() {
-      document.getElementById('sidebar').classList.add('open');
-      document.getElementById('sidebarOverlay').classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeSidebar() {
-      document.getElementById('sidebar').classList.remove('open');
-      document.getElementById('sidebarOverlay').classList.remove('show');
-      document.body.style.overflow = '';
-    }
+  if (!b.date) {
+    return res.status(400).json({ error: 'Date is required' });
+  }
+  if (total === 0) {
+    return res.status(400).json({ error: 'Enter at least one count' });
+  }
 
-    function getToken() { return localStorage.getItem('jcf_token') || ''; }
-    function getSession() {
-      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
-      catch (e) { return null; }
-    }
-    function logout() {
-      localStorage.removeItem('jcf_token');
-      localStorage.removeItem('jcf_user');
-      window.location.href = 'login.html';
-    }
-    function requireLogin() {
-      if (!getToken() || !getSession()) {
-        window.location.href = 'login.html';
-        return false;
-      }
-      return true;
-    }
-    function apiFetch(path, options) {
-      options = options || {};
-      options.headers = options.headers || {};
-      options.headers['Authorization'] = 'Bearer ' + getToken();
-      if (options.body) options.headers['Content-Type'] = 'application/json';
-      return fetch(API + path, options).then(function (res) {
-        if (res.status === 401) { logout(); return Promise.reject(new Error('Unauthorized')); }
-        return res.text().then(function (text) {
-          var data = null;
-          try { data = text ? JSON.parse(text) : null; }
-          catch (e) { return Promise.reject(new Error('Bad response')); }
-          return { ok: res.ok, data: data };
-        });
-      });
-    }
+  const record = {
+    id: b.id || ('ATT-' + Date.now()),
+    date: b.date,
+    service,
+    eventName: service === 'Special' ? eventName : '',
+    men,
+    ladies,
+    youths,
+    teens,
+    sundaySchool,
+    sunday_school: sundaySchool,
+    total,
+    createdAt: new Date().toISOString()
+  };
 
-    function onServiceTypeChange() {
-      var isSpecial = document.getElementById('serviceType').value === 'Special';
-      document.getElementById('specialNameGroup').style.display = isSpecial ? 'block' : 'none';
-      if (!isSpecial) document.getElementById('eventName').value = '';
-    }
+  s.attendance.push(record);
+  db.saveStore();
+  res.status(201).json(normalize(record));
+});
 
-    function calcTotal() {
-      var men = parseInt(document.getElementById('men').value, 10) || 0;
-      var ladies = parseInt(document.getElementById('ladies').value, 10) || 0;
-      var youths = parseInt(document.getElementById('youths').value, 10) || 0;
-      var teens = parseInt(document.getElementById('teens').value, 10) || 0;
-      var sundaySchool = parseInt(document.getElementById('sundaySchool').value, 10) || 0;
-      var total = men + ladies + youths + teens + sundaySchool;
-      document.getElementById('totalDisplay').textContent = total;
-      return total;
-    }
+router.put('/:id', (req, res) => {
+  const s = store();
+  ensure(s);
+  const i = s.attendance.findIndex(
+    (x) => String(x.id) === String(req.params.id)
+  );
+  if (i === -1) return res.status(404).json({ error: 'Record not found' });
 
-    function showSuccess(msg) {
-      var el = document.getElementById('successMsg');
-      el.textContent = msg;
-      el.classList.add('show');
-      setTimeout(function () { el.classList.remove('show'); }, 2800);
-    }
+  const b = req.body || {};
+  const service = b.service || s.attendance[i].service || 'Sunday Service';
+  const eventName = (b.eventName || b.event_name || '').trim();
 
-    function resetForm() {
-      editingId = null;
-      document.getElementById('formTitle').textContent = 'Record Attendance';
-      document.getElementById('saveBtn').textContent = 'Save Attendance';
-      document.getElementById('serviceDate').value = new Date().toISOString().split('T')[0];
-      document.getElementById('serviceType').value = 'Sunday Service';
-      document.getElementById('eventName').value = '';
-      document.getElementById('men').value = 0;
-      document.getElementById('ladies').value = 0;
-      document.getElementById('youths').value = 0;
-      document.getElementById('teens').value = 0;
-      document.getElementById('sundaySchool').value = 0;
-      onServiceTypeChange();
-      calcTotal();
-    }
+  if (service === 'Special' && !eventName) {
+    return res.status(400).json({ error: 'Special event name is required' });
+  }
 
-    function formatDate(d) {
-      if (!d) return '-';
-      try {
-        return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', {
-          day: 'numeric', month: 'short', year: 'numeric'
-        });
-      } catch (e) { return d; }
-    }
+  const men = Number(b.men) || 0;
+  const ladies = Number(b.ladies) || 0;
+  const youths = Number(b.youths) || 0;
+  const teens = Number(b.teens) || 0;
+  const sundaySchool =
+    Number(b.sundaySchool) || Number(b.sunday_school) || 0;
 
-    function serviceLabel(r) {
-      if (r.service === 'Special' && r.eventName) {
-        return 'Special: ' + r.eventName;
-      }
-      return r.service || r.eventName || '-';
-    }
+  s.attendance[i] = {
+    ...s.attendance[i],
+    date: b.date || s.attendance[i].date,
+    service,
+    eventName: service === 'Special' ? eventName : '',
+    men,
+    ladies,
+    youths,
+    teens,
+    sundaySchool,
+    sunday_school: sundaySchool,
+    total: men + ladies + youths + teens + sundaySchool,
+    updatedAt: new Date().toISOString()
+  };
 
-    function updateStats() {
-      document.getElementById('statRecords').textContent = RECORDS.length;
-      if (!RECORDS.length) {
-        document.getElementById('statLatest').textContent = '0';
-        document.getElementById('statAvg').textContent = '0';
-        document.getElementById('statHigh').textContent = '0';
-        return;
-      }
-      document.getElementById('statLatest').textContent = RECORDS[0].total || 0;
-      var month = new Date().toISOString().slice(0, 7);
-      var thisMonth = RECORDS.filter(function (r) {
-        return (r.date || '').indexOf(month) === 0;
-      });
-      var avg = thisMonth.length
-        ? Math.round(thisMonth.reduce(function (s, r) { return s + (r.total || 0); }, 0) / thisMonth.length)
-        : 0;
-      document.getElementById('statAvg').textContent = avg;
-      var high = Math.max.apply(null, RECORDS.map(function (r) { return r.total || 0; }));
-      document.getElementById('statHigh').textContent = high;
-    }
+  db.saveStore();
+  res.json(normalize(s.attendance[i]));
+});
 
-    function renderHistory() {
-      var tbody = document.getElementById('historyBody');
-      if (!RECORDS.length) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#94a3b8;">No attendance records yet</td></tr>';
-        return;
-      }
-      tbody.innerHTML = RECORDS.map(function (r) {
-        return '<tr>' +
-          '<td>' + formatDate(r.date) + '</td>' +
-          '<td>' + serviceLabel(r) + '</td>' +
-          '<td>' + (r.men || 0) + '</td>' +
-          '<td>' + (r.ladies || 0) + '</td>' +
-          '<td>' + (r.youths || 0) + '</td>' +
-          '<td>' + (r.teens || 0) + '</td>' +
-          '<td>' + (r.sundaySchool || 0) + '</td>' +
-          '<td><strong>' + (r.total || 0) + '</strong></td>' +
-          '<td>' +
-            '<button type="button" class="action-btn" onclick="editRecord(\'' + r.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteRecord(\'' + r.id + '\')">Delete</button>' +
-          '</td></tr>';
-      }).join('');
-    }
+router.delete('/:id', (req, res) => {
+  const s = store();
+  ensure(s);
+  const before = s.attendance.length;
+  s.attendance = s.attendance.filter(
+    (x) => String(x.id) !== String(req.params.id)
+  );
+  db.saveStore();
+  if (s.attendance.length === before) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
+  res.json({ ok: true });
+});
 
-    function loadRecords() {
-      apiFetch('/attendance')
-        .then(function (result) {
-          RECORDS = result.ok && Array.isArray(result.data) ? result.data : [];
-          RECORDS.sort(function (a, b) {
-            return (b.date || '').localeCompare(a.date || '');
-          });
-          updateStats();
-          renderHistory();
-        })
-        .catch(function () {
-          RECORDS = [];
-          updateStats();
-          renderHistory();
-        });
-    }
-
-    function saveAttendance() {
-      var date = document.getElementById('serviceDate').value;
-      var service = document.getElementById('serviceType').value;
-      var eventName = document.getElementById('eventName').value.trim();
-      var men = parseInt(document.getElementById('men').value, 10) || 0;
-      var ladies = parseInt(document.getElementById('ladies').value, 10) || 0;
-      var youths = parseInt(document.getElementById('youths').value, 10) || 0;
-      var teens = parseInt(document.getElementById('teens').value, 10) || 0;
-      var sundaySchool = parseInt(document.getElementById('sundaySchool').value, 10) || 0;
-      var total = men + ladies + youths + teens + sundaySchool;
-
-      if (!date) {
-        alert('Select a date');
-        return;
-      }
-      if (service === 'Special' && !eventName) {
-        alert('Enter the special event name');
-        return;
-      }
-      if (total === 0) {
-        alert('Enter at least one number');
-        return;
-      }
-
-      var record = {
-        id: editingId || ('ATT-' + Date.now()),
-        date: date,
-        service: service,
-        eventName: service === 'Special' ? eventName : '',
-        men: men,
-        ladies: ladies,
-        youths: youths,
-        teens: teens,
-        sundaySchool: sundaySchool,
-        total: total
-      };
-
-      var path = editingId
-        ? '/attendance/' + encodeURIComponent(editingId)
-        : '/attendance';
-      var method = editingId ? 'PUT' : 'POST';
-
-      apiFetch(path, { method: method, body: JSON.stringify(record) })
-        .then(function (result) {
-          if (!result.ok) {
-            alert((result.data && result.data.error) || 'Save failed');
-            return;
-          }
-          showSuccess('Saved! Total: ' + total + (eventName ? ' (' + eventName + ')' : ''));
-          resetForm();
-          loadRecords();
-        })
-        .catch(function () {
-          alert('Cannot reach server. Is npm start running?');
-        });
-    }
-
-    function editRecord(id) {
-      var r = RECORDS.find(function (x) { return x.id === id; });
-      if (!r) return;
-      editingId = r.id;
-      document.getElementById('formTitle').textContent = 'Edit Attendance';
-      document.getElementById('saveBtn').textContent = 'Update Attendance';
-      document.getElementById('serviceDate').value = r.date || '';
-      document.getElementById('serviceType').value = r.service || 'Sunday Service';
-      document.getElementById('eventName').value = r.eventName || '';
-      document.getElementById('men').value = r.men || 0;
-      document.getElementById('ladies').value = r.ladies || 0;
-      document.getElementById('youths').value = r.youths || 0;
-      document.getElementById('teens').value = r.teens || 0;
-      document.getElementById('sundaySchool').value = r.sundaySchool || 0;
-      onServiceTypeChange();
-      calcTotal();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function deleteRecord(id) {
-      if (!confirm('Delete this attendance record?')) return;
-      apiFetch('/attendance/' + encodeURIComponent(id), { method: 'DELETE' })
-        .then(function (result) {
-          if (result.ok) {
-            showSuccess('Record deleted.');
-            if (editingId === id) resetForm();
-            loadRecords();
-          } else {
-            alert((result.data && result.data.error) || 'Delete failed');
-          }
-        })
-        .catch(function () { alert('Server error'); });
-    }
-
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-    });
-
-    if (!requireLogin()) {
-      /* redirect */
-    } else {
-      var session = getSession();
-      if (session) {
-        document.getElementById('userName').textContent = session.name || '—';
-        document.getElementById('userRole').textContent = session.role || '—';
-        document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
-      }
-      resetForm();
-      loadRecords();
-    }
-  </script>
-  <script src="js/access.js"></script>
-</body>
-</html>
+module.exports = router;

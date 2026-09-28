@@ -365,31 +365,12 @@
               <label>Growth Group</label>
               <select id="growthGroup">
                 <option value="">Select Growth Group</option>
-                <option value="Growth Group 1">Growth Group 1</option>
-                <option value="Growth Group 2">Growth Group 2</option>
-                <option value="Growth Group 3">Growth Group 3</option>
-                <option value="Growth Group 4">Growth Group 4</option>
-                <option value="Growth Group 5">Growth Group 5</option>
-                <option value="Growth Group 6">Growth Group 6</option>
-                <option value="Growth Group 7">Growth Group 7</option>
-                <option value="Growth Group 8">Growth Group 8</option>
-                <option value="Growth Group 9">Growth Group 9</option>
-                <option value="Growth Group 10">Growth Group 10</option>
               </select>
             </div>
             <div class="form-group">
               <label>Department</label>
               <select id="department">
                 <option value="">Select Department</option>
-                <option value="Men Fellowship">Men Fellowship</option>
-                <option value="Ladies Fellowship">Ladies Fellowship</option>
-                <option value="Youth Ministry">Youth Ministry</option>
-                <option value="Media Ministry">Media Ministry</option>
-                <option value="Sound & Technical Ministry">Sound & Technical Ministry</option>
-                <option value="Worship Team">Worship Team</option>
-                <option value="Champs House">Champs House</option>
-                <option value="Ushers">Ushers</option>
-                <option value="Protocol">Protocol</option>
               </select>
             </div>
             <div class="form-group full">
@@ -473,11 +454,12 @@
       }
       return getSession();
     }
+
     function apiFetch(path, options) {
       options = options || {};
       options.headers = options.headers || {};
       options.headers['Authorization'] = 'Bearer ' + getToken();
-      options.headers['Content-Type'] = 'application/json';
+      if (options.body) options.headers['Content-Type'] = 'application/json';
       return fetch(API + path, options).then(function (res) {
         if (res.status === 401) {
           localStorage.removeItem('jcf_token');
@@ -485,7 +467,14 @@
           window.location.href = 'login.html';
           return Promise.reject(new Error('Unauthorized'));
         }
-        return res.json().then(function (data) {
+        return res.text().then(function (text) {
+          var data = null;
+          if (text) {
+            try { data = JSON.parse(text); }
+            catch (e) {
+              return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+            }
+          }
           return { ok: res.ok, status: res.status, data: data };
         });
       });
@@ -493,6 +482,61 @@
 
     function generateMemberId() {
       return 'JCF-' + Date.now().toString().slice(-6);
+    }
+
+    /* Load real growth groups + departments from API */
+    function loadGroupOptions(selectedGroup, selectedDept) {
+      var gSel = document.getElementById('growthGroup');
+      var dSel = document.getElementById('department');
+
+      gSel.innerHTML = '<option value="">Select Growth Group</option>';
+      dSel.innerHTML = '<option value="">Select Department</option>';
+
+      return Promise.all([
+        apiFetch('/groups').catch(function () { return { ok: false, data: [] }; }),
+        apiFetch('/departments').catch(function () { return { ok: false, data: [] }; })
+      ]).then(function (results) {
+        var groups = results[0].ok && Array.isArray(results[0].data) ? results[0].data : [];
+        var depts = results[1].ok && Array.isArray(results[1].data) ? results[1].data : [];
+
+        groups.forEach(function (g) {
+          var name = g.name || g.title || '';
+          if (!name) return;
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          gSel.appendChild(opt);
+        });
+        depts.forEach(function (d) {
+          var name = d.name || d.title || '';
+          if (!name) return;
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          dSel.appendChild(opt);
+        });
+
+        /* Fallback labels if API empty */
+        if (!groups.length) {
+          ['Growth Group 1', 'Growth Group 2', 'Growth Group 3', 'Growth Group 4', 'Growth Group 5'].forEach(function (n) {
+            var opt = document.createElement('option');
+            opt.value = n;
+            opt.textContent = n;
+            gSel.appendChild(opt);
+          });
+        }
+        if (!depts.length) {
+          ['Men Fellowship', 'Ladies Fellowship', 'Youth Ministry', 'Media Ministry', 'Sound & Technical Ministry', 'Worship Team', 'Champs House', 'Ushers', 'Protocol'].forEach(function (n) {
+            var opt = document.createElement('option');
+            opt.value = n;
+            opt.textContent = n;
+            dSel.appendChild(opt);
+          });
+        }
+
+        if (selectedGroup) gSel.value = selectedGroup;
+        if (selectedDept) dSel.value = selectedDept;
+      });
     }
 
     function fillForm(m) {
@@ -508,14 +552,16 @@
       document.getElementById('spouse').value = m.spouse || '';
       document.getElementById('children').value = m.children || '';
       document.getElementById('dateJoined').value = m.date_joined || m.dateJoined || m.joined || '';
-      document.getElementById('growthGroup').value = m.growth_group || m.group || '';
-      document.getElementById('department').value = m.department || '';
       document.getElementById('ministry').value = m.ministry || '';
       document.getElementById('bornAgain').value = m.born_again || m.bornAgain || '';
       document.getElementById('baptism').value = m.baptism || '';
       document.getElementById('holySpirit').value = m.holy_spirit || m.holySpirit || '';
       document.getElementById('membershipClass').value = m.membership_class || m.membershipClass || '';
       document.getElementById('status').value = m.status || 'Active';
+
+      var group = m.growth_group || m.group || m.growthGroup || '';
+      var dept = m.department || '';
+      loadGroupOptions(group, dept);
     }
 
     function collectForm() {
@@ -532,7 +578,9 @@
         spouse: document.getElementById('spouse').value.trim(),
         children: document.getElementById('children').value.trim(),
         dateJoined: document.getElementById('dateJoined').value,
+        joined: document.getElementById('dateJoined').value,
         group: document.getElementById('growthGroup').value,
+        growthGroup: document.getElementById('growthGroup').value,
         department: document.getElementById('department').value,
         ministry: document.getElementById('ministry').value.trim(),
         bornAgain: document.getElementById('bornAgain').value,
@@ -569,22 +617,22 @@
           btn.disabled = false;
           btn.textContent = isEditMode ? 'Update Member' : 'Save Member';
           if (!result.ok) {
-            err.textContent = (result.data && result.data.error) || 'Save failed';
+            err.textContent = (result.data && result.data.error) || ('Save failed (status ' + result.status + ')');
             err.classList.add('show');
             return;
           }
           ok.textContent = isEditMode
             ? 'Member updated successfully!'
-            : 'Member ' + (result.data.name || member.name) + ' saved!';
+            : 'Member ' + ((result.data && result.data.name) || member.name) + ' saved!';
           ok.classList.add('show');
           setTimeout(function () {
             window.location.href = 'members.html';
-          }, 1000);
+          }, 900);
         })
-        .catch(function () {
+        .catch(function (ex) {
           btn.disabled = false;
           btn.textContent = isEditMode ? 'Update Member' : 'Save Member';
-          err.textContent = 'Cannot reach server. Is npm start running?';
+          err.textContent = (ex && ex.message) || 'Cannot reach server. Is npm start running?';
           err.classList.add('show');
         });
     }
@@ -618,6 +666,7 @@
     } else {
       document.getElementById('memberId').value = generateMemberId();
       document.getElementById('dateJoined').value = new Date().toISOString().split('T')[0];
+      loadGroupOptions('', '');
     }
   </script>
   <script src="js/access.js"></script>

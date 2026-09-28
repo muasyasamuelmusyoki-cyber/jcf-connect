@@ -135,7 +135,6 @@
     .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
     .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
     .content { padding: 1.25rem; flex: 1; max-width: 700px; }
-
     .form-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -205,6 +204,7 @@
       color: white;
       box-shadow: 0 4px 12px rgba(196,30,58,0.3);
     }
+    .btn-primary:disabled { opacity: 0.7; }
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
@@ -231,7 +231,6 @@
       color: #fca5a5;
     }
     .success-msg.show, .error-msg.show { display: block; }
-
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
       .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
@@ -318,6 +317,10 @@
               <input type="tel" id="phone" placeholder="07XX XXX XXX" />
             </div>
             <div class="form-group">
+              <label>Parent / Guardian</label>
+              <input type="text" id="parentName" placeholder="Optional" />
+            </div>
+            <div class="form-group">
               <label>Status</label>
               <select id="status">
                 <option value="Active">Active</option>
@@ -384,8 +387,13 @@
           logout();
           return Promise.reject(new Error('Unauthorized'));
         }
-        return res.json().then(function (data) {
-          return { ok: res.ok, data: data };
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
     }
@@ -414,12 +422,21 @@
 
     function fillClassSelect(selectedId) {
       var sel = document.getElementById('classId');
-      var active = CLASSES.filter(function (c) { return c.status === 'Active' || c.id === selectedId; });
+      var list = CLASSES.filter(function (c) {
+        return c.status === 'Active' || String(c.id) === String(selectedId);
+      });
+      if (!list.length) list = CLASSES.slice();
       sel.innerHTML = '<option value="">Select class</option>' +
-        active.map(function (c) {
-          return '<option value="' + c.id + '">' + (c.name || c.id) + (c.teacher ? ' (' + c.teacher + ')' : '') + '</option>';
+        list.map(function (c) {
+          var label = (c.name || c.id) + (c.teacher ? ' (' + c.teacher + ')' : '');
+          return '<option value="' + String(c.id).replace(/"/g, '&quot;') + '">' + label + '</option>';
         }).join('');
       if (selectedId) sel.value = selectedId;
+      if (!CLASSES.length) {
+        document.getElementById('errorMsg').textContent =
+          'No classes found. Create a class first on Champs House.';
+        document.getElementById('errorMsg').classList.add('show');
+      }
     }
 
     function fillForm(s) {
@@ -427,6 +444,7 @@
       document.getElementById('name').value = s.name || '';
       document.getElementById('classId').value = s.class_id || s.classId || '';
       document.getElementById('phone').value = s.phone || '';
+      document.getElementById('parentName').value = s.parentName || s.parent_name || '';
       document.getElementById('status').value = s.status || 'Active';
       document.getElementById('notes').value = s.notes || '';
     }
@@ -444,7 +462,7 @@
       btn.textContent = 'Saving...';
 
       var classId = document.getElementById('classId').value;
-      var cls = CLASSES.find(function (c) { return c.id === classId; });
+      var cls = CLASSES.find(function (c) { return String(c.id) === String(classId); });
 
       var record = {
         id: document.getElementById('studentId').value || ('STU-' + Date.now()),
@@ -452,6 +470,7 @@
         classId: classId,
         className: cls ? cls.name : '',
         phone: document.getElementById('phone').value.trim(),
+        parentName: document.getElementById('parentName').value.trim(),
         status: document.getElementById('status').value,
         notes: document.getElementById('notes').value.trim()
       };
@@ -464,7 +483,9 @@
           btn.disabled = false;
           btn.textContent = isEdit ? 'Update Student' : 'Save Student';
           if (!result.ok) {
-            document.getElementById('errorMsg').textContent = (result.data && result.data.error) || 'Save failed';
+            document.getElementById('errorMsg').textContent =
+              (result.data && result.data.error) ||
+              ('Save failed (status ' + result.status + '). Is /api/champs-students registered?');
             document.getElementById('errorMsg').classList.add('show');
             return;
           }
@@ -473,12 +494,13 @@
             : 'Student "' + record.name + '" saved!';
           document.getElementById('successMsg').classList.add('show');
           document.getElementById('errorMsg').classList.remove('show');
-          setTimeout(function () { window.location.href = 'champs-house.html'; }, 1000);
+          setTimeout(function () { window.location.href = 'champs-house.html'; }, 900);
         })
-        .catch(function () {
+        .catch(function (err) {
           btn.disabled = false;
           btn.textContent = isEdit ? 'Update Student' : 'Save Student';
-          document.getElementById('errorMsg').textContent = 'Cannot reach server. Is npm start running?';
+          document.getElementById('errorMsg').textContent =
+            (err && err.message) || 'Cannot reach server. Is npm start running?';
           document.getElementById('errorMsg').classList.add('show');
         });
     }
@@ -523,6 +545,9 @@
         CLASSES = [];
         fillClassSelect();
         document.getElementById('studentId').value = 'STU-' + Date.now();
+        document.getElementById('errorMsg').textContent =
+          'Could not load classes. Check server and /api/champs-classes.';
+        document.getElementById('errorMsg').classList.add('show');
       });
   </script>
   <script src="js/access.js"></script>

@@ -25,8 +25,8 @@ function defaultData() {
     leaders: [],
     champs_classes: [],
     champs_students: [],
-    settings: {},
-    logs: []
+    logs: [],
+    settings: {}
   };
 }
 
@@ -37,13 +37,13 @@ function load() {
     return data;
   }
   try {
-    const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-    // Ensure new collections exist on old files
-    const defaults = defaultData();
-    Object.keys(defaults).forEach((key) => {
-      if (data[key] === undefined) data[key] = defaults[key];
+    const raw = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    // Ensure every key exists (for older jcf.json files)
+    const base = defaultData();
+    Object.keys(base).forEach((key) => {
+      if (raw[key] === undefined) raw[key] = base[key];
     });
-    return data;
+    return raw;
   } catch (e) {
     const data = defaultData();
     save(data);
@@ -58,40 +58,50 @@ function save(data) {
 let store = load();
 
 function seedUsers() {
-  store = load();
-
-  // Never create default accounts with passwords hard-coded in source code.
-  // Existing databases with users are left untouched.
   if (store.users && store.users.length > 0) return;
-
-  const email = (process.env.BOOTSTRAP_ADMIN_EMAIL || '').trim().toLowerCase();
-  const password = process.env.BOOTSTRAP_ADMIN_PASSWORD || '';
-  const name = (process.env.BOOTSTRAP_ADMIN_NAME || 'System Admin').trim();
-
-  if (!email || !password) {
-    console.log('No bootstrap admin configured. No default users were created.');
-    return;
-  }
-
-  if (password.length < 12) {
-    throw new Error('BOOTSTRAP_ADMIN_PASSWORD must be at least 12 characters.');
-  }
-
+  const hash = (p) => bcrypt.hashSync(p, 10);
   store.users = [
     {
       id: 1,
-      email,
-      password: bcrypt.hashSync(password, 10),
-      name,
+      email: 'admin@jcf.rongai',
+      password: hash('Admin@2026'),
+      name: 'System Admin',
       role: 'Super Admin',
       status: 'Active',
       access: ['*']
+    },
+    {
+      id: 2,
+      email: 'pastor@jcf.rongai',
+      password: hash('Pastor@2026'),
+      name: 'Pastor Samuel',
+      role: 'Super Admin',
+      status: 'Active',
+      access: ['*']
+    },
+    {
+      id: 3,
+      email: 'secretary@jcf.rongai',
+      password: hash('Secretary@1'),
+      name: 'Mary Wanjiku',
+      role: 'Admin',
+      status: 'Active',
+      access: ['*']
+    },
+    {
+      id: 4,
+      email: 'treasurer@jcf.rongai',
+      password: hash('Treasurer@1'),
+      name: 'James Otieno',
+      role: 'Finance',
+      status: 'Active',
+      access: ['dashboard', 'finance', 'reports']
     }
   ];
-
   save(store);
-  console.log('Bootstrap administrator created.');
+  console.log('Default users seeded.');
 }
+
 seedUsers();
 
 const db = {
@@ -105,7 +115,7 @@ const db = {
 
   findUserByEmail(email) {
     store = load();
-    const e = (email || '').toLowerCase();
+    const e = (email || '').trim().toLowerCase();
     return (
       store.users.find(
         (u) => (u.email || '').toLowerCase() === e && u.status === 'Active'
@@ -118,36 +128,34 @@ const db = {
     return store.users.find((u) => String(u.id) === String(id)) || null;
   },
 
+  // Members
   getMembers() {
     store = load();
-    return store.members.slice().reverse();
+    return (store.members || []).slice().reverse();
   },
-
   getMember(id) {
     store = load();
-    return store.members.find((m) => m.id === id) || null;
+    return (store.members || []).find((m) => m.id === id) || null;
   },
-
   addMember(member) {
     store = load();
+    if (!store.members) store.members = [];
     store.members.push(member);
     save(store);
     return member;
   },
-
   updateMember(id, data) {
     store = load();
-    const i = store.members.findIndex((m) => m.id === id);
+    const i = (store.members || []).findIndex((m) => m.id === id);
     if (i === -1) return null;
     store.members[i] = { ...store.members[i], ...data, id };
     save(store);
     return store.members[i];
   },
-
   deleteMember(id) {
     store = load();
-    const before = store.members.length;
-    store.members = store.members.filter((m) => m.id !== id);
+    const before = (store.members || []).length;
+    store.members = (store.members || []).filter((m) => m.id !== id);
     save(store);
     return before !== store.members.length;
   }

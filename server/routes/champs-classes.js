@@ -9,68 +9,105 @@ function store() {
   return db.getStore();
 }
 
+function ensure(s) {
+  if (!Array.isArray(s.champs_classes)) s.champs_classes = [];
+  if (!Array.isArray(s.champs_students)) s.champs_students = [];
+}
+
+function normalize(c) {
+  return {
+    id: c.id,
+    name: c.name || '',
+    teacher: c.teacher || '',
+    ageGroup: c.ageGroup || c.age_group || '',
+    room: c.room || '',
+    status: c.status || 'Active',
+    notes: c.notes || '',
+    createdAt: c.createdAt || c.created_at || null,
+    updatedAt: c.updatedAt || null
+  };
+}
+
 router.get('/', (req, res) => {
-  res.json((store().champs_classes || []).slice().reverse());
+  const s = store();
+  ensure(s);
+  res.json(s.champs_classes.map(normalize).reverse());
 });
 
 router.get('/:id', (req, res) => {
-  const row = (store().champs_classes || []).find((x) => x.id === req.params.id);
+  const s = store();
+  ensure(s);
+  const row = s.champs_classes.find((x) => String(x.id) === String(req.params.id));
   if (!row) return res.status(404).json({ error: 'Class not found' });
-  res.json(row);
+  res.json(normalize(row));
 });
 
 router.post('/', (req, res) => {
   const s = store();
-  if (!s.champs_classes) s.champs_classes = [];
+  ensure(s);
   const b = req.body || {};
-  const row = {
+  if (!b.name || !String(b.name).trim()) {
+    return res.status(400).json({ error: 'Class name is required' });
+  }
+  if (!b.teacher || !String(b.teacher).trim()) {
+    return res.status(400).json({ error: 'Teacher is required' });
+  }
+
+  const record = {
     id: b.id || ('CLS-' + Date.now()),
-    name: b.name || '',
-    teacher: b.teacher || '',
+    name: String(b.name).trim(),
+    teacher: String(b.teacher).trim(),
+    ageGroup: (b.ageGroup || b.age_group || '').trim(),
+    room: (b.room || '').trim(),
     status: b.status || 'Active',
-    notes: b.notes || ''
+    notes: (b.notes || '').trim(),
+    createdAt: new Date().toISOString()
   };
-  s.champs_classes.push(row);
+
+  s.champs_classes.push(record);
   db.saveStore();
-  res.status(201).json(row);
+  res.status(201).json(normalize(record));
 });
 
 router.put('/:id', (req, res) => {
   const s = store();
-  if (!s.champs_classes) s.champs_classes = [];
-  const i = s.champs_classes.findIndex((x) => x.id === req.params.id);
+  ensure(s);
+  const i = s.champs_classes.findIndex((x) => String(x.id) === String(req.params.id));
   if (i === -1) return res.status(404).json({ error: 'Class not found' });
+
   const b = req.body || {};
+  const cur = s.champs_classes[i];
   s.champs_classes[i] = {
-    ...s.champs_classes[i],
-    name: b.name || '',
-    teacher: b.teacher || '',
-    status: b.status || 'Active',
-    notes: b.notes || ''
+    ...cur,
+    name: b.name != null ? String(b.name).trim() : cur.name,
+    teacher: b.teacher != null ? String(b.teacher).trim() : cur.teacher,
+    ageGroup: b.ageGroup != null || b.age_group != null
+      ? String(b.ageGroup || b.age_group || '').trim()
+      : (cur.ageGroup || ''),
+    room: b.room != null ? String(b.room).trim() : (cur.room || ''),
+    status: b.status || cur.status || 'Active',
+    notes: b.notes != null ? String(b.notes).trim() : (cur.notes || ''),
+    updatedAt: new Date().toISOString()
   };
-  if (s.champs_students) {
-    s.champs_students.forEach((st) => {
-      if (st.class_id === req.params.id) st.class_name = s.champs_classes[i].name;
-    });
-  }
   db.saveStore();
-  res.json(s.champs_classes[i]);
+  res.json(normalize(s.champs_classes[i]));
 });
 
 router.delete('/:id', (req, res) => {
   const s = store();
-  const before = (s.champs_classes || []).length;
-  s.champs_classes = (s.champs_classes || []).filter((x) => x.id !== req.params.id);
-  if (s.champs_students) {
-    s.champs_students.forEach((st) => {
-      if (st.class_id === req.params.id) {
-        st.class_id = '';
-        st.class_name = '';
-      }
-    });
-  }
+  ensure(s);
+  const id = String(req.params.id);
+  const before = s.champs_classes.length;
+  s.champs_classes = s.champs_classes.filter((x) => String(x.id) !== id);
+  // Unassign students from deleted class
+  s.champs_students = (s.champs_students || []).map((st) => {
+    if (String(st.classId || st.class_id) === id) {
+      return { ...st, classId: '', className: '' };
+    }
+    return st;
+  });
   db.saveStore();
-  if ((s.champs_classes || []).length === before) {
+  if (s.champs_classes.length === before) {
     return res.status(404).json({ error: 'Class not found' });
   }
   res.json({ ok: true });

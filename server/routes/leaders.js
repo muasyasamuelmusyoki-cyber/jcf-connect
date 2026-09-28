@@ -6,42 +6,41 @@ const router = express.Router();
 router.use(authRequired);
 
 function store() {
-  const s = db.getStore();
-  if (!s.leaders) s.leaders = [];
-  return s;
+  return db.getStore();
 }
 
-function nextId(list) {
-  const n = list.length + 1;
-  return 'LDR-' + String(n).padStart(3, '0');
+function ensureLeaders(s) {
+  if (!Array.isArray(s.leaders)) s.leaders = [];
 }
 
 router.get('/', (req, res) => {
   const s = store();
+  ensureLeaders(s);
   res.json(s.leaders.slice().reverse());
 });
 
 router.get('/:id', (req, res) => {
   const s = store();
-  const item = s.leaders.find((x) => x.id === req.params.id);
-  if (!item) return res.status(404).json({ error: 'Leader not found' });
-  res.json(item);
+  ensureLeaders(s);
+  const row = s.leaders.find((x) => String(x.id) === String(req.params.id));
+  if (!row) return res.status(404).json({ error: 'Leader not found' });
+  res.json(row);
 });
 
 router.post('/', (req, res) => {
   const s = store();
+  ensureLeaders(s);
   const b = req.body || {};
   if (!b.name || !b.title) {
     return res.status(400).json({ error: 'Name and title are required' });
   }
   const leader = {
-    id: b.id || nextId(s.leaders),
+    id: b.id || ('LDR-' + Date.now()),
     name: String(b.name).trim(),
     title: String(b.title).trim(),
     phone: (b.phone || '').trim(),
-    email: (b.email || '').trim().toLowerCase(),
+    email: (b.email || '').trim(),
     department: (b.department || '').trim(),
-    memberId: (b.memberId || '').trim(),
     status: b.status || 'Active',
     notes: (b.notes || '').trim(),
     createdAt: new Date().toISOString()
@@ -53,20 +52,19 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   const s = store();
-  const i = s.leaders.findIndex((x) => x.id === req.params.id);
+  ensureLeaders(s);
+  const i = s.leaders.findIndex((x) => String(x.id) === String(req.params.id));
   if (i === -1) return res.status(404).json({ error: 'Leader not found' });
   const b = req.body || {};
-  const cur = s.leaders[i];
   s.leaders[i] = {
-    ...cur,
-    name: b.name != null ? String(b.name).trim() : cur.name,
-    title: b.title != null ? String(b.title).trim() : cur.title,
-    phone: b.phone != null ? String(b.phone).trim() : cur.phone,
-    email: b.email != null ? String(b.email).trim().toLowerCase() : cur.email,
-    department: b.department != null ? String(b.department).trim() : cur.department,
-    memberId: b.memberId != null ? String(b.memberId).trim() : cur.memberId,
-    status: b.status || cur.status,
-    notes: b.notes != null ? String(b.notes).trim() : cur.notes,
+    ...s.leaders[i],
+    name: (b.name || s.leaders[i].name || '').trim(),
+    title: (b.title || s.leaders[i].title || '').trim(),
+    phone: (b.phone || '').trim(),
+    email: (b.email || '').trim(),
+    department: (b.department || '').trim(),
+    status: b.status || s.leaders[i].status || 'Active',
+    notes: (b.notes || '').trim(),
     updatedAt: new Date().toISOString()
   };
   db.saveStore();
@@ -75,10 +73,13 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const s = store();
+  ensureLeaders(s);
   const before = s.leaders.length;
-  s.leaders = s.leaders.filter((x) => x.id !== req.params.id);
-  if (s.leaders.length === before) return res.status(404).json({ error: 'Leader not found' });
+  s.leaders = s.leaders.filter((x) => String(x.id) !== String(req.params.id));
   db.saveStore();
+  if (s.leaders.length === before) {
+    return res.status(404).json({ error: 'Leader not found' });
+  }
   res.json({ ok: true });
 });
 

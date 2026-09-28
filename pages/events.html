@@ -292,6 +292,17 @@
       font-size: 0.85rem;
       color: var(--text-muted);
     }
+    .error-banner {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      background: rgba(196,30,58,0.12);
+      border: 1px solid rgba(196,30,58,0.3);
+      color: #fca5a5;
+      font-size: 0.9rem;
+    }
+    .error-banner.show { display: block; }
 
     @media (max-width: 1100px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -369,6 +380,8 @@
     </header>
 
     <div class="content">
+      <div class="error-banner" id="errorBanner"></div>
+
       <div class="stats-row">
         <div class="stat-card blue">
           <div class="stat-label">Upcoming</div>
@@ -396,18 +409,13 @@
           </div>
           <select class="filter-select" id="filterType" onchange="filterEvents()">
             <option value="">All Types</option>
-            <option value="Sunday Service">Sunday Service</option>
-            <option value="Midweek Service">Midweek Service</option>
-            <option value="Prayer Meeting">Prayer Meeting</option>
-            <option value="Youth Service">Youth Service</option>
-            <option value="Teens Meeting">Teens Meeting</option>
-            <option value="Sunday School">Sunday School</option>
+            <option value="Service">Service</option>
+            <option value="Meeting">Meeting</option>
             <option value="Conference">Conference</option>
             <option value="Outreach">Outreach</option>
             <option value="Wedding">Wedding</option>
             <option value="Funeral">Funeral</option>
-            <option value="Baptism">Baptism</option>
-            <option value="Special Event">Special Event</option>
+            <option value="Special">Special</option>
             <option value="Other">Other</option>
           </select>
           <select class="filter-select" id="filterStatus" onchange="filterEvents()">
@@ -491,12 +499,16 @@
         }
         return res.text().then(function (text) {
           var data = null;
-          try { data = text ? JSON.parse(text) : null; } catch (e) {
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
             return Promise.reject(new Error('Bad response (status ' + res.status + '). Is /api/events registered?'));
           }
           return { ok: res.ok, status: res.status, data: data };
         });
       });
+    }
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
     function normalize(e) {
@@ -511,19 +523,30 @@
         venue: e.venue || '',
         description: e.description || '',
         status: e.status || 'Planned',
-        expectedAttendance: e.expected_attendance || e.expectedAttendance || 0,
-        organizer: e.organizer || '',
-        department: e.department || '',
         notes: e.notes || ''
       };
     }
 
+    function showError(msg) {
+      var el = document.getElementById('errorBanner');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+    function clearError() {
+      document.getElementById('errorBanner').classList.remove('show');
+    }
+
     function loadEvents() {
+      clearError();
       apiFetch('/events')
         .then(function (result) {
-          EVENTS = result.ok && Array.isArray(result.data)
-            ? result.data.map(normalize)
-            : [];
+          if (!result.ok) {
+            EVENTS = [];
+            showError((result.data && result.data.error) ||
+              'Could not load events (status ' + result.status + '). Check /api/events route.');
+          } else {
+            EVENTS = Array.isArray(result.data) ? result.data.map(normalize) : [];
+          }
           updateStats();
           filterEvents();
         })
@@ -532,6 +555,7 @@
           EVENTS = [];
           updateStats();
           filterEvents();
+          showError((err && err.message) || 'Cannot reach server. Is npm start running?');
         });
     }
 
@@ -570,6 +594,7 @@
         return (a.date || '').localeCompare(b.date || '');
       });
       tbody.innerHTML = sorted.map(function (e) {
+        var id = esc(e.id);
         return '<tr>' +
           '<td>' + formatDate(e.date) + (e.endDate ? ' – ' + formatDate(e.endDate) : '') + '</td>' +
           '<td><strong>' + e.title + '</strong></td>' +
@@ -578,8 +603,8 @@
           '<td>' + (e.venue || '-') + '</td>' +
           '<td><span class="badge ' + (e.status || '').toLowerCase() + '">' + (e.status || '-') + '</span></td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editEvent(\'' + e.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteEvent(\'' + e.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editEvent(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteEvent(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
       document.getElementById('pageInfo').textContent = 'Showing ' + data.length + ' events';
@@ -624,8 +649,8 @@
     requireLogin();
     var session = getSession();
     if (session) {
-      document.getElementById('userName').textContent = session.name;
-      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userName').textContent = session.name || '—';
+      document.getElementById('userRole').textContent = session.role || '—';
       document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
     }
 

@@ -411,16 +411,24 @@
       border: 1px solid var(--border);
       color: var(--text-muted);
     }
-    .success-msg {
-      background: rgba(16,185,129,0.12);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: #6ee7b7;
+    .success-msg, .error-msg {
       padding: 0.8rem 1rem;
       border-radius: 10px;
       margin-bottom: 1.15rem;
       display: none;
+      font-size: 0.9rem;
     }
-    .success-msg.show { display: block; }
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .error-msg {
+      background: rgba(196,30,58,0.12);
+      border: 1px solid rgba(196,30,58,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
 
     @media (max-width: 1100px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -520,6 +528,7 @@
       </div>
 
       <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
 
       <div class="tabs">
         <button type="button" class="tab-btn active" onclick="showTab('depts', this)">Departments</button>
@@ -706,10 +715,18 @@
           logout();
           return Promise.reject(new Error('Unauthorized'));
         }
-        return res.json().then(function (data) {
-          return { ok: res.ok, data: data };
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
+    }
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
     function normalizeDept(d) {
@@ -738,11 +755,28 @@
       };
     }
 
+    function showError(msg) {
+      var el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 4000);
+    }
+    function showSuccess(msg) {
+      var el = document.getElementById('successMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      document.getElementById('errorMsg').classList.remove('show');
+      setTimeout(function () { el.classList.remove('show'); }, 2500);
+    }
+
     function loadAll() {
       return Promise.all([
         apiFetch('/departments'),
         apiFetch('/dept-members')
       ]).then(function (results) {
+        if (!results[0].ok) {
+          showError('Could not load departments (status ' + results[0].status + '). Check /api/departments.');
+        }
         DEPTS = results[0].ok && Array.isArray(results[0].data)
           ? results[0].data.map(normalizeDept) : [];
         MEMBERS = results[1].ok && Array.isArray(results[1].data)
@@ -751,25 +785,21 @@
         fillDeptSelects();
         renderDepts();
         renderMembers();
-      }).catch(function () {
+      }).catch(function (err) {
         DEPTS = [];
         MEMBERS = [];
         updateStats();
         fillDeptSelects();
         renderDepts();
         renderMembers();
+        showError((err && err.message) || 'Cannot reach server. Is npm start running?');
       });
     }
 
     function memberCount(deptId) {
-      return MEMBERS.filter(function (m) { return m.deptId === deptId; }).length;
-    }
-
-    function showSuccess(msg) {
-      var el = document.getElementById('successMsg');
-      el.textContent = msg;
-      el.classList.add('show');
-      setTimeout(function () { el.classList.remove('show'); }, 2500);
+      return MEMBERS.filter(function (m) {
+        return String(m.deptId) === String(deptId);
+      }).length;
     }
 
     function showTab(id, btn) {
@@ -782,16 +812,23 @@
     }
 
     function updateStats() {
-      document.getElementById('statTotal').textContent = DEPTS.length;
-      document.getElementById('statActive').textContent = DEPTS.filter(function (d) { return d.status === 'Active'; }).length;
-      document.getElementById('statMembers').textContent = MEMBERS.length;
-      document.getElementById('statAvg').textContent = DEPTS.length ? Math.round(MEMBERS.length / DEPTS.length) : 0;
+      document.getElementById('statTotal').textContent = String(DEPTS.length);
+      document.getElementById('statActive').textContent = String(
+        DEPTS.filter(function (d) { return d.status === 'Active'; }).length
+      );
+      document.getElementById('statMembers').textContent = String(MEMBERS.length);
+      document.getElementById('statAvg').textContent = String(
+        DEPTS.length ? Math.round(MEMBERS.length / DEPTS.length) : 0
+      );
     }
 
     function fillDeptSelects() {
+      var active = DEPTS.filter(function (d) { return d.status === 'Active'; });
+      if (!active.length) active = DEPTS.slice();
       var opts = '<option value="">Select department</option>' +
-        DEPTS.filter(function (d) { return d.status === 'Active'; }).map(function (d) {
-          return '<option value="' + d.id + '">' + d.name + ' (' + d.leader + ')</option>';
+        active.map(function (d) {
+          return '<option value="' + String(d.id).replace(/"/g, '&quot;') + '">' +
+            d.name + (d.leader ? ' (' + d.leader + ')' : '') + '</option>';
         }).join('');
       document.getElementById('mDeptId').innerHTML = opts;
 
@@ -799,7 +836,7 @@
       var cur = filter.value;
       filter.innerHTML = '<option value="">All Departments</option>' +
         DEPTS.map(function (d) {
-          return '<option value="' + d.id + '">' + d.name + '</option>';
+          return '<option value="' + String(d.id).replace(/"/g, '&quot;') + '">' + d.name + '</option>';
         }).join('');
       filter.value = cur;
     }
@@ -818,22 +855,23 @@
         return;
       }
       grid.innerHTML = data.map(function (d) {
+        var id = esc(d.id);
         return '<div class="dept-card">' +
           '<div class="dept-header">' +
             '<div class="dept-name">' + d.name + '</div>' +
             '<span class="dept-badge ' + (d.status === 'Inactive' ? 'inactive' : '') + '">' + d.status + '</span>' +
           '</div>' +
           '<div class="dept-meta">' +
-            '<div>👤 Leader: <strong>' + d.leader + '</strong></div>' +
+            '<div>👤 Leader: <strong>' + (d.leader || '-') + '</strong></div>' +
             '<div>📞 ' + (d.phone || '-') + '</div>' +
             '<div>📅 ' + (d.meetingDay || '-') + (d.meetingTime ? ' · ' + d.meetingTime : '') + '</div>' +
             '<div>👥 Members: <strong>' + memberCount(d.id) + '</strong></div>' +
             (d.description ? '<div style="margin-top:0.35rem;">' + d.description + '</div>' : '') +
           '</div>' +
           '<div class="dept-actions">' +
-            '<button type="button" class="action-btn" onclick="viewDeptMembers(\'' + d.id + '\')">Members</button>' +
-            '<button type="button" class="action-btn" onclick="editDept(\'' + d.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteDept(\'' + d.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="viewDeptMembers(\'' + id + '\')">Members</button>' +
+            '<button type="button" class="action-btn" onclick="editDept(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteDept(\'' + id + '\')">Delete</button>' +
           '</div></div>';
       }).join('');
     }
@@ -861,7 +899,7 @@
     }
 
     function editDept(id) {
-      var d = DEPTS.find(function (x) { return x.id === id; });
+      var d = DEPTS.find(function (x) { return String(x.id) === String(id); });
       if (!d) return;
       editingDeptId = id;
       document.getElementById('deptFormTitle').textContent = 'Edit Department';
@@ -902,14 +940,16 @@
       apiFetch(path, { method: method, body: JSON.stringify(record) })
         .then(function (result) {
           if (!result.ok) {
-            alert((result.data && result.data.error) || 'Save failed');
+            alert((result.data && result.data.error) || ('Save failed (status ' + result.status + ')'));
             return;
           }
           showSuccess(editingDeptId ? 'Department updated!' : '"' + name + '" added!');
           closeDeptForm();
           loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (err) {
+          alert((err && err.message) || 'Server error');
+        });
     }
 
     function deleteDept(id) {
@@ -927,7 +967,9 @@
             alert((result.data && result.data.error) || 'Delete failed');
           }
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (err) {
+          alert((err && err.message) || 'Server error');
+        });
     }
 
     function viewDeptMembers(deptId) {
@@ -944,7 +986,7 @@
           (m.name || '').toLowerCase().indexOf(q) !== -1 ||
           (m.phone || '').indexOf(q) !== -1 ||
           (m.role || '').toLowerCase().indexOf(q) !== -1;
-        var matchD = !deptId || m.deptId === deptId;
+        var matchD = !deptId || String(m.deptId) === String(deptId);
         return matchQ && matchD;
       });
       var tbody = document.getElementById('membersTable');
@@ -953,6 +995,7 @@
         return;
       }
       tbody.innerHTML = data.map(function (m) {
+        var id = esc(m.id);
         return '<tr>' +
           '<td><strong>' + m.name + '</strong></td>' +
           '<td>' + (m.deptName || '-') + '</td>' +
@@ -960,8 +1003,8 @@
           '<td>' + (m.role || '-') + '</td>' +
           '<td><span class="badge ' + (m.status === 'Active' ? 'active' : 'inactive') + '">' + m.status + '</span></td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editMember(\'' + m.id + '\')">Edit</button> ' +
-            '<button type="button" class="action-btn" onclick="deleteMember(\'' + m.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editMember(\'' + id + '\')">Edit</button> ' +
+            '<button type="button" class="action-btn" onclick="deleteMember(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
     }
@@ -987,7 +1030,7 @@
     }
 
     function editMember(id) {
-      var m = MEMBERS.find(function (x) { return x.id === id; });
+      var m = MEMBERS.find(function (x) { return String(x.id) === String(id); });
       if (!m) return;
       editingMemberId = id;
       document.getElementById('memberFormTitle').textContent = 'Edit Department Member';
@@ -1011,10 +1054,12 @@
         alert('Name and department are required');
         return;
       }
+      var dept = DEPTS.find(function (d) { return String(d.id) === String(deptId); });
       var record = {
         id: editingMemberId || ('DM-' + Date.now()),
         name: name,
         deptId: deptId,
+        deptName: dept ? dept.name : '',
         phone: document.getElementById('mPhone').value.trim(),
         role: document.getElementById('mRole').value.trim(),
         status: document.getElementById('mStatus').value,
@@ -1027,14 +1072,16 @@
       apiFetch(path, { method: method, body: JSON.stringify(record) })
         .then(function (result) {
           if (!result.ok) {
-            alert((result.data && result.data.error) || 'Save failed');
+            alert((result.data && result.data.error) || ('Save failed (status ' + result.status + ')'));
             return;
           }
           showSuccess(editingMemberId ? 'Member updated!' : '"' + name + '" added!');
           closeMemberForm();
           loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (err) {
+          alert((err && err.message) || 'Server error');
+        });
     }
 
     function deleteMember(id) {
@@ -1048,7 +1095,9 @@
             alert((result.data && result.data.error) || 'Delete failed');
           }
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (err) {
+          alert((err && err.message) || 'Server error');
+        });
     }
 
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
@@ -1058,8 +1107,8 @@
     requireLogin();
     var session = getSession();
     if (session) {
-      document.getElementById('userName').textContent = session.name;
-      document.getElementById('userRole').textContent = session.role;
+      document.getElementById('userName').textContent = session.name || '—';
+      document.getElementById('userRole').textContent = session.role || '—';
       document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
     }
 

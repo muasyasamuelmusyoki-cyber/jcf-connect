@@ -152,7 +152,6 @@
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
     .content { padding: 1.25rem; flex: 1; }
-
     .hero {
       background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(212,160,23,0.1));
       border: 1px solid rgba(196,30,58,0.3);
@@ -162,7 +161,6 @@
     }
     .hero h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; }
     .hero p { font-size: 0.88rem; color: var(--text-muted); }
-
     .stats-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -180,13 +178,7 @@
     .stat-card.green .stat-value { color: #34d399; }
     .stat-card.gold .stat-value { color: var(--gold); }
     .stat-card.blue .stat-value { color: #60a5fa; }
-
-    .tabs {
-      display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1.15rem;
-      flex-wrap: wrap;
-    }
+    .tabs { display: flex; gap: 0.4rem; margin-bottom: 1.15rem; flex-wrap: wrap; }
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
@@ -206,7 +198,6 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-
     .toolbar {
       display: flex;
       justify-content: space-between;
@@ -262,7 +253,6 @@
       white-space: nowrap;
       box-shadow: 0 4px 12px rgba(196,30,58,0.3);
     }
-
     .table-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -291,8 +281,6 @@
       border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
-
     .badge {
       display: inline-block;
       padding: 0.22rem 0.5rem;
@@ -302,7 +290,6 @@
     }
     .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
     .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
-
     .action-btn {
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
@@ -315,8 +302,12 @@
       margin-right: 0.2rem;
       min-height: 36px;
     }
-    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-
+    .hint {
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
     @media (max-width: 1100px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
     }
@@ -445,6 +436,7 @@
               <tbody id="classesTable"></tbody>
             </table>
           </div>
+          <div class="hint" id="classesHint">Loading…</div>
         </div>
       </div>
 
@@ -477,6 +469,7 @@
               <tbody id="studentsTable"></tbody>
             </table>
           </div>
+          <div class="hint" id="studentsHint">Loading…</div>
         </div>
       </div>
     </div>
@@ -529,12 +522,16 @@
         }
         return res.text().then(function (text) {
           var data = null;
-          try { data = text ? JSON.parse(text) : null; } catch (e) {
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
             return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
           }
-          return { ok: res.ok, data: data };
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
+    }
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
     function normalizeClass(c) {
@@ -546,12 +543,20 @@
         notes: c.notes || ''
       };
     }
+    function classNameById(classId) {
+      if (!classId) return '';
+      for (var i = 0; i < CLASSES.length; i++) {
+        if (String(CLASSES[i].id) === String(classId)) return CLASSES[i].name;
+      }
+      return '';
+    }
     function normalizeStudent(s) {
+      var classId = s.class_id || s.classId || '';
       return {
         id: s.id || '',
         name: s.name || '',
-        classId: s.class_id || s.classId || '',
-        className: s.class_name || s.className || '',
+        classId: classId,
+        className: s.class_name || s.className || classNameById(classId),
         phone: s.phone || '',
         status: s.status || 'Active',
         notes: s.notes || ''
@@ -559,39 +564,64 @@
     }
 
     function loadAll() {
+      document.getElementById('classesHint').textContent = 'Loading…';
+      document.getElementById('studentsHint').textContent = 'Loading…';
       return Promise.all([
         apiFetch('/champs-classes'),
         apiFetch('/champs-students')
       ]).then(function (results) {
+        if (!results[0].ok) {
+          document.getElementById('classesHint').textContent =
+            'Could not load classes (status ' + results[0].status + '). Check /api/champs-classes is registered.';
+        } else {
+          document.getElementById('classesHint').textContent = '';
+        }
+        if (!results[1].ok) {
+          document.getElementById('studentsHint').textContent =
+            'Could not load students (status ' + results[1].status + '). Check /api/champs-students is registered.';
+        } else {
+          document.getElementById('studentsHint').textContent = '';
+        }
+
         CLASSES = results[0].ok && Array.isArray(results[0].data)
           ? results[0].data.map(normalizeClass) : [];
         STUDENTS = results[1].ok && Array.isArray(results[1].data)
           ? results[1].data.map(normalizeStudent) : [];
+
         updateStats();
         fillClassFilter();
         renderClasses();
         renderStudents();
-      }).catch(function () {
+      }).catch(function (err) {
         CLASSES = [];
         STUDENTS = [];
         updateStats();
         fillClassFilter();
         renderClasses();
         renderStudents();
+        document.getElementById('classesHint').textContent =
+          (err && err.message) || 'Cannot reach server. Is npm start running?';
+        document.getElementById('studentsHint').textContent = '';
       });
     }
 
     function studentCount(classId) {
-      return STUDENTS.filter(function (s) { return s.classId === classId; }).length;
+      return STUDENTS.filter(function (s) {
+        return String(s.classId) === String(classId);
+      }).length;
     }
 
     function updateStats() {
-      document.getElementById('statClasses').textContent = CLASSES.length;
-      document.getElementById('statActiveClasses').textContent = CLASSES.filter(function (c) { return c.status === 'Active'; }).length;
-      document.getElementById('statStudents').textContent = STUDENTS.length;
+      document.getElementById('statClasses').textContent = String(CLASSES.length);
+      document.getElementById('statActiveClasses').textContent = String(
+        CLASSES.filter(function (c) { return c.status === 'Active'; }).length
+      );
+      document.getElementById('statStudents').textContent = String(STUDENTS.length);
       var teachers = {};
-      CLASSES.forEach(function (c) { if (c.teacher) teachers[c.teacher] = true; });
-      document.getElementById('statTeachers').textContent = Object.keys(teachers).length;
+      CLASSES.forEach(function (c) {
+        if (c.teacher) teachers[c.teacher] = true;
+      });
+      document.getElementById('statTeachers').textContent = String(Object.keys(teachers).length);
     }
 
     function showTab(id, btn) {
@@ -610,10 +640,11 @@
       });
       var tbody = document.getElementById('classesTable');
       if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No classes found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No classes found. Click Add Class.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(function (c) {
+        var id = esc(c.id);
         return '<tr>' +
           '<td>' + c.id + '</td>' +
           '<td><strong>' + c.name + '</strong></td>' +
@@ -621,8 +652,8 @@
           '<td>' + studentCount(c.id) + '</td>' +
           '<td><span class="badge ' + (c.status === 'Active' ? 'active' : 'inactive') + '">' + c.status + '</span></td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editClass(\'' + c.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteClass(\'' + c.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editClass(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteClass(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
     }
@@ -632,7 +663,7 @@
       var cur = sel.value;
       sel.innerHTML = '<option value="">All Classes</option>' +
         CLASSES.map(function (c) {
-          return '<option value="' + c.id + '">' + c.name + '</option>';
+          return '<option value="' + String(c.id).replace(/"/g, '&quot;') + '">' + c.name + '</option>';
         }).join('');
       sel.value = cur;
     }
@@ -641,25 +672,29 @@
       var q = (document.getElementById('studentSearch').value || '').toLowerCase();
       var classId = document.getElementById('filterClass').value;
       var data = STUDENTS.filter(function (s) {
-        var matchQ = !q || (s.name || '').toLowerCase().indexOf(q) !== -1 || (s.phone || '').indexOf(q) !== -1;
-        var matchC = !classId || s.classId === classId;
+        var matchQ = !q ||
+          (s.name || '').toLowerCase().indexOf(q) !== -1 ||
+          (s.phone || '').indexOf(q) !== -1;
+        var matchC = !classId || String(s.classId) === String(classId);
         return matchQ && matchC;
       });
       var tbody = document.getElementById('studentsTable');
       if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No students found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No students found. Click Add Student.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(function (s) {
+        var id = esc(s.id);
+        var cls = s.className || classNameById(s.classId) || '-';
         return '<tr>' +
           '<td>' + s.id + '</td>' +
           '<td><strong>' + s.name + '</strong></td>' +
-          '<td>' + (s.className || '-') + '</td>' +
+          '<td>' + cls + '</td>' +
           '<td>' + (s.phone || '-') + '</td>' +
           '<td><span class="badge ' + (s.status === 'Active' ? 'active' : 'inactive') + '">' + s.status + '</span></td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editStudent(\'' + s.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteStudent(\'' + s.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editStudent(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteStudent(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
     }

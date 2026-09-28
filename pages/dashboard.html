@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Dashboard – JCF Connect | Joy Christian Fellowship – Rongai</title>
   <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
   <link rel="apple-touch-icon" href="../assets/images/logo.jpg" />
@@ -19,8 +19,9 @@
       --text-muted: #64748b; --border: #e2e8f0;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg); color: var(--text); min-height: 100vh;
       display: flex; transition: background 0.25s, color 0.25s;
     }
@@ -30,7 +31,7 @@
       z-index: 100; transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 1.4rem 1.25rem; border-bottom: 1px solid var(--border);
+      padding: 1.25rem 1.1rem; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 0.75rem;
     }
     .sidebar-logo {
@@ -39,34 +40,44 @@
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
     .sidebar-brand span {
-      font-size: 0.65rem; color: var(--gold); letter-spacing: 0.08em;
+      font-size: 0.62rem; color: var(--gold); letter-spacing: 0.06em;
       text-transform: uppercase; font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .nav-item {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.7rem 0.9rem; border-radius: 10px; color: var(--text-muted);
-      text-decoration: none; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.25rem;
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.72rem 0.85rem; border-radius: 10px; color: var(--text-muted);
+      text-decoration: none; font-size: 0.9rem; margin-bottom: 0.2rem; min-height: 44px;
     }
     .nav-item:hover { background: rgba(196,30,58,0.08); color: var(--text); }
     .nav-item.active {
       background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
       color: #ff6b7a; border: 1px solid rgba(196,30,58,0.25);
     }
-    .nav-icon { width: 1.25rem; text-align: center; font-size: 1rem; }
+    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
     .sidebar-footer {
-      padding: 1rem 1.25rem; border-top: 1px solid var(--border);
-      font-size: 0.7rem; color: var(--text-muted); text-align: center; line-height: 1.5;
+      padding: 1rem; border-top: 1px solid var(--border);
+      font-size: 0.68rem; color: var(--text-muted); text-align: center; line-height: 1.5;
     }
-    .main { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90;
+    }
+    .sidebar-overlay.show { display: block; }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; min-width: 0; }
     .topbar {
       background: var(--card); border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.75rem; display: flex; align-items: center;
-      justify-content: space-between; position: sticky; top: 0; z-index: 50;
+      padding: 0.85rem 1.25rem; display: flex; align-items: center;
+      justify-content: space-between; gap: 0.75rem; position: sticky; top: 0; z-index: 50; flex-wrap: wrap;
     }
-    .topbar-left h2 { font-size: 1.15rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .menu-toggle {
+      display: none; background: none; border: none; color: var(--text);
+      font-size: 1.45rem; cursor: pointer; min-width: 44px; min-height: 44px;
+      align-items: center; justify-content: center;
+    }
+    .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; flex-wrap: wrap; }
     .date-badge {
       font-size: 0.8rem; color: var(--text-muted); background: rgba(128,128,128,0.08);
       padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border);
@@ -78,7 +89,7 @@
     }
     .session-timer.warn { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.1); }
     .icon-btn {
-      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
+      width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
       background: transparent; color: var(--text-muted); cursor: pointer;
       display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
@@ -92,39 +103,39 @@
     }
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.75rem; flex: 1; }
+    .content { padding: 1.25rem; flex: 1; }
     .welcome-banner {
       background: linear-gradient(135deg, rgba(196,30,58,0.15), rgba(196,30,58,0.05));
       border: 1px solid rgba(196,30,58,0.25); border-radius: 14px;
-      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      padding: 1.15rem 1.35rem; margin-bottom: 1.25rem;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
     }
     .welcome-banner h3 { font-size: 1.1rem; font-weight: 600; }
     .welcome-banner p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
     .stats-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.75rem;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.85rem; margin-bottom: 1.25rem;
     }
     .stat-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem;
     }
-    .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.5rem; }
-    .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
-    .stat-change { font-size: 0.7rem; margin-top: 0.45rem; font-weight: 500; color: var(--success); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 0.45rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+    .stat-change { font-size: 0.7rem; margin-top: 0.4rem; color: var(--success); }
     .stat-card.green .stat-value { color: #34d399; }
     .stat-card.blue .stat-value { color: #60a5fa; }
     .stat-card.gold .stat-value { color: var(--gold); }
     .stat-card.purple .stat-value { color: #a78bfa; }
     .middle-row {
-      display: grid; grid-template-columns: 1fr 1fr 320px; gap: 1.25rem; margin-bottom: 1.75rem;
+      display: grid; grid-template-columns: 1fr 1fr minmax(260px, 320px); gap: 1rem; margin-bottom: 1.25rem;
     }
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.35rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem;
     }
-    .card-header { display: flex; justify-content: space-between; margin-bottom: 1.1rem; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 0.5rem; }
     .card-title { font-size: 0.95rem; font-weight: 600; }
     .card-subtitle { font-size: 0.75rem; color: var(--text-muted); }
     .chart-wrap { position: relative; height: 220px; }
-    .mini-stat { display: flex; justify-content: space-between; padding: 0.65rem 0; font-size: 0.85rem; }
+    .mini-stat { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.85rem; }
     .mini-stat .label { color: var(--text-muted); }
     .mini-stat .val { font-weight: 600; }
     .mini-stat .val.green { color: #34d399; }
@@ -142,36 +153,30 @@
     .activity-dot.gold { background: var(--gold); }
     .activity-text { font-size: 0.82rem; line-height: 1.4; }
     .activity-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
-    .quick-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.9rem; }
+    .quick-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; }
     .action-btn {
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 1.1rem 0.75rem; text-align: center; text-decoration: none; color: var(--text);
-      transition: all 0.15s;
+      padding: 1rem 0.65rem; text-align: center; text-decoration: none; color: var(--text);
+      transition: all 0.15s; min-height: 88px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
     }
     .action-btn:hover {
       border-color: var(--accent); background: rgba(196,30,58,0.08); transform: translateY(-2px);
     }
-    .action-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+    .action-icon { font-size: 1.35rem; margin-bottom: 0.35rem; }
     .action-label { font-size: 0.78rem; font-weight: 500; }
-    .menu-toggle {
-      display: none; background: none; border: none; color: var(--text); font-size: 1.4rem; cursor: pointer;
-    }
-    .sidebar-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
-    }
-    .sidebar-overlay.show { display: block; }
     .session-warning {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--card);
-      border: 1px solid var(--accent); border-radius: 12px; padding: 1.15rem 1.35rem;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.35); z-index: 200; display: none; max-width: 340px;
+      position: fixed; bottom: 1.25rem; right: 1.25rem; left: 1.25rem; max-width: 340px; margin-left: auto;
+      background: var(--card); border: 1px solid var(--accent); border-radius: 12px;
+      padding: 1.15rem 1.35rem; box-shadow: 0 8px 30px rgba(0,0,0,0.35); z-index: 200; display: none;
     }
     .session-warning.show { display: block; }
     .session-warning h4 { font-size: 0.95rem; margin-bottom: 0.4rem; color: #ff6b7a; }
     .session-warning p { font-size: 0.85rem; margin-bottom: 0.9rem; color: var(--text-muted); line-height: 1.45; }
-    .session-warning .btn-row { display: flex; gap: 0.5rem; }
+    .session-warning .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .session-warning button {
-      border: none; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem;
-      font-weight: 600; cursor: pointer; font-family: inherit;
+      border: none; padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; font-family: inherit; min-height: 40px;
     }
     .session-warning .btn-stay { background: var(--accent); color: #fff; }
     .session-warning .btn-logout {
@@ -184,16 +189,19 @@
       .quick-actions { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 900px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
+      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
       .main { margin-left: 0; }
-      .menu-toggle { display: block; }
+      .menu-toggle { display: flex; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .topbar-left p { display: none; }
+      .user-info > div:last-child { display: none; }
     }
     @media (max-width: 560px) {
       .stats-grid { grid-template-columns: 1fr; }
+      .middle-row { grid-template-columns: 1fr; }
       .quick-actions { grid-template-columns: repeat(2, 1fr); }
-      .content { padding: 1rem; }
+      .content { padding: 0.9rem; }
       .topbar-right .date-badge { display: none; }
     }
   </style>
@@ -232,9 +240,9 @@
 
   <div class="main">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:1rem;">
-        <button class="menu-toggle" onclick="openSidebar()" aria-label="Menu">☰</button>
-        <div class="topbar-left">
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Menu">☰</button>
+        <div>
           <h2>Dashboard</h2>
           <p>Welcome back. Here’s what’s happening today.</p>
         </div>
@@ -242,8 +250,8 @@
       <div class="topbar-right">
         <div class="session-timer" id="sessionTimer" title="Auto-logout after inactivity">⏱ 5:00</div>
         <div class="date-badge" id="currentDate"></div>
-        <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-        <button class="icon-btn" onclick="logout()" title="Logout">⏻</button>
+        <button type="button" class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        <button type="button" class="icon-btn" onclick="logout()" title="Logout">⏻</button>
         <div class="user-info">
           <div class="user-avatar" id="userAvatar">?</div>
           <div>
@@ -258,7 +266,7 @@
       <div class="welcome-banner">
         <div>
           <h3 id="welcomeText">Welcome back!</h3>
-          <p>Joy Christian Fellowship – Rongai · City of Champions</p>
+          <p id="churchLine">Joy Christian Fellowship – Rongai · City of Champions</p>
         </div>
         <div class="date-badge" id="bannerDate"></div>
       </div>
@@ -329,7 +337,7 @@
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:1.75rem;">
+      <div class="card" style="margin-bottom:1.25rem;">
         <div class="card-header">
           <div>
             <div class="card-title">Finance Snapshot</div>
@@ -382,6 +390,10 @@
 
   <script>
     var API = '/api';
+    var attendanceChart = null;
+    var financeChart = null;
+    var lastAtt = [];
+    var lastFin = [];
 
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
@@ -402,6 +414,22 @@
       }
       return session;
     }
+    function apiFetch(path) {
+      return fetch(API + path, {
+        headers: { Authorization: 'Bearer ' + getToken() }
+      }).then(function (res) {
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) { return { ok: false, data: null }; }
+          return { ok: res.ok, data: data };
+        });
+      });
+    }
 
     var session = requireLogin();
     if (session) {
@@ -417,7 +445,7 @@
       localStorage.setItem('jcf_theme', theme);
       var btn = document.getElementById('themeToggle');
       if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-      updateChartColors(theme);
+      if (lastAtt.length || lastFin.length) buildCharts(theme, lastAtt, lastFin);
     }
     function toggleTheme() {
       var current = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -437,7 +465,7 @@
       document.body.style.overflow = '';
     }
 
-    /* Auto logout – 5 min */
+    /* 5-minute idle logout (this page) – access.js also handles other pages */
     var IDLE_MS = 5 * 60 * 1000;
     var WARN_BEFORE_MS = 60 * 1000;
     var idleTimer = null, warnTimer = null, countdownInterval = null;
@@ -458,7 +486,8 @@
       else el.classList.remove('warn');
     }
     function resetIdleTimer() {
-      document.getElementById('sessionWarning').classList.remove('show');
+      var warn = document.getElementById('sessionWarning');
+      if (warn) warn.classList.remove('show');
       clearTimeout(idleTimer);
       clearTimeout(warnTimer);
       clearInterval(countdownInterval);
@@ -493,80 +522,92 @@
       return 'KES ' + Number(n || 0).toLocaleString('en-KE');
     }
 
-    function apiFetch(path) {
-      return fetch(API + path, {
-        headers: { Authorization: 'Bearer ' + getToken() }
-      }).then(function (res) {
-        if (res.status === 401) { logout(); return Promise.reject(); }
-        return res.json().then(function (data) {
-          return { ok: res.ok, data: data };
-        });
-      });
-    }
-
-    /* Load live summary from API */
-    function loadSummary() {
-      apiFetch('/reports/summary').then(function (r) {
-        if (!r.ok || !r.data) return loadFromModules();
-        var d = r.data;
-        if (d.members) {
-          document.getElementById('statMembers').textContent = d.members.total || 0;
-          document.getElementById('statActive').textContent = d.members.active || 0;
+    function loadChurchLine() {
+      try {
+        var church = JSON.parse(localStorage.getItem('jcf_church') || 'null');
+        if (church && church.name) {
+          var line = church.name;
+          if (church.slogan) line += ' · ' + church.slogan;
+          document.getElementById('churchLine').textContent = line;
         }
-        if (d.visitors) document.getElementById('statVisitors').textContent = d.visitors.total || 0;
-        if (d.groups != null) document.getElementById('statGroups').textContent = d.groups;
-        if (d.attendance) document.getElementById('statAttendance').textContent = d.attendance.latestTotal || 0;
-        if (d.finance) {
-          document.getElementById('finIncome').textContent = formatMoney(d.finance.income);
-          document.getElementById('finExpense').textContent = formatMoney(d.finance.expense);
-          document.getElementById('finBalance').textContent = formatMoney(d.finance.balance);
-          document.getElementById('finTithe').textContent = formatMoney(d.finance.tithe);
+      } catch (e) {}
+      apiFetch('/settings').then(function (r) {
+        if (!r.ok || !r.data) return;
+        var c = r.data.church || r.data;
+        if (c && c.name) {
+          var line = c.name;
+          if (c.slogan) line += ' · ' + c.slogan;
+          document.getElementById('churchLine').textContent = line;
+          localStorage.setItem('jcf_church', JSON.stringify(c));
         }
-      }).catch(function () {
-        loadFromModules();
-      });
+      }).catch(function () {});
     }
 
     function loadFromModules() {
-      Promise.all([
+      return Promise.all([
         apiFetch('/members').catch(function () { return { ok: false }; }),
         apiFetch('/visitors').catch(function () { return { ok: false }; }),
         apiFetch('/groups').catch(function () { return { ok: false }; }),
         apiFetch('/attendance').catch(function () { return { ok: false }; }),
-        apiFetch('/finance').catch(function () { return { ok: false }; })
+        apiFetch('/finance').catch(function () { return { ok: false }; }),
+        apiFetch('/users/logs').catch(function () { return { ok: false }; })
       ]).then(function (results) {
         var members = results[0].ok && Array.isArray(results[0].data) ? results[0].data : [];
         var visitors = results[1].ok && Array.isArray(results[1].data) ? results[1].data : [];
         var groups = results[2].ok && Array.isArray(results[2].data) ? results[2].data : [];
         var att = results[3].ok && Array.isArray(results[3].data) ? results[3].data : [];
         var fin = results[4].ok && Array.isArray(results[4].data) ? results[4].data : [];
+        var logs = results[5].ok && Array.isArray(results[5].data) ? results[5].data : [];
 
-        document.getElementById('statMembers').textContent = members.length;
-        document.getElementById('statActive').textContent =
-          members.filter(function (m) { return m.status === 'Active'; }).length;
-        document.getElementById('statVisitors').textContent = visitors.length;
-        document.getElementById('statGroups').textContent =
-          groups.filter(function (g) { return g.status === 'Active'; }).length || groups.length;
-        if (att[0]) document.getElementById('statAttendance').textContent = att[0].total || 0;
+        document.getElementById('statMembers').textContent = String(members.length);
+        document.getElementById('statActive').textContent = String(
+          members.filter(function (m) { return m.status === 'Active'; }).length
+        );
+        document.getElementById('statVisitors').textContent = String(visitors.length);
+        document.getElementById('statGroups').textContent = String(
+          groups.filter(function (g) { return g.status === 'Active'; }).length || groups.length
+        );
+        if (att[0]) document.getElementById('statAttendance').textContent = String(att[0].total || 0);
 
         var income = fin.filter(function (t) { return t.type === 'income'; })
           .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
         var expense = fin.filter(function (t) { return t.type === 'expense'; })
           .reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
         var tithe = fin.filter(function (t) {
-          return t.type === 'income' && (t.category === 'Tithe' || t.category === 'tithe');
+          return t.type === 'income' && String(t.category || '').toLowerCase() === 'tithe';
         }).reduce(function (s, t) { return s + (Number(t.amount) || 0); }, 0);
+
         document.getElementById('finIncome').textContent = formatMoney(income);
         document.getElementById('finExpense').textContent = formatMoney(expense);
         document.getElementById('finBalance').textContent = formatMoney(income - expense);
         document.getElementById('finTithe').textContent = formatMoney(tithe);
 
+        lastAtt = att;
+        lastFin = fin;
         buildCharts(savedTheme, att, fin);
+        renderActivity(logs);
       });
     }
 
-    var attendanceChart = null;
-    var financeChart = null;
+    function renderActivity(logs) {
+      var list = document.getElementById('activityList');
+      if (!logs || !logs.length) {
+        list.innerHTML =
+          '<li class="activity-item"><div class="activity-dot green"></div><div>' +
+          '<div class="activity-text">Logged in successfully</div>' +
+          '<div class="activity-time">Just now</div></div></li>';
+        return;
+      }
+      list.innerHTML = logs.slice(0, 8).map(function (log) {
+        var action = log.action || log.detail || 'Activity';
+        var actor = log.actor || '';
+        var when = log.at ? new Date(log.at).toLocaleString('en-GB') : '';
+        return '<li class="activity-item">' +
+          '<div class="activity-dot blue"></div><div>' +
+          '<div class="activity-text">' + action + (actor ? ' · ' + actor : '') + '</div>' +
+          '<div class="activity-time">' + when + '</div></div></li>';
+      }).join('');
+    }
 
     function getChartColors(theme) {
       var isDark = theme === 'dark';
@@ -590,7 +631,7 @@
             return new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
           } catch (e) { return r.date || ''; }
         });
-        attData = recent.map(function (r) { return r.total || 0; });
+        attData = recent.map(function (r) { return Number(r.total) || 0; });
       }
 
       if (attendanceChart) attendanceChart.destroy();
@@ -656,11 +697,8 @@
       });
     }
 
-    function updateChartColors(theme) {
-      loadFromModules();
-    }
-
-    loadSummary();
+    loadChurchLine();
+    loadFromModules();
     resetIdleTimer();
     setInterval(updateTimerDisplay, 1000);
   </script>

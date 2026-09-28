@@ -10,6 +10,7 @@
   <style>
     :root {
       --accent: #c41e3a;
+      --gold: #d4a017;
       --bg: #080f18;
       --sidebar: #0c1524;
       --card: #111c2e;
@@ -17,12 +18,10 @@
       --text-muted: #94a3b8;
       --border: #1e3352;
       --input-bg: #0c1524;
-      --gold: #d4a017;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -55,61 +54,84 @@
     }
     .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
     .sidebar-brand span {
-      font-size: 0.62rem; color: var(--gold);
-      text-transform: uppercase; font-weight: 600;
+      font-size: 0.62rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
     .nav-item {
-      display: flex; align-items: center; gap: 0.7rem;
-      padding: 0.72rem 0.85rem; border-radius: 10px;
-      color: var(--text-muted); text-decoration: none;
-      font-size: 0.9rem; margin-bottom: 0.2rem; min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.72rem 0.85rem;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+      min-height: 44px;
     }
-    .nav-item:hover { background: rgba(196,30,58,0.08); color: var(--text); }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
-      background: rgba(196,30,58,0.15); color: #ff6b7a;
+      background: rgba(196,30,58,0.15);
+      color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
-    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
+    .nav-icon { width: 1.35rem; text-align: center; }
     .sidebar-footer {
-      padding: 1rem; border-top: 1px solid var(--border);
-      font-size: 0.68rem; color: var(--text-muted); text-align: center;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-align: center;
     }
     .sidebar-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55); z-index: 90;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
     }
     .sidebar-overlay.show { display: block; }
-    .main { flex: 1; margin-left: 260px; min-width: 0; }
+    .main { flex: 1; margin-left: 260px; min-height: 100vh; min-width: 0; }
     .topbar {
       background: var(--card);
       border-bottom: 1px solid var(--border);
       padding: 0.85rem 1.25rem;
       display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 0.75rem;
       position: sticky;
       top: 0;
       z-index: 50;
+      flex-wrap: wrap;
     }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
     .menu-toggle {
-      display: none; background: none; border: none; color: var(--text);
-      font-size: 1.45rem; cursor: pointer; min-width: 44px; min-height: 44px;
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.45rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
     }
-    .topbar h2 { font-size: 1.1rem; }
-    .topbar p { font-size: 0.78rem; color: var(--text-muted); }
-    .content { padding: 1.25rem; max-width: 800px; }
+    .topbar-left h2 { font-size: 1.1rem; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
+    .content { padding: 1.25rem; max-width: 900px; }
     .form-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1.35rem;
     }
-    .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1.15rem; }
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: 1rem 1.25rem;
     }
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-group.full { grid-column: 1 / -1; }
@@ -118,65 +140,78 @@
       background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 0.7rem 0.85rem;
+      padding: 0.7rem 0.9rem;
       color: var(--text);
-      font-family: inherit;
       font-size: 16px;
-      max-width: 100%;
+      font-family: inherit;
+      outline: none;
     }
-    textarea { min-height: 70px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    textarea { min-height: 80px; resize: vertical; }
     .form-actions {
       display: flex;
       gap: 0.75rem;
       justify-content: flex-end;
       flex-wrap: wrap;
       margin-top: 1.25rem;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--border);
     }
     .btn {
       padding: 0.7rem 1.3rem;
       border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       border: none;
       min-height: 44px;
-      touch-action: manipulation;
     }
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
     }
+    .btn-primary:disabled { opacity: 0.7; }
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
     }
-    .success-msg {
-      background: rgba(16,185,129,0.12);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: #6ee7b7;
+    .success-msg, .error-msg {
       padding: 0.8rem 1rem;
       border-radius: 10px;
       margin-bottom: 1rem;
       display: none;
     }
-    .success-msg.show { display: block; }
-
+    .success-msg {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+    .error-msg {
+      background: rgba(196,30,58,0.12);
+      border: 1px solid rgba(196,30,58,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
-      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
+      .sidebar.open { transform: translateX(0); }
       .main { margin-left: 0; }
       .menu-toggle { display: flex; align-items: center; justify-content: center; }
       .form-grid { grid-template-columns: 1fr; }
       .content { padding: 0.9rem; }
-      .form-actions { justify-content: stretch; }
-      .form-actions .btn { flex: 1; }
     }
   </style>
 </head>
 <body>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
@@ -200,34 +235,45 @@
       <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
       <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
-    <div class="sidebar-footer">JCF CONNECT<br>© Joy Christian Fellowship – Rongai</div>
+    <div class="sidebar-footer">JCF CONNECT</div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
-      <div>
-        <h2 id="pageTitle">Add Asset</h2>
-        <p id="pageSubtitle">Register church equipment</p>
+      <div class="topbar-left">
+        <button type="button" class="menu-toggle" onclick="openSidebar()">☰</button>
+        <div>
+          <h2 id="pageTitle">Add Asset</h2>
+          <p id="pageSubtitle">Register church equipment</p>
+        </div>
       </div>
+      <a href="assets.html" class="btn btn-secondary">← Back</a>
     </header>
 
     <div class="content">
       <div class="success-msg" id="successMsg"></div>
-      <div class="form-card">
-        <div class="section-title">Asset details</div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <form class="form-card" onsubmit="saveAsset(event)">
         <div class="form-grid">
           <div class="form-group">
+            <label>Asset ID</label>
+            <input type="text" id="assetId" readonly style="opacity:0.7;" />
+          </div>
+          <div class="form-group">
             <label>Name *</label>
-            <input type="text" id="name" placeholder="e.g. Microphone" />
+            <input type="text" id="name" required placeholder="e.g. Mixer board" />
           </div>
           <div class="form-group">
             <label>Category *</label>
-            <select id="category">
+            <select id="category" required>
+              <option value="">Select category</option>
+              <option value="Media">Media</option>
+              <option value="Sound">Sound</option>
               <option value="Audio Visual">Audio Visual</option>
-              <option value="Furniture">Furniture</option>
-              <option value="IT Equipment">IT Equipment</option>
               <option value="Musical Instruments">Musical Instruments</option>
+              <option value="IT Equipment">IT Equipment</option>
+              <option value="Furniture">Furniture</option>
               <option value="Vehicle">Vehicle</option>
               <option value="Kitchen">Kitchen</option>
               <option value="Generator / Power">Generator / Power</option>
@@ -245,7 +291,7 @@
           <div class="form-group">
             <label>Condition</label>
             <select id="condition">
-              <option value="Excellent">Excellent</option>
+              <option value="New">New</option>
               <option value="Good" selected>Good</option>
               <option value="Fair">Fair</option>
               <option value="Poor">Poor</option>
@@ -262,15 +308,15 @@
           </div>
           <div class="form-group">
             <label>Location</label>
-            <input type="text" id="location" placeholder="e.g. Store Room" />
+            <input type="text" id="location" placeholder="e.g. Main sanctuary" />
           </div>
           <div class="form-group">
             <label>Purchase value (KES)</label>
-            <input type="number" id="purchaseValue" min="0" value="0" />
+            <input type="number" id="purchaseValue" min="0" step="1" value="0" />
           </div>
           <div class="form-group">
             <label>Assigned to</label>
-            <input type="text" id="assignedTo" />
+            <input type="text" id="assignedTo" placeholder="Person or team" />
           </div>
           <div class="form-group full">
             <label>Notes</label>
@@ -278,10 +324,10 @@
           </div>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="window.location.href='assets.html'">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveAsset()">Save Asset</button>
+          <a href="assets.html" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Save Asset</button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -299,18 +345,10 @@
       document.getElementById('sidebarOverlay').classList.remove('show');
       document.body.style.overflow = '';
     }
-
-    function getToken() {
-      return localStorage.getItem('jcf_token') || '';
-    }
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
       catch (e) { return null; }
-    }
-    function logout() {
-      localStorage.removeItem('jcf_token');
-      localStorage.removeItem('jcf_user');
-      window.location.href = 'login.html';
     }
     function apiFetch(path, options) {
       options = options || {};
@@ -319,48 +357,43 @@
       if (options.body) options.headers['Content-Type'] = 'application/json';
       return fetch(API + path, options).then(function (res) {
         if (res.status === 401) {
-          logout();
+          localStorage.removeItem('jcf_token');
+          localStorage.removeItem('jcf_user');
+          window.location.href = 'login.html';
           return Promise.reject(new Error('Unauthorized'));
         }
         return res.text().then(function (text) {
           var data = null;
           try { data = text ? JSON.parse(text) : null; }
-          catch (e) {
-            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
-          }
+          catch (e) { return Promise.reject(new Error('Bad response ' + res.status)); }
           return { ok: res.ok, status: res.status, data: data };
         });
       });
     }
-
     function fillForm(a) {
+      document.getElementById('assetId').value = a.id || '';
       document.getElementById('name').value = a.name || '';
-      document.getElementById('category').value = a.category || 'Other';
-      document.getElementById('serialNumber').value = a.serial_number || a.serialNumber || '';
+      document.getElementById('category').value = a.category || '';
+      document.getElementById('serialNumber').value = a.serialNumber || a.serial_number || '';
       document.getElementById('quantity').value = a.quantity || 1;
       document.getElementById('condition').value = a.condition || 'Good';
       document.getElementById('status').value = a.status || 'Available';
       document.getElementById('location').value = a.location || '';
-      document.getElementById('purchaseValue').value = a.purchase_value != null ? a.purchase_value : (a.purchaseValue || 0);
-      document.getElementById('assignedTo').value = a.assigned_to || a.assignedTo || '';
+      document.getElementById('purchaseValue').value =
+        a.purchaseValue != null ? a.purchaseValue : (a.purchase_value || 0);
+      document.getElementById('assignedTo').value = a.assignedTo || a.assigned_to || '';
       document.getElementById('notes').value = a.notes || '';
     }
+    function saveAsset(e) {
+      e.preventDefault();
+      var err = document.getElementById('errorMsg');
+      var ok = document.getElementById('successMsg');
+      err.classList.remove('show');
+      ok.classList.remove('show');
 
-    function saveAsset() {
-      var name = document.getElementById('name').value.trim();
-      if (!name) {
-        alert('Name is required');
-        return;
-      }
-      if (!getToken()) {
-        alert('Please login first');
-        window.location.href = 'login.html';
-        return;
-      }
-
-      var record = {
-        id: editingId || ('AST-' + Date.now()),
-        name: name,
+      var body = {
+        id: document.getElementById('assetId').value,
+        name: document.getElementById('name').value.trim(),
         category: document.getElementById('category').value,
         serialNumber: document.getElementById('serialNumber').value.trim(),
         quantity: parseInt(document.getElementById('quantity').value, 10) || 1,
@@ -371,24 +404,33 @@
         assignedTo: document.getElementById('assignedTo').value.trim(),
         notes: document.getElementById('notes').value.trim()
       };
+      if (!body.name || !body.category) {
+        err.textContent = 'Name and category are required.';
+        err.classList.add('show');
+        return;
+      }
 
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
       var path = editingId ? '/assets/' + encodeURIComponent(editingId) : '/assets';
       var method = editingId ? 'PUT' : 'POST';
 
-      apiFetch(path, { method: method, body: JSON.stringify(record) })
+      apiFetch(path, { method: method, body: JSON.stringify(body) })
         .then(function (result) {
+          btn.disabled = false;
           if (!result.ok) {
-            alert((result.data && result.data.error) || ('Save failed (status ' + result.status + ')'));
+            err.textContent = (result.data && result.data.error) || ('Save failed (' + result.status + ')');
+            err.classList.add('show');
             return;
           }
-          document.getElementById('successMsg').textContent = editingId ? 'Asset updated!' : 'Asset saved!';
-          document.getElementById('successMsg').classList.add('show');
-          setTimeout(function () {
-            window.location.href = 'assets.html';
-          }, 800);
+          ok.textContent = editingId ? 'Asset updated!' : 'Asset saved!';
+          ok.classList.add('show');
+          setTimeout(function () { window.location.href = 'assets.html'; }, 800);
         })
-        .catch(function (err) {
-          alert(err.message || 'Cannot reach server');
+        .catch(function (ex) {
+          btn.disabled = false;
+          err.textContent = ex.message || 'Cannot reach server';
+          err.classList.add('show');
         });
     }
 
@@ -414,6 +456,8 @@
             alert('Could not load asset');
             window.location.href = 'assets.html';
           });
+      } else {
+        document.getElementById('assetId').value = 'AST-' + Date.now();
       }
     }
   </script>

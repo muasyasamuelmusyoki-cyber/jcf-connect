@@ -234,7 +234,6 @@
       margin-right: 0.25rem;
       min-height: 36px;
     }
-
     @media (max-width: 1100px) {
       .stats-row { grid-template-columns: repeat(3, 1fr); }
     }
@@ -244,11 +243,9 @@
       .main { margin-left: 0; }
       .menu-toggle { display: flex; }
       .topbar-left p { display: none; }
-      .user-info span, .user-info #userName, .user-info #userRole { display: none; }
       .user-info div:last-child { display: none; }
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .content { padding: 0.9rem; }
-      .search-box input { width: 120px; }
     }
     @media (max-width: 480px) {
       .stats-row { grid-template-columns: 1fr; }
@@ -304,26 +301,11 @@
 
     <div class="content">
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Assets</div>
-          <div class="stat-value" id="statTotal">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Available</div>
-          <div class="stat-value" id="statAvailable">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">In Use</div>
-          <div class="stat-value" id="statInUse">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Under Repair</div>
-          <div class="stat-value" id="statRepair">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Value</div>
-          <div class="stat-value" id="statValue">KES 0</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Total Assets</div><div class="stat-value" id="statTotal">0</div></div>
+        <div class="stat-card"><div class="stat-label">Available</div><div class="stat-value" id="statAvailable">0</div></div>
+        <div class="stat-card"><div class="stat-label">In Use</div><div class="stat-value" id="statInUse">0</div></div>
+        <div class="stat-card"><div class="stat-label">Under Repair</div><div class="stat-value" id="statRepair">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="statValue">KES 0</div></div>
       </div>
 
       <div class="toolbar">
@@ -333,10 +315,12 @@
           </div>
           <select class="filter-select" id="filterCategory" onchange="filterAssets()">
             <option value="">All Categories</option>
+            <option value="Media">Media</option>
+            <option value="Sound">Sound</option>
             <option value="Audio Visual">Audio Visual</option>
-            <option value="Furniture">Furniture</option>
-            <option value="IT Equipment">IT Equipment</option>
             <option value="Musical Instruments">Musical Instruments</option>
+            <option value="IT Equipment">IT Equipment</option>
+            <option value="Furniture">Furniture</option>
             <option value="Vehicle">Vehicle</option>
             <option value="Kitchen">Kitchen</option>
             <option value="Generator / Power">Generator / Power</option>
@@ -391,16 +375,10 @@
       document.getElementById('sidebarOverlay').classList.remove('show');
       document.body.style.overflow = '';
     }
-
-    function getToken() {
-      return localStorage.getItem('jcf_token') || '';
-    }
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
     function getSession() {
-      try {
-        return JSON.parse(localStorage.getItem('jcf_user') || 'null');
-      } catch (e) {
-        return null;
-      }
+      try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
+      catch (e) { return null; }
     }
     function logout() {
       localStorage.removeItem('jcf_token');
@@ -418,9 +396,7 @@
       options = options || {};
       options.headers = options.headers || {};
       options.headers['Authorization'] = 'Bearer ' + getToken();
-      if (options.body) {
-        options.headers['Content-Type'] = 'application/json';
-      }
+      if (options.body) options.headers['Content-Type'] = 'application/json';
       return fetch(API + path, options).then(function (res) {
         if (res.status === 401) {
           logout();
@@ -428,16 +404,15 @@
         }
         return res.text().then(function (text) {
           var data = null;
-          try {
-            data = text ? JSON.parse(text) : null;
-          } catch (e) {
-            return Promise.reject(new Error('Bad response status ' + res.status));
-          }
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) { return Promise.reject(new Error('Bad response status ' + res.status)); }
           return { ok: res.ok, data: data };
         });
       });
     }
-
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
     function normalize(a) {
       return {
         id: a.id || '',
@@ -453,13 +428,10 @@
         notes: a.notes || ''
       };
     }
-
     function loadAssets() {
       apiFetch('/assets')
         .then(function (result) {
-          ASSETS = result.ok && Array.isArray(result.data)
-            ? result.data.map(normalize)
-            : [];
+          ASSETS = result.ok && Array.isArray(result.data) ? result.data.map(normalize) : [];
           updateStats();
           filterAssets();
         })
@@ -467,38 +439,27 @@
           ASSETS = [];
           updateStats();
           filterAssets();
+          document.getElementById('pageInfo').textContent = 'Could not load assets. Is server running?';
         });
     }
-
     function formatMoney(n) {
       return 'KES ' + Number(n || 0).toLocaleString('en-KE');
     }
-
     function statusClass(s) {
       if (s === 'Available') return 'available';
       if (s === 'In Use') return 'inuse';
       if (s === 'Under Repair') return 'repair';
       return 'lost';
     }
-
     function updateStats() {
       document.getElementById('statTotal').textContent = String(ASSETS.length);
-      document.getElementById('statAvailable').textContent = String(
-        ASSETS.filter(function (a) { return a.status === 'Available'; }).length
-      );
-      document.getElementById('statInUse').textContent = String(
-        ASSETS.filter(function (a) { return a.status === 'In Use'; }).length
-      );
-      document.getElementById('statRepair').textContent = String(
-        ASSETS.filter(function (a) { return a.status === 'Under Repair'; }).length
-      );
+      document.getElementById('statAvailable').textContent = String(ASSETS.filter(function (a) { return a.status === 'Available'; }).length);
+      document.getElementById('statInUse').textContent = String(ASSETS.filter(function (a) { return a.status === 'In Use'; }).length);
+      document.getElementById('statRepair').textContent = String(ASSETS.filter(function (a) { return a.status === 'Under Repair'; }).length);
       var totalVal = 0;
-      for (var i = 0; i < ASSETS.length; i++) {
-        totalVal += Number(ASSETS[i].purchaseValue) || 0;
-      }
+      for (var i = 0; i < ASSETS.length; i++) totalVal += Number(ASSETS[i].purchaseValue) || 0;
       document.getElementById('statValue').textContent = formatMoney(totalVal);
     }
-
     function renderTable(data) {
       var tbody = document.getElementById('assetsTable');
       if (!data.length) {
@@ -507,8 +468,8 @@
         return;
       }
       tbody.innerHTML = data.map(function (a) {
-        return (
-          '<tr>' +
+        var id = esc(a.id);
+        return '<tr>' +
           '<td>' + a.id + '</td>' +
           '<td><strong>' + a.name + '</strong></td>' +
           '<td>' + (a.category || '-') + '</td>' +
@@ -518,14 +479,12 @@
           '<td>' + (a.location || '-') + '</td>' +
           '<td>' + (a.purchaseValue ? formatMoney(a.purchaseValue) : '-') + '</td>' +
           '<td>' +
-          '<button type="button" class="action-btn" onclick="editAsset(\'' + a.id + '\')">Edit</button>' +
-          '<button type="button" class="action-btn" onclick="deleteAsset(\'' + a.id + '\')">Delete</button>' +
-          '</td></tr>'
-        );
+            '<button type="button" class="action-btn" onclick="editAsset(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteAsset(\'' + id + '\')">Delete</button>' +
+          '</td></tr>';
       }).join('');
       document.getElementById('pageInfo').textContent = 'Showing ' + data.length + ' assets';
     }
-
     function filterAssets() {
       var q = (document.getElementById('searchInput').value || '').toLowerCase();
       var cat = document.getElementById('filterCategory').value;
@@ -535,17 +494,13 @@
           (a.name || '').toLowerCase().indexOf(q) !== -1 ||
           (a.serialNumber || '').toLowerCase().indexOf(q) !== -1 ||
           (a.location || '').toLowerCase().indexOf(q) !== -1;
-        var matchCat = !cat || a.category === cat;
-        var matchStatus = !status || a.status === status;
-        return matchQ && matchCat && matchStatus;
+        return matchQ && (!cat || a.category === cat) && (!status || a.status === status);
       });
       renderTable(filtered);
     }
-
     function editAsset(id) {
       window.location.href = 'asset-form.html?id=' + encodeURIComponent(id);
     }
-
     function deleteAsset(id) {
       if (!confirm('Delete this asset?')) return;
       apiFetch('/assets/' + encodeURIComponent(id), { method: 'DELETE' })
@@ -553,9 +508,7 @@
           if (result.ok) loadAssets();
           else alert((result.data && result.data.error) || 'Delete failed');
         })
-        .catch(function (err) {
-          alert(err.message || 'Server error');
-        });
+        .catch(function (err) { alert(err.message || 'Server error'); });
     }
 
     if (!requireLogin()) {

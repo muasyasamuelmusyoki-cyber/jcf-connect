@@ -197,13 +197,13 @@
       cursor: pointer;
       border: none;
       min-height: 44px;
-      touch-action: manipulation;
     }
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
       box-shadow: 0 4px 12px rgba(196,30,58,0.3);
     }
+    .btn-primary:disabled { opacity: 0.7; }
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
@@ -212,18 +212,24 @@
       display: inline-flex;
       align-items: center;
     }
-    .success-msg {
+    .success-msg, .error-msg {
       padding: 0.8rem 1rem;
       border-radius: 10px;
       margin-bottom: 1.15rem;
       display: none;
       font-size: 0.9rem;
+    }
+    .success-msg {
       background: rgba(16,185,129,0.12);
       border: 1px solid rgba(16,185,129,0.3);
       color: #6ee7b7;
     }
-    .success-msg.show { display: block; }
-
+    .error-msg {
+      background: rgba(196,30,58,0.12);
+      border: 1px solid rgba(196,30,58,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
       .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
@@ -283,6 +289,7 @@
 
     <div class="content">
       <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
 
       <form onsubmit="saveClass(event)" novalidate>
         <div class="form-card">
@@ -301,6 +308,14 @@
               <label>Teacher <span class="req">*</span></label>
               <input type="text" id="teacher" placeholder="Teacher full name" />
               <span class="field-error" id="errTeacher">Teacher is required</span>
+            </div>
+            <div class="form-group">
+              <label>Age group</label>
+              <input type="text" id="ageGroup" placeholder="e.g. 6–8 years" />
+            </div>
+            <div class="form-group">
+              <label>Room</label>
+              <input type="text" id="room" placeholder="e.g. Room 2" />
             </div>
             <div class="form-group">
               <label>Status</label>
@@ -367,7 +382,7 @@
           catch (e) {
             return Promise.reject(new Error('Bad response ' + res.status));
           }
-          return { ok: res.ok, data: data };
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
     }
@@ -397,6 +412,8 @@
       document.getElementById('classId').value = c.id || '';
       document.getElementById('name').value = c.name || '';
       document.getElementById('teacher').value = c.teacher || '';
+      document.getElementById('ageGroup').value = c.ageGroup || c.age_group || '';
+      document.getElementById('room').value = c.room || '';
       document.getElementById('status').value = c.status || 'Active';
       document.getElementById('notes').value = c.notes || '';
     }
@@ -404,56 +421,45 @@
     function saveClass(e) {
       e.preventDefault();
       if (!validate()) return;
-      if (!getToken()) {
-        alert('Please login first');
-        window.location.href = 'login.html';
-        return;
-      }
+
+      var err = document.getElementById('errorMsg');
+      var ok = document.getElementById('successMsg');
+      err.classList.remove('show');
+      ok.classList.remove('show');
 
       var record = {
         id: document.getElementById('classId').value || ('CLS-' + Date.now()),
         name: document.getElementById('name').value.trim(),
         teacher: document.getElementById('teacher').value.trim(),
+        ageGroup: document.getElementById('ageGroup').value.trim(),
+        room: document.getElementById('room').value.trim(),
         status: document.getElementById('status').value,
         notes: document.getElementById('notes').value.trim()
       };
 
       var path = isEdit ? '/champs-classes/' + encodeURIComponent(editId) : '/champs-classes';
       var method = isEdit ? 'PUT' : 'POST';
+      var btn = document.getElementById('saveBtn');
+      btn.disabled = true;
 
       apiFetch(path, { method: method, body: JSON.stringify(record) })
         .then(function (result) {
+          btn.disabled = false;
           if (!result.ok) {
-            // Fallback to localStorage if API route missing
-            var saved = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
-            if (isEdit) {
-              var idx = saved.findIndex(function (c) { return c.id === editId; });
-              if (idx !== -1) saved[idx] = record;
-              else saved.push(record);
-            } else {
-              saved.push(record);
-            }
-            localStorage.setItem('jcf_champs_classes', JSON.stringify(saved));
+            err.textContent = (result.data && result.data.error) || ('Save failed (status ' + result.status + '). Is /api/champs-classes registered?');
+            err.classList.add('show');
+            return;
           }
-          document.getElementById('successMsg').textContent = isEdit
+          ok.textContent = isEdit
             ? 'Class updated successfully!'
             : 'Class "' + record.name + '" saved!';
-          document.getElementById('successMsg').classList.add('show');
+          ok.classList.add('show');
           setTimeout(function () { window.location.href = 'champs-house.html'; }, 900);
         })
-        .catch(function () {
-          var saved = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
-          if (isEdit) {
-            var idx = saved.findIndex(function (c) { return c.id === editId; });
-            if (idx !== -1) saved[idx] = record;
-            else saved.push(record);
-          } else {
-            saved.push(record);
-          }
-          localStorage.setItem('jcf_champs_classes', JSON.stringify(saved));
-          document.getElementById('successMsg').textContent = 'Class saved (offline).';
-          document.getElementById('successMsg').classList.add('show');
-          setTimeout(function () { window.location.href = 'champs-house.html'; }, 900);
+        .catch(function (ex) {
+          btn.disabled = false;
+          err.textContent = (ex && ex.message) || 'Cannot reach server. Is npm start running?';
+          err.classList.add('show');
         });
     }
 
@@ -470,26 +476,15 @@
         document.getElementById('saveBtn').textContent = 'Update Class';
         apiFetch('/champs-classes/' + encodeURIComponent(id))
           .then(function (result) {
-            if (result.ok && result.data) {
-              fillForm(result.data);
-              return;
-            }
-            var local = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
-            var found = local.find(function (c) { return c.id === id; });
-            if (found) fillForm(found);
+            if (result.ok && result.data) fillForm(result.data);
             else {
               alert('Class not found');
               window.location.href = 'champs-house.html';
             }
           })
           .catch(function () {
-            var local = JSON.parse(localStorage.getItem('jcf_champs_classes') || '[]');
-            var found = local.find(function (c) { return c.id === id; });
-            if (found) fillForm(found);
-            else {
-              alert('Class not found');
-              window.location.href = 'champs-house.html';
-            }
+            alert('Could not load class');
+            window.location.href = 'champs-house.html';
           });
       } else {
         document.getElementById('classId').value = 'CLS-' + Date.now().toString().slice(-6);

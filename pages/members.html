@@ -561,6 +561,8 @@
       }
       return getSession();
     }
+
+    /* Safer: empty body / non-JSON won't crash buttons */
     function apiFetch(path, options) {
       options = options || {};
       options.headers = options.headers || {};
@@ -573,10 +575,23 @@
           logout();
           return Promise.reject(new Error('Unauthorized'));
         }
-        return res.json().then(function (data) {
+        return res.text().then(function (text) {
+          var data = null;
+          if (text) {
+            try { data = JSON.parse(text); }
+            catch (e) {
+              return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+            }
+          }
           return { ok: res.ok, status: res.status, data: data };
         });
       });
+    }
+
+    function esc(str) {
+      return String(str || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'");
     }
 
     function normalizeMember(m) {
@@ -602,12 +617,18 @@
             MEMBERS = result.data.map(normalizeMember);
           } else {
             MEMBERS = [];
+            if (!result.ok) {
+              document.getElementById('pageInfo').textContent =
+                'Could not load members (status ' + result.status + '). Check /api/members';
+            }
           }
           updateStats();
           filterMembers();
         })
-        .catch(function () {
-          document.getElementById('pageInfo').textContent = 'Could not load members (is server running?)';
+        .catch(function (err) {
+          document.getElementById('pageInfo').textContent =
+            'Could not load members. Is npm start running?';
+          console.error(err);
           MEMBERS = [];
           updateStats();
           filterMembers();
@@ -633,21 +654,24 @@
       var tbody = document.getElementById('membersTable');
       if (!data.length) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#94a3b8;">No members found. Click Add Member to create one.</td></tr>';
-        document.getElementById('pageInfo').textContent = 'Showing 0 members';
+        if (document.getElementById('pageInfo').textContent.indexOf('Could not') === -1) {
+          document.getElementById('pageInfo').textContent = 'Showing 0 members';
+        }
         return;
       }
       tbody.innerHTML = data.map(function (m) {
+        var id = esc(m.id);
         return '<tr>' +
-          '<td><div class="member-info"><div class="avatar">' + getInitials(m.name) + '</div><div><div class="member-name">' + m.name + '</div><div class="member-id">' + m.id + '</div></div></div></td>' +
+          '<td><div class="member-info"><div class="avatar">' + getInitials(m.name) + '</div><div><div class="member-name">' + (m.name || '-') + '</div><div class="member-id">' + (m.id || '') + '</div></div></div></td>' +
           '<td>' + (m.phone || '-') + '</td>' +
           '<td>' + (m.group || '-') + '</td>' +
           '<td>' + (m.department || '-') + '</td>' +
           '<td><span class="badge ' + statusClass(m.status) + '">' + (m.status || 'Active') + '</span></td>' +
           '<td>' + formatDate(m.joined) + '</td>' +
           '<td><div class="actions">' +
-            '<button type="button" class="action-btn view" onclick="viewMember(\'' + m.id + '\')">View</button>' +
-            '<button type="button" class="action-btn edit" onclick="editMember(\'' + m.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn delete" onclick="deleteMember(\'' + m.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn view" onclick="viewMember(\'' + id + '\')">View</button>' +
+            '<button type="button" class="action-btn edit" onclick="editMember(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn delete" onclick="deleteMember(\'' + id + '\')">Delete</button>' +
           '</div></td></tr>';
       }).join('');
       document.getElementById('pageInfo').textContent = 'Showing ' + data.length + ' members';
@@ -681,7 +705,7 @@
     }
 
     function viewMember(id) {
-      var m = MEMBERS.find(function (x) { return x.id === id; });
+      var m = MEMBERS.find(function (x) { return String(x.id) === String(id); });
       if (!m) return;
       document.getElementById('viewTitle').textContent = m.name;
       document.getElementById('viewBody').innerHTML =
@@ -713,11 +737,11 @@
             closeView();
             loadMembers();
           } else {
-            alert((result.data && result.data.error) || 'Delete failed');
+            alert((result.data && result.data.error) || 'Delete failed (status ' + result.status + ')');
           }
         })
-        .catch(function () {
-          alert('Server error. Is npm start running?');
+        .catch(function (err) {
+          alert(err.message || 'Server error. Is npm start running?');
         });
     }
 
