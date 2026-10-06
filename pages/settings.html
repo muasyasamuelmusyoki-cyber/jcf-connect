@@ -53,15 +53,14 @@
       background: rgba(196,30,58,0.15);
       padding: 4px;
     }
-    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
     .sidebar-brand span {
       font-size: 0.62rem;
       color: var(--gold);
-      letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
     .nav-item {
       display: flex;
       align-items: center;
@@ -76,18 +75,17 @@
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      background: rgba(196,30,58,0.15);
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
-    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
+    .nav-icon { width: 1.35rem; text-align: center; }
     .sidebar-footer {
       padding: 1rem;
       border-top: 1px solid var(--border);
       font-size: 0.68rem;
       color: var(--text-muted);
       text-align: center;
-      line-height: 1.5;
     }
     .sidebar-overlay {
       display: none;
@@ -117,7 +115,7 @@
       top: 0;
       z-index: 50;
     }
-    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
     .menu-toggle {
       display: none;
       background: none;
@@ -127,40 +125,35 @@
       cursor: pointer;
       min-width: 44px;
       min-height: 44px;
-      align-items: center;
-      justify-content: center;
     }
-    .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .topbar-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .topbar-left h2 { font-size: 1.1rem; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
     .user-info { display: flex; align-items: center; gap: 0.6rem; }
     .user-avatar {
       width: 36px; height: 36px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem;
     }
     .user-name { font-size: 0.875rem; font-weight: 500; }
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
-    .content { padding: 1.25rem; max-width: 1000px; flex: 1; }
+    .content { padding: 1.25rem; flex: 1; max-width: 960px; }
 
     .tabs {
       display: flex;
       gap: 0.4rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
       flex-wrap: wrap;
     }
     .tab-btn {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.55rem 1.05rem;
+      padding: 0.55rem 1rem;
       border-radius: 999px;
       font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
       font-family: inherit;
       min-height: 44px;
@@ -170,17 +163,17 @@
       border-color: rgba(196,30,58,0.35);
       color: #ff6b7a;
     }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .panel { display: none; }
+    .panel.active { display: block; }
 
-    .form-card {
+    .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1.25rem;
       margin-bottom: 1.15rem;
     }
-    .section-title {
+    .card h3 {
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 1rem;
@@ -190,7 +183,7 @@
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.9rem 1.15rem;
+      gap: 0.9rem;
     }
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-group.full { grid-column: 1 / -1; }
@@ -201,19 +194,35 @@
       border-radius: 10px;
       padding: 0.65rem 0.85rem;
       color: var(--text);
-      font-family: inherit;
       font-size: 16px;
-      max-width: 100%;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
     }
     input:focus, select:focus, textarea:focus {
-      outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
     }
     textarea { min-height: 80px; resize: vertical; }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .check-row input { width: auto; }
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 1.15rem;
+    }
     .btn {
       padding: 0.65rem 1.2rem;
       border-radius: 10px;
+      font-size: 0.875rem;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
@@ -223,49 +232,50 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
-      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
     }
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
     }
-    .form-actions {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      margin-top: 1.15rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
+    .btn-danger {
+      background: rgba(196,30,58,0.2);
+      border: 1px solid rgba(196,30,58,0.4);
+      color: #ff6b7a;
     }
-    .success-msg {
-      padding: 0.75rem 1rem;
+    .success-msg, .error-msg {
+      padding: 0.8rem 1rem;
       border-radius: 10px;
       margin-bottom: 1rem;
       display: none;
+      font-size: 0.9rem;
+    }
+    .success-msg {
       background: rgba(16,185,129,0.12);
       border: 1px solid rgba(16,185,129,0.3);
       color: #6ee7b7;
     }
-    .success-msg.show { display: block; }
+    .error-msg {
+      background: rgba(196,30,58,0.12);
+      border: 1px solid rgba(196,30,58,0.3);
+      color: #fca5a5;
+    }
+    .success-msg.show, .error-msg.show { display: block; }
 
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .users-table { width: 100%; border-collapse: collapse; min-width: 640px; }
-    .users-table th, .users-table td {
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    th {
       text-align: left;
-      padding: 0.7rem 0.85rem;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-    }
-    .users-table th {
+      padding: 0.75rem 0.85rem;
       font-size: 0.72rem;
       color: var(--text-muted);
       text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.7rem 0.85rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .badge {
       display: inline-block;
@@ -274,7 +284,6 @@
       font-size: 0.7rem;
       font-weight: 600;
     }
-    .badge.admin { background: rgba(196,30,58,0.15); color: #ff6b7a; }
     .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
     .badge.suspended { background: rgba(245,158,11,0.15); color: #fbbf24; }
     .action-btn {
@@ -286,69 +295,62 @@
       font-size: 0.72rem;
       cursor: pointer;
       font-family: inherit;
-      margin-right: 0.2rem;
+      margin-right: 0.25rem;
       min-height: 36px;
     }
-    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.85rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .toggle-desc { font-size: 0.75rem; color: var(--text-muted); }
-    .switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background: var(--border);
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    .slider:before {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      left: 3px; bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: 0.2s;
-    }
-    .switch input:checked + .slider { background: var(--accent); }
-    .switch input:checked + .slider:before { transform: translateX(20px); }
-
+    .action-btn:hover { color: var(--text); }
     .access-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 0.5rem;
-      margin-top: 0.4rem;
     }
+    .access-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.5rem;
+      background: var(--input-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .access-item input { width: auto; }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal.show { display: flex; }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-box h3 { margin-bottom: 1rem; }
 
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
-      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
+      .sidebar.open { transform: translateX(0); }
       .main { margin-left: 0; }
-      .menu-toggle { display: flex; }
-      .topbar-left p { display: none; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; }
       .user-info > div:last-child { display: none; }
       .form-grid { grid-template-columns: 1fr; }
       .content { padding: 0.9rem; }
-      .form-actions { justify-content: stretch; }
-      .form-actions .btn { flex: 1; }
-      .access-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 640px) {
-      .access-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
@@ -372,90 +374,123 @@
       <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
       <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      JCF CONNECT<br>
-      © Joy Christian Fellowship – Rongai
-    </div>
+    <div class="sidebar-footer">JCF CONNECT</div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+        <button type="button" class="menu-toggle" onclick="openSidebar()">☰</button>
         <div>
           <h2>Settings</h2>
-          <p>Church profile, users, access and logs</p>
+          <p>Church info, users, preferences &amp; logs</p>
         </div>
       </div>
-      <div class="topbar-right">
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">?</div>
-          <div>
-            <div class="user-name" id="userName">—</div>
-            <div class="user-role" id="userRole">—</div>
-          </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div class="user-name" id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
         </div>
       </div>
     </header>
 
     <div class="content">
       <div class="success-msg" id="successMsg"></div>
+      <div class="error-msg" id="errorMsg"></div>
 
       <div class="tabs">
-        <button type="button" class="tab-btn active" onclick="showTab('church', this)">Church Profile</button>
-        <button type="button" class="tab-btn" onclick="showTab('users', this)">Users</button>
-        <button type="button" class="tab-btn" onclick="showTab('preferences', this)">Preferences</button>
-        <button type="button" class="tab-btn" onclick="showTab('security', this)">Security</button>
-        <button type="button" class="tab-btn" onclick="showTab('logs', this)">Activity Logs</button>
+        <button type="button" class="tab-btn active" onclick="showPanel('church', this)">Church</button>
+        <button type="button" class="tab-btn" onclick="showPanel('prefs', this)">Preferences</button>
+        <button type="button" class="tab-btn" onclick="showPanel('users', this)">Users</button>
+        <button type="button" class="tab-btn" onclick="showPanel('logs', this)">Activity Log</button>
       </div>
 
-      <div class="tab-panel active" id="tab-church">
-        <div class="form-card">
-          <div class="section-title">Church Information</div>
+      <!-- Church -->
+      <div class="panel active" id="panel-church">
+        <div class="card">
+          <h3>Church Information</h3>
           <div class="form-grid">
-            <div class="form-group full">
+            <div class="form-group">
               <label>Church Name</label>
-              <input type="text" id="churchName" value="Joy Christian Fellowship – Rongai" />
+              <input type="text" id="churchName" placeholder="Joy Christian Fellowship" />
             </div>
             <div class="form-group">
               <label>Slogan</label>
-              <input type="text" id="churchSlogan" value="City of Champions" />
+              <input type="text" id="churchSlogan" placeholder="City of Champions" />
             </div>
             <div class="form-group">
               <label>Phone</label>
-              <input type="tel" id="churchPhone" />
+              <input type="tel" id="churchPhone" placeholder="07XX XXX XXX" />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" id="churchEmail" />
+              <input type="email" id="churchEmail" placeholder="info@jcf.or.ke" />
             </div>
             <div class="form-group">
               <label>Website</label>
-              <input type="url" id="churchWebsite" placeholder="https://" />
+              <input type="text" id="churchWebsite" placeholder="https://..." />
             </div>
-            <div class="form-group full">
+            <div class="form-group">
               <label>Address</label>
-              <input type="text" id="churchAddress" value="Rongai, Kajiado County, Kenya" />
+              <input type="text" id="churchAddress" placeholder="Rongai, Kenya" />
             </div>
             <div class="form-group full">
               <label>About</label>
-              <textarea id="churchAbout">Raising champions for Christ in Rongai and beyond.</textarea>
+              <textarea id="churchAbout" placeholder="Short description..."></textarea>
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn btn-primary" onclick="saveChurch()">Save Church Profile</button>
+            <button type="button" class="btn btn-primary" onclick="saveChurch()">Save Church Info</button>
           </div>
         </div>
       </div>
 
-      <div class="tab-panel" id="tab-users">
-        <div class="form-card">
-          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
-            <span>System Users</span>
-            <button type="button" class="btn btn-primary" style="padding:0.45rem 0.9rem;font-size:0.8rem;" onclick="openUserForm()">+ Add User</button>
+      <!-- Preferences -->
+      <div class="panel" id="panel-prefs">
+        <div class="card">
+          <h3>App Preferences</h3>
+          <div class="check-row">
+            <input type="checkbox" id="prefDark" checked />
+            <label for="prefDark">Dark mode (default)</label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="prefBanner" checked />
+            <label for="prefBanner">Show welcome banner on dashboard</label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="prefIdle" checked />
+            <label for="prefIdle">Auto-logout when idle</label>
+          </div>
+          <div class="form-grid" style="margin-top:1rem;">
+            <div class="form-group">
+              <label>Idle timeout (minutes)</label>
+              <input type="number" id="prefIdleMins" min="1" max="60" value="5" />
+            </div>
+            <div class="form-group">
+              <label>Currency</label>
+              <select id="prefCurrency">
+                <option value="KES">KES</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save Preferences</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="panel" id="panel-users">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
+            <h3 style="margin:0;border:none;padding:0;">System Users</h3>
+            <button type="button" class="btn btn-primary" onclick="openUserForm()">+ Add User</button>
           </div>
           <div class="table-wrap">
-            <table class="users-table">
+            <table>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -470,138 +505,14 @@
             </table>
           </div>
         </div>
-
-        <div class="form-card" id="userFormCard" style="display:none;">
-          <div class="section-title" id="userFormTitle">Add User</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Name *</label>
-              <input type="text" id="uName" />
-            </div>
-            <div class="form-group">
-              <label>Email *</label>
-              <input type="email" id="uEmail" />
-            </div>
-            <div class="form-group">
-              <label>Role</label>
-              <select id="uRole">
-                <option value="Super Admin">Super Admin</option>
-                <option value="Admin">Admin</option>
-                <option value="Finance">Finance</option>
-                <option value="Usher">Usher</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select id="uStatus">
-                <option value="Active">Active</option>
-                <option value="Suspended">Suspended</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label id="uPassLabel">Password *</label>
-              <input type="password" id="uPassword" placeholder="Min 6 characters" />
-            </div>
-            <div class="form-group full">
-              <label>Module access</label>
-              <div id="accessChecks" class="access-grid"></div>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeUserForm()">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
-          </div>
-        </div>
       </div>
 
-      <div class="tab-panel" id="tab-preferences">
-        <div class="form-card">
-          <div class="section-title">Display & System</div>
-          <div class="toggle-row">
-            <div>
-              <div>Dark mode</div>
-              <div class="toggle-desc">Use dark theme</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="prefDark" checked onchange="togglePrefTheme()" />
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div>Welcome banner</div>
-              <div class="toggle-desc">Show on dashboard</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="prefBanner" checked onchange="savePrefs()" />
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div>Currency</div>
-              <div class="toggle-desc">Money display</div>
-            </div>
-            <select id="prefCurrency" onchange="savePrefs()" style="width:auto;">
-              <option value="KES" selected>KES</option>
-              <option value="USD">USD</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save Preferences</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="tab-security">
-        <div class="form-card">
-          <div class="section-title">Session</div>
-          <div class="toggle-row">
-            <div>
-              <div>Auto-logout after inactivity</div>
-              <div class="toggle-desc">Used on dashboard</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="prefIdle" checked onchange="savePrefs()" />
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="form-group" style="margin-top:1rem;max-width:140px;">
-            <label>Idle minutes</label>
-            <input type="number" id="prefIdleMins" min="1" max="60" value="5" onchange="savePrefs()" />
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" onclick="clearLocalData()">Clear Local Cache</button>
-            <button type="button" class="btn btn-primary" onclick="savePrefs()">Save</button>
-          </div>
-        </div>
-
-        <div class="form-card">
-          <div class="section-title">Two-Factor Authentication</div>
-          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;" id="twoFactorStatus">Checking...</p>
-          <div id="twoFactorSetup" style="display:none;">
-            <p style="font-size:0.85rem;margin-bottom:0.75rem;">Scan this QR with Google Authenticator or Microsoft Authenticator, then enter the code:</p>
-            <img id="twoFactorQR" alt="QR" style="max-width:200px;border-radius:8px;margin-bottom:1rem;background:#fff;padding:8px;" />
-            <div class="form-group" style="max-width:220px;">
-              <label>Code from app</label>
-              <input type="text" id="twoFactorCode" maxlength="6" placeholder="123456" />
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn btn-primary" onclick="confirm2FA()">Enable 2FA</button>
-            </div>
-          </div>
-          <div class="form-actions" id="twoFactorActions">
-            <button type="button" class="btn btn-primary" id="btnStart2FA" onclick="start2FA()">Set up 2FA</button>
-            <button type="button" class="btn btn-secondary" id="btnDisable2FA" style="display:none;" onclick="disable2FA()">Disable 2FA</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="tab-logs">
-        <div class="form-card">
-          <div class="section-title">Activity Logs</div>
+      <!-- Logs -->
+      <div class="panel" id="panel-logs">
+        <div class="card">
+          <h3>Activity Log</h3>
           <div class="table-wrap">
-            <table class="users-table">
+            <table>
               <thead>
                 <tr>
                   <th>Time</th>
@@ -618,14 +529,64 @@
     </div>
   </div>
 
+  <!-- User modal -->
+  <div class="modal" id="userModal">
+    <div class="modal-box">
+      <h3 id="userModalTitle">Add User</h3>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Full Name *</label>
+          <input type="text" id="uName" />
+        </div>
+        <div class="form-group full">
+          <label>Email *</label>
+          <input type="email" id="uEmail" />
+        </div>
+        <div class="form-group full">
+          <label>Password <span id="pwdHint">(required for new)</span></label>
+          <input type="password" id="uPassword" placeholder="Min 6 characters" />
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="uRole">
+            <option value="Admin">Admin</option>
+            <option value="Finance">Finance</option>
+            <option value="Secretary">Secretary</option>
+            <option value="Leader">Leader</option>
+            <option value="Viewer">Viewer</option>
+            <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="uStatus">
+            <option value="Active">Active</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Page Access</label>
+          <div class="access-grid" id="accessGrid"></div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeUserForm()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     var API = '/api';
-    var MODULES = [
+    var USERS = [];
+    var editingUserId = null;
+    var ACCESS_KEYS = [
       { key: 'dashboard', label: 'Dashboard' },
       { key: 'members', label: 'Members' },
       { key: 'visitors', label: 'Visitors' },
       { key: 'groups', label: 'Growth Groups' },
       { key: 'departments', label: 'Departments' },
+      { key: 'leaders', label: 'Leaders' },
       { key: 'attendance', label: 'Attendance' },
       { key: 'champs', label: 'Champs House' },
       { key: 'finance', label: 'Finance' },
@@ -634,8 +595,6 @@
       { key: 'reports', label: 'Reports' },
       { key: 'settings', label: 'Settings' }
     ];
-    var USERS = [];
-    var editingUserId = null;
 
     function openSidebar() {
       document.getElementById('sidebar').classList.add('open');
@@ -658,41 +617,99 @@
       localStorage.removeItem('jcf_user');
       window.location.href = 'login.html';
     }
+    function requireLogin() {
+      if (!getToken() || !getSession()) {
+        window.location.href = 'login.html';
+        return null;
+      }
+      return getSession();
+    }
     function apiFetch(path, options) {
       options = options || {};
       options.headers = options.headers || {};
       options.headers['Authorization'] = 'Bearer ' + getToken();
       if (options.body) options.headers['Content-Type'] = 'application/json';
       return fetch(API + path, options).then(function (res) {
-        if (res.status === 401) { logout(); return Promise.reject(new Error('Unauthorized')); }
+        if (res.status === 401) {
+          logout();
+          return Promise.reject(new Error('Unauthorized'));
+        }
         return res.text().then(function (text) {
           var data = null;
           try { data = text ? JSON.parse(text) : null; }
-          catch (e) { return Promise.reject(new Error('Bad response ' + res.status)); }
-          return { ok: res.ok, data: data };
+          catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
     }
-
-    function showTab(id, btn) {
-      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
-      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
-      document.getElementById('tab-' + id).classList.add('active');
-      if (btn) btn.classList.add('active');
-      if (id === 'users') loadUsers();
-      if (id === 'logs') loadLogs();
-      if (id === 'security') load2FAStatus();
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
-
     function showSuccess(msg) {
       var el = document.getElementById('successMsg');
       el.textContent = msg;
       el.classList.add('show');
-      setTimeout(function () { el.classList.remove('show'); }, 2500);
+      document.getElementById('errorMsg').classList.remove('show');
+      setTimeout(function () { el.classList.remove('show'); }, 3000);
+    }
+    function showError(msg) {
+      var el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function showPanel(id, btn) {
+      document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.getElementById('panel-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (id === 'users') loadUsers();
+      if (id === 'logs') loadLogs();
+    }
+
+    /* ---- Church ---- */
+    function loadSettings() {
+      apiFetch('/settings')
+        .then(function (r) {
+          if (!r.ok || !r.data) return;
+          var c = r.data.church || {};
+          if (c.name) document.getElementById('churchName').value = c.name;
+          if (c.slogan) document.getElementById('churchSlogan').value = c.slogan;
+          if (c.phone) document.getElementById('churchPhone').value = c.phone;
+          if (c.email) document.getElementById('churchEmail').value = c.email;
+          if (c.website) document.getElementById('churchWebsite').value = c.website;
+          if (c.address) document.getElementById('churchAddress').value = c.address;
+          if (c.about) document.getElementById('churchAbout').value = c.about;
+          localStorage.setItem('jcf_church', JSON.stringify(c));
+
+          var p = r.data.prefs || {};
+          document.getElementById('prefDark').checked = p.dark !== false;
+          document.getElementById('prefBanner').checked = p.banner !== false;
+          document.getElementById('prefIdle').checked = p.idle !== false;
+          if (p.idleMins) document.getElementById('prefIdleMins').value = p.idleMins;
+          if (p.currency) document.getElementById('prefCurrency').value = p.currency;
+          localStorage.setItem('jcf_prefs', JSON.stringify(p));
+          if (p.dark === false) localStorage.setItem('jcf_theme', 'light');
+          else localStorage.setItem('jcf_theme', 'dark');
+        })
+        .catch(function () {
+          var church = JSON.parse(localStorage.getItem('jcf_church') || 'null');
+          if (church) {
+            if (church.name) document.getElementById('churchName').value = church.name;
+            if (church.slogan) document.getElementById('churchSlogan').value = church.slogan;
+            if (church.phone) document.getElementById('churchPhone').value = church.phone;
+            if (church.email) document.getElementById('churchEmail').value = church.email;
+            if (church.website) document.getElementById('churchWebsite').value = church.website;
+            if (church.address) document.getElementById('churchAddress').value = church.address;
+            if (church.about) document.getElementById('churchAbout').value = church.about;
+          }
+        });
     }
 
     function saveChurch() {
-      var church = {
+      var body = {
         name: document.getElementById('churchName').value.trim(),
         slogan: document.getElementById('churchSlogan').value.trim(),
         phone: document.getElementById('churchPhone').value.trim(),
@@ -701,114 +718,54 @@
         address: document.getElementById('churchAddress').value.trim(),
         about: document.getElementById('churchAbout').value.trim()
       };
-      apiFetch('/settings', { method: 'PUT', body: JSON.stringify({ church: church }) })
+      apiFetch('/settings/church', { method: 'PUT', body: JSON.stringify(body) })
         .then(function (r) {
-          if (r.ok) {
-            localStorage.setItem('jcf_church', JSON.stringify(church));
-            showSuccess('Church profile saved.');
-          } else alert((r.data && r.data.error) || 'Save failed');
+          if (!r.ok) {
+            showError((r.data && r.data.error) || 'Save failed');
+            return;
+          }
+          localStorage.setItem('jcf_church', JSON.stringify(r.data || body));
+          showSuccess('Church information saved. Dashboard will show updated name.');
         })
-        .catch(function (e) { alert(e.message); });
+        .catch(function (e) {
+          localStorage.setItem('jcf_church', JSON.stringify(body));
+          showSuccess('Saved locally (server may be offline).');
+        });
     }
 
     function savePrefs() {
-      var prefs = {
+      var body = {
         dark: document.getElementById('prefDark').checked,
         banner: document.getElementById('prefBanner').checked,
-        currency: document.getElementById('prefCurrency').value,
         idle: document.getElementById('prefIdle').checked,
-        idleMins: parseInt(document.getElementById('prefIdleMins').value, 10) || 5
+        idleMins: parseInt(document.getElementById('prefIdleMins').value, 10) || 5,
+        currency: document.getElementById('prefCurrency').value
       };
-      localStorage.setItem('jcf_prefs', JSON.stringify(prefs));
-      localStorage.setItem('jcf_theme', prefs.dark ? 'dark' : 'light');
-      showSuccess('Preferences saved.');
+      localStorage.setItem('jcf_prefs', JSON.stringify(body));
+      localStorage.setItem('jcf_theme', body.dark ? 'dark' : 'light');
+      apiFetch('/settings/prefs', { method: 'PUT', body: JSON.stringify(body) })
+        .then(function (r) {
+          showSuccess('Preferences saved.');
+        })
+        .catch(function () {
+          showSuccess('Preferences saved locally.');
+        });
     }
 
-    function togglePrefTheme() {
-      localStorage.setItem('jcf_theme', document.getElementById('prefDark').checked ? 'dark' : 'light');
-      savePrefs();
-    }
-
-    function clearLocalData() {
-      if (!confirm('Clear browser cache? (Keeps login)')) return;
-      var token = getToken();
-      var user = localStorage.getItem('jcf_user');
-      localStorage.clear();
-      if (token) localStorage.setItem('jcf_token', token);
-      if (user) localStorage.setItem('jcf_user', user);
-      showSuccess('Local cache cleared.');
-    }
-
-    function load2FAStatus() {
-      apiFetch('/2fa/status').then(function (r) {
-        var on = r.ok && r.data && r.data.enabled;
-        document.getElementById('twoFactorStatus').textContent = on
-          ? '2FA is enabled on your account.'
-          : '2FA is not enabled.';
-        document.getElementById('btnStart2FA').style.display = on ? 'none' : 'inline-block';
-        document.getElementById('btnDisable2FA').style.display = on ? 'inline-block' : 'none';
-        document.getElementById('twoFactorSetup').style.display = 'none';
-      }).catch(function () {
-        document.getElementById('twoFactorStatus').textContent = 'Could not load 2FA status. Is /api/2fa registered?';
-      });
-    }
-
-    function start2FA() {
-      apiFetch('/2fa/setup', { method: 'POST' }).then(function (r) {
-        if (!r.ok) {
-          alert((r.data && r.data.error) || 'Setup failed');
-          return;
-        }
-        document.getElementById('twoFactorQR').src = r.data.qr;
-        document.getElementById('twoFactorSetup').style.display = 'block';
-      }).catch(function (e) { alert(e.message); });
-    }
-
-    function confirm2FA() {
-      var code = document.getElementById('twoFactorCode').value.trim();
-      if (!code) { alert('Enter the code from your app'); return; }
-      apiFetch('/2fa/enable', {
-        method: 'POST',
-        body: JSON.stringify({ code: code })
-      }).then(function (r) {
-        if (!r.ok) {
-          alert((r.data && r.data.error) || 'Invalid code');
-          return;
-        }
-        showSuccess('2FA enabled.');
-        load2FAStatus();
-      }).catch(function (e) { alert(e.message); });
-    }
-
-    function disable2FA() {
-      var code = prompt('Enter current authenticator code to disable 2FA:');
-      if (!code) return;
-      apiFetch('/2fa/disable', {
-        method: 'POST',
-        body: JSON.stringify({ code: code })
-      }).then(function (r) {
-        if (!r.ok) {
-          alert((r.data && r.data.error) || 'Failed');
-          return;
-        }
-        showSuccess('2FA disabled.');
-        load2FAStatus();
-      }).catch(function (e) { alert(e.message); });
-    }
-
-    function buildAccessChecks(selected) {
+    /* ---- Users ---- */
+    function buildAccessGrid(selected) {
       selected = selected || [];
-      document.getElementById('accessChecks').innerHTML = MODULES.map(function (m) {
-        var checked = selected.indexOf('*') !== -1 || selected.indexOf(m.key) !== -1 ? ' checked' : '';
-        return '<label style="font-size:0.8rem;display:flex;align-items:center;gap:0.35rem;">' +
-          '<input type="checkbox" class="access-cb" value="' + m.key + '"' + checked + ' /> ' + m.label +
-          '</label>';
+      var all = selected.indexOf('*') !== -1;
+      document.getElementById('accessGrid').innerHTML = ACCESS_KEYS.map(function (a) {
+        var checked = all || selected.indexOf(a.key) !== -1 ? ' checked' : '';
+        return '<label class="access-item"><input type="checkbox" class="access-cb" value="' + a.key + '"' + checked + ' /> ' + a.label + '</label>';
       }).join('');
     }
 
     function getSelectedAccess() {
+      var boxes = document.querySelectorAll('.access-cb:checked');
       var list = [];
-      document.querySelectorAll('.access-cb:checked').forEach(function (cb) { list.push(cb.value); });
+      boxes.forEach(function (b) { list.push(b.value); });
       return list;
     }
 
@@ -818,79 +775,82 @@
           USERS = r.ok && Array.isArray(r.data) ? r.data : [];
           renderUsers();
         })
-        .catch(function () { USERS = []; renderUsers(); });
+        .catch(function () {
+          USERS = [];
+          renderUsers();
+          showError('Could not load users. Need Admin role and /api/users.');
+        });
     }
 
     function renderUsers() {
       var tbody = document.getElementById('usersTable');
       if (!USERS.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">No users</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2rem;">No users</td></tr>';
         return;
       }
       tbody.innerHTML = USERS.map(function (u) {
-        var access = (u.access || []).indexOf('*') !== -1
-          ? 'All'
-          : ((u.access || []).length ? (u.access || []).length + ' modules' : 'Role default');
-        var stClass = u.status === 'Active' ? 'active' : 'suspended';
+        var id = esc(u.id);
+        var access = Array.isArray(u.access) ? u.access : [];
+        var accessLabel = access.indexOf('*') !== -1 ? 'All' : (access.length ? access.length + ' pages' : 'None');
+        var st = (u.status || 'Active').toLowerCase();
         return '<tr>' +
           '<td><strong>' + (u.name || '-') + '</strong></td>' +
           '<td>' + (u.email || '-') + '</td>' +
-          '<td><span class="badge admin">' + (u.role || '-') + '</span></td>' +
-          '<td><span class="badge ' + stClass + '">' + (u.status || '-') + '</span></td>' +
-          '<td>' + access + '</td>' +
+          '<td>' + (u.role || '-') + '</td>' +
+          '<td><span class="badge ' + (st === 'active' ? 'active' : 'suspended') + '">' + (u.status || 'Active') + '</span></td>' +
+          '<td>' + accessLabel + '</td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editUser(\'' + u.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="toggleSuspend(\'' + u.id + '\')">' +
-              (u.status === 'Suspended' ? 'Activate' : 'Suspend') + '</button>' +
-            '<button type="button" class="action-btn" onclick="deleteUser(\'' + u.id + '\')">Delete</button>' +
+            '<button type="button" class="action-btn" onclick="editUser(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteUser(\'' + id + '\')">Delete</button>' +
           '</td></tr>';
       }).join('');
     }
 
     function openUserForm() {
       editingUserId = null;
-      document.getElementById('userFormTitle').textContent = 'Add User';
-      document.getElementById('uPassLabel').textContent = 'Password *';
+      document.getElementById('userModalTitle').textContent = 'Add User';
+      document.getElementById('pwdHint').textContent = '(required)';
       document.getElementById('uName').value = '';
       document.getElementById('uEmail').value = '';
-      document.getElementById('uEmail').disabled = false;
+      document.getElementById('uPassword').value = '';
       document.getElementById('uRole').value = 'Admin';
       document.getElementById('uStatus').value = 'Active';
-      document.getElementById('uPassword').value = '';
-      buildAccessChecks([]);
-      document.getElementById('userFormCard').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      buildAccessGrid([]);
+      document.getElementById('userModal').classList.add('show');
     }
 
     function closeUserForm() {
-      document.getElementById('userFormCard').style.display = 'none';
+      document.getElementById('userModal').classList.remove('show');
       editingUserId = null;
     }
 
     function editUser(id) {
       var u = USERS.find(function (x) { return String(x.id) === String(id); });
       if (!u) return;
-      editingUserId = u.id;
-      document.getElementById('userFormTitle').textContent = 'Edit User';
-      document.getElementById('uPassLabel').textContent = 'New password (optional)';
+      editingUserId = id;
+      document.getElementById('userModalTitle').textContent = 'Edit User';
+      document.getElementById('pwdHint').textContent = '(leave blank to keep)';
       document.getElementById('uName').value = u.name || '';
       document.getElementById('uEmail').value = u.email || '';
-      document.getElementById('uEmail').disabled = true;
+      document.getElementById('uPassword').value = '';
       document.getElementById('uRole').value = u.role || 'Admin';
       document.getElementById('uStatus').value = u.status || 'Active';
-      document.getElementById('uPassword').value = '';
-      buildAccessChecks(u.access || []);
-      document.getElementById('userFormCard').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      buildAccessGrid(u.access || []);
+      document.getElementById('userModal').classList.add('show');
     }
 
     function saveUser() {
       var name = document.getElementById('uName').value.trim();
-      var email = document.getElementById('uEmail').value.trim().toLowerCase();
+      var email = document.getElementById('uEmail').value.trim();
       var password = document.getElementById('uPassword').value;
-      if (!name || !email) { alert('Name and email required'); return; }
-      if (!editingUserId && password.length < 6) { alert('Password min 6 characters'); return; }
-
+      if (!name || !email) {
+        alert('Name and email are required');
+        return;
+      }
+      if (!editingUserId && (!password || password.length < 6)) {
+        alert('Password must be at least 6 characters');
+        return;
+      }
       var body = {
         name: name,
         email: email,
@@ -898,59 +858,62 @@
         status: document.getElementById('uStatus').value,
         access: getSelectedAccess()
       };
-      if (password) body.password = password;
+      if (password && password.length >= 6) body.password = password;
 
       var path = editingUserId ? '/users/' + encodeURIComponent(editingUserId) : '/users';
       var method = editingUserId ? 'PUT' : 'POST';
 
       apiFetch(path, { method: method, body: JSON.stringify(body) })
         .then(function (r) {
-          if (!r.ok) { alert((r.data && r.data.error) || 'Save failed'); return; }
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Save failed');
+            return;
+          }
           showSuccess(editingUserId ? 'User updated.' : 'User created.');
           closeUserForm();
           loadUsers();
         })
-        .catch(function (e) { alert(e.message); });
-    }
-
-    function toggleSuspend(id) {
-      var u = USERS.find(function (x) { return String(x.id) === String(id); });
-      if (!u) return;
-      var next = u.status === 'Suspended' ? 'Active' : 'Suspended';
-      if (!confirm((next === 'Suspended' ? 'Suspend' : 'Activate') + ' ' + u.email + '?')) return;
-      apiFetch('/users/' + encodeURIComponent(id), {
-        method: 'PUT',
-        body: JSON.stringify({ status: next })
-      }).then(function (r) {
-        if (r.ok) { showSuccess('User ' + next.toLowerCase() + '.'); loadUsers(); }
-        else alert((r.data && r.data.error) || 'Failed');
-      }).catch(function (e) { alert(e.message); });
+        .catch(function (e) {
+          alert(e.message || 'Server error');
+        });
     }
 
     function deleteUser(id) {
-      var u = USERS.find(function (x) { return String(x.id) === String(id); });
-      if (!u) return;
-      if (!confirm('Delete user ' + u.email + '?')) return;
+      if (!confirm('Delete this user?')) return;
       apiFetch('/users/' + encodeURIComponent(id), { method: 'DELETE' })
         .then(function (r) {
-          if (r.ok) { showSuccess('User deleted.'); loadUsers(); }
-          else alert((r.data && r.data.error) || 'Delete failed');
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Delete failed');
+            return;
+          }
+          showSuccess('User deleted.');
+          loadUsers();
         })
-        .catch(function (e) { alert(e.message); });
+        .catch(function (e) {
+          alert(e.message || 'Server error');
+        });
     }
 
+    /* ---- Logs ---- */
     function loadLogs() {
       apiFetch('/users/logs')
         .then(function (r) {
           var logs = r.ok && Array.isArray(r.data) ? r.data : [];
           var tbody = document.getElementById('logsTable');
           if (!logs.length) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">No logs yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:2rem;">No activity yet</td></tr>';
             return;
           }
           tbody.innerHTML = logs.map(function (l) {
-            var t = l.at ? new Date(l.at).toLocaleString('en-GB') : '-';
-            return '<tr><td>' + t + '</td><td>' + (l.actor || '-') + '</td><td>' + (l.action || '-') + '</td><td>' + (l.detail || '-') + '</td></tr>';
+            var t = l.at || l.time || '';
+            try {
+              t = new Date(t).toLocaleString('en-GB');
+            } catch (e) {}
+            return '<tr>' +
+              '<td>' + t + '</td>' +
+              '<td>' + (l.actor || '-') + '</td>' +
+              '<td>' + (l.action || '-') + '</td>' +
+              '<td>' + (l.detail || '-') + '</td></tr>';
           }).join('');
         })
         .catch(function () {
@@ -959,33 +922,18 @@
         });
     }
 
-    if (!getToken() || !getSession()) {
-      window.location.href = 'login.html';
-    } else {
-      var session = getSession();
-      document.getElementById('userName').textContent = session.name;
-      document.getElementById('userRole').textContent = session.role;
-      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+    document.getElementById('userModal').addEventListener('click', function (e) {
+      if (e.target === this) closeUserForm();
+    });
 
-      var church = JSON.parse(localStorage.getItem('jcf_church') || 'null');
-      if (church) {
-        if (church.name) document.getElementById('churchName').value = church.name;
-        if (church.slogan) document.getElementById('churchSlogan').value = church.slogan;
-        if (church.phone) document.getElementById('churchPhone').value = church.phone;
-        if (church.email) document.getElementById('churchEmail').value = church.email;
-        if (church.website) document.getElementById('churchWebsite').value = church.website;
-        if (church.address) document.getElementById('churchAddress').value = church.address;
-        if (church.about) document.getElementById('churchAbout').value = church.about;
-      }
-      var prefs = JSON.parse(localStorage.getItem('jcf_prefs') || 'null');
-      if (prefs) {
-        document.getElementById('prefDark').checked = prefs.dark !== false;
-        document.getElementById('prefBanner').checked = prefs.banner !== false;
-        if (prefs.currency) document.getElementById('prefCurrency').value = prefs.currency;
-        document.getElementById('prefIdle').checked = prefs.idle !== false;
-        if (prefs.idleMins) document.getElementById('prefIdleMins').value = prefs.idleMins;
-      }
+    requireLogin();
+    var session = getSession();
+    if (session) {
+      document.getElementById('userName').textContent = session.name || '—';
+      document.getElementById('userRole').textContent = session.role || '—';
+      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
     }
+    loadSettings();
   </script>
   <script src="js/access.js"></script>
 </body>

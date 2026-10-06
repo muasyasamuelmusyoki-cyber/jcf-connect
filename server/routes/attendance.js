@@ -20,6 +20,7 @@ function normalize(row) {
   const teens = Number(row.teens) || 0;
   const sundaySchool =
     Number(row.sundaySchool) || Number(row.sunday_school) || 0;
+
   return {
     id: row.id,
     date: row.date || '',
@@ -51,7 +52,9 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const s = store();
   ensure(s);
-  const row = s.attendance.find((x) => String(x.id) === String(req.params.id));
+  const row = s.attendance.find(
+    (x) => String(x.id) === String(req.params.id)
+  );
   if (!row) return res.status(404).json({ error: 'Record not found' });
   res.json(normalize(row));
 });
@@ -83,7 +86,7 @@ router.post('/', (req, res) => {
   }
 
   const record = {
-    id: b.id || ('ATT-' + Date.now()),
+    id: b.id || 'ATT-' + Date.now(),
     date: b.date,
     service,
     eventName: service === 'Special' ? eventName : '',

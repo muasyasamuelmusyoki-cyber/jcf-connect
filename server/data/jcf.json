@@ -49,6 +49,29 @@
       "membership_class": "Completed",
       "status": "Active",
       "created_at": "2026-09-18T23:34:12.485Z"
+    },
+    {
+      "id": "JCF-176469",
+      "name": "Sammy",
+      "phone": "0746795323",
+      "email": "visionwaveafrica@gmail.com",
+      "gender": "Male",
+      "address": "M,Cathy house, olekasasi rd",
+      "occupation": "Nil",
+      "dob": "2005-04-12",
+      "marital_status": "Married",
+      "spouse": "Everlyn",
+      "children": "david",
+      "date_joined": "2026-10-06",
+      "growth_group": "",
+      "department": "",
+      "ministry": "",
+      "born_again": "",
+      "baptism": "",
+      "holy_spirit": "",
+      "membership_class": "",
+      "status": "Active",
+      "created_at": "2026-10-06T13:44:11.160Z"
     }
   ],
   "visitors": [
@@ -150,13 +173,20 @@
   "growth_groups": [],
   "settings": {
     "church": {
-      "name": "Joy Christian Fellowship – Rongai",
+      "name": "JOY CHRISTIAN FELLOWSHIP RONGAI",
       "slogan": "City of Champions",
-      "phone": "",
-      "email": "pastor@jcf.rongai",
+      "phone": "0746795323",
+      "email": "joycfor@gmail.com",
       "website": "",
-      "address": "Rongai, Kajiado County, Kenya",
+      "address": "M,Cathy house, olekasasi rd",
       "about": "Raising champions for Christ in Rongai and beyond."
+    },
+    "prefs": {
+      "dark": true,
+      "banner": true,
+      "currency": "KES",
+      "idle": true,
+      "idleMins": 6
     }
   },
   "groups": [
@@ -170,6 +200,17 @@
       "location": "2",
       "status": "Active",
       "notes": "sam"
+    },
+    {
+      "id": "GG-1791294278676",
+      "name": "Ffff",
+      "leader": "duke",
+      "phone": "",
+      "day": "",
+      "time": "",
+      "location": "",
+      "status": "Active",
+      "notes": "Nil"
     }
   ],
   "group_members": [
@@ -181,6 +222,15 @@
       "phone": "0719738100",
       "status": "Active",
       "notes": "sam"
+    },
+    {
+      "id": "GM-1791294301020",
+      "name": "Sammy",
+      "group_id": "GG-1791294278676",
+      "group_name": "Ffff",
+      "phone": "0746795323",
+      "status": "Active",
+      "notes": ""
     }
   ],
   "dept_members": [

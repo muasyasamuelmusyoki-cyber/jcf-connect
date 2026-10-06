@@ -53,15 +53,14 @@
       background: rgba(196,30,58,0.15);
       padding: 4px;
     }
-    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+    .sidebar-brand h1 { font-size: 0.85rem; font-weight: 700; }
     .sidebar-brand span {
       font-size: 0.62rem;
       color: var(--gold);
-      letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
     }
-    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .sidebar-nav { flex: 1; padding: 0.75rem; overflow-y: auto; }
     .nav-item {
       display: flex;
       align-items: center;
@@ -76,18 +75,17 @@
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(196,30,58,0.2), rgba(196,30,58,0.08));
+      background: rgba(196,30,58,0.15);
       color: #ff6b7a;
       border: 1px solid rgba(196,30,58,0.25);
     }
-    .nav-icon { width: 1.35rem; text-align: center; flex-shrink: 0; }
+    .nav-icon { width: 1.35rem; text-align: center; }
     .sidebar-footer {
       padding: 1rem;
       border-top: 1px solid var(--border);
       font-size: 0.68rem;
       color: var(--text-muted);
       text-align: center;
-      line-height: 1.5;
     }
     .sidebar-overlay {
       display: none;
@@ -117,7 +115,7 @@
       top: 0;
       z-index: 50;
     }
-    .topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
     .menu-toggle {
       display: none;
       background: none;
@@ -127,20 +125,9 @@
       cursor: pointer;
       min-width: 44px;
       min-height: 44px;
-      align-items: center;
-      justify-content: center;
     }
-    .topbar-left h2 { font-size: 1.1rem; font-weight: 600; }
-    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .topbar-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
-    .date-badge {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      background: rgba(255,255,255,0.04);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
+    .topbar-left h2 { font-size: 1.1rem; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); }
     .user-info { display: flex; align-items: center; gap: 0.6rem; }
     .user-avatar {
       width: 36px; height: 36px;
@@ -153,247 +140,41 @@
     .user-role { font-size: 0.7rem; color: var(--text-muted); }
     .content { padding: 1.25rem; flex: 1; }
 
-    .stats-row {
+    .stats {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 0.85rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
     }
-    .stat-card {
+    .stat {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1rem 1.15rem;
+      padding: 1rem;
     }
-    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.35rem; }
-    .stat-value { font-size: 1.4rem; font-weight: 700; }
-    .stat-card.green .stat-value { color: #34d399; }
-    .stat-card.blue .stat-value { color: #60a5fa; }
-    .stat-card.gold .stat-value { color: var(--gold); }
-
-    .tabs {
-      display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1.15rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.55rem 1.1rem;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      min-height: 44px;
-    }
-    .tab-btn.active, .tab-btn:hover {
-      background: rgba(196,30,58,0.15);
-      border-color: rgba(196,30,58,0.35);
-      color: #ff6b7a;
-    }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .stat-value { font-size: 1.3rem; font-weight: 700; }
 
     .toolbar {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.85rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
       margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .search-box {
-      display: flex;
       align-items: center;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.5rem 0.85rem;
-      min-width: 180px;
-      flex: 1;
-      max-width: 280px;
     }
-    .search-box input {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 16px;
-      width: 100%;
-      outline: none;
-      font-family: inherit;
-    }
-    .filter-select {
+    .toolbar input, .toolbar select {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.5rem 0.8rem;
+      padding: 0.55rem 0.85rem;
       border-radius: 10px;
       font-size: 16px;
       font-family: inherit;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #9b1b2e);
-      color: white;
-      border: none;
-      padding: 0.55rem 1.1rem;
-      border-radius: 10px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
       min-height: 44px;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(196,30,58,0.3);
-    }
-
-    .groups-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-    .group-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.15rem;
-    }
-    .group-card:hover { border-color: rgba(196,30,58,0.35); }
-    .group-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.5rem;
-      margin-bottom: 0.85rem;
-    }
-    .group-name { font-size: 1.05rem; font-weight: 600; }
-    .group-badge {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      font-weight: 600;
-      background: rgba(16,185,129,0.15);
-      color: #34d399;
-      flex-shrink: 0;
-    }
-    .group-badge.inactive {
-      background: rgba(148,163,184,0.15);
-      color: #94a3b8;
-    }
-    .group-meta {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.7;
-    }
-    .group-meta strong { color: var(--text); font-weight: 500; }
-    .group-actions {
-      display: flex;
-      gap: 0.4rem;
-      margin-top: 1rem;
-      padding-top: 0.9rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      flex-wrap: wrap;
-    }
-    .action-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.4rem 0.65rem;
-      border-radius: 7px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-family: inherit;
-      min-height: 36px;
-    }
-    .action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-
-    .table-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table { width: 100%; border-collapse: collapse; min-width: 560px; }
-    thead { background: rgba(255,255,255,0.03); }
-    th {
-      text-align: left;
-      padding: 0.8rem 0.9rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 0.75rem 0.9rem;
-      font-size: 0.875rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    tr:last-child td { border-bottom: none; }
-
-    .badge {
-      display: inline-block;
-      padding: 0.22rem 0.5rem;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-    .badge.active { background: rgba(16,185,129,0.15); color: #34d399; }
-    .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
-
-    .form-panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
-      margin-bottom: 1.15rem;
-      display: none;
-    }
-    .form-panel.show { display: block; }
-    .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.9rem;
-    }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
-    input, select, textarea {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.65rem 0.85rem;
-      color: var(--text);
-      font-size: 16px;
-      font-family: inherit;
-      outline: none;
-      max-width: 100%;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
-    }
-    textarea { resize: vertical; min-height: 70px; }
-    .form-actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      margin-top: 1.15rem;
+      min-width: 160px;
     }
     .btn {
-      padding: 0.65rem 1.2rem;
+      padding: 0.6rem 1.1rem;
       border-radius: 10px;
       font-size: 0.875rem;
       font-weight: 600;
@@ -402,7 +183,7 @@
       border: none;
       min-height: 44px;
     }
-    .btn-primary-form {
+    .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9b1b2e);
       color: white;
     }
@@ -411,44 +192,163 @@
       border: 1px solid var(--border);
       color: var(--text-muted);
     }
+    .btn-danger {
+      background: rgba(196,30,58,0.2);
+      border: 1px solid rgba(196,30,58,0.4);
+      color: #ff6b7a;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .group-list { display: flex; flex-direction: column; gap: 0.55rem; max-height: 420px; overflow-y: auto; }
+    .group-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .group-item:hover, .group-item.active {
+      background: rgba(196,30,58,0.12);
+      border-color: rgba(196,30,58,0.35);
+    }
+    .group-item strong { display: block; margin-bottom: 0.2rem; }
+    .group-meta { font-size: 0.75rem; color: var(--text-muted); }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: rgba(16,185,129,0.15);
+      color: #34d399;
+    }
+    .badge.inactive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 480px; }
+    th {
+      text-align: left;
+      padding: 0.65rem 0.7rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.6rem 0.7rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.5rem;
+      border-radius: 7px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: inherit;
+      margin-right: 0.2rem;
+      min-height: 34px;
+    }
+    .muted { color: var(--text-muted); text-align: center; padding: 1.5rem !important; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.78rem; color: var(--text-muted); }
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      font-size: 16px;
+      font-family: inherit;
+      width: 100%;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196,30,58,0.15);
+    }
+    .form-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 0.9rem;
+    }
     .success-msg {
+      display: none;
       background: rgba(16,185,129,0.12);
       border: 1px solid rgba(16,185,129,0.3);
       color: #6ee7b7;
-      padding: 0.8rem 1rem;
+      padding: 0.75rem 1rem;
       border-radius: 10px;
-      margin-bottom: 1.15rem;
-      display: none;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
     }
     .success-msg.show { display: block; }
-
-    @media (max-width: 1100px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .search-hits {
+      max-height: 160px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 0.35rem;
+      display: none;
     }
+    .search-hits.show { display: block; }
+    .search-hit {
+      padding: 0.55rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .search-hit:hover { background: rgba(196,30,58,0.12); }
+    .hidden { display: none !important; }
+
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); width: min(280px, 85vw); }
-      .sidebar.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,0.35); }
+      .sidebar.open { transform: translateX(0); }
       .main { margin-left: 0; }
-      .menu-toggle { display: flex; }
-      .topbar-left p { display: none; }
-      .date-badge { display: none; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; }
       .user-info > div:last-child { display: none; }
+      .grid-2 { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .content { padding: 0.9rem; }
-      .form-actions { justify-content: stretch; }
-      .form-actions .btn { flex: 1; }
-    }
-    @media (max-width: 640px) {
-      .stats-row { grid-template-columns: 1fr; }
-      .toolbar { flex-direction: column; align-items: stretch; }
-      .search-box { max-width: none; }
-      .btn-primary { justify-content: center; width: 100%; }
     }
   </style>
 </head>
 <body>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <img src="../assets/images/logo.jpg" alt="Logo" class="sidebar-logo" />
@@ -472,90 +372,62 @@
       <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
       <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      JCF CONNECT<br>
-      © Joy Christian Fellowship – Rongai
-    </div>
+    <div class="sidebar-footer">JCF CONNECT</div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <button type="button" class="menu-toggle" onclick="openSidebar()" aria-label="Open menu">☰</button>
+        <button type="button" class="menu-toggle" onclick="openSidebar()">☰</button>
         <div>
           <h2>Growth Groups</h2>
-          <p>Groups, leaders and members</p>
+          <p>Groups, leaders &amp; assign members</p>
         </div>
       </div>
-      <div class="topbar-right">
-        <div class="date-badge" id="currentDate"></div>
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">?</div>
-          <div>
-            <div class="user-name" id="userName">—</div>
-            <div class="user-role" id="userRole">—</div>
-          </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div class="user-name" id="userName">—</div>
+          <div class="user-role" id="userRole">—</div>
         </div>
       </div>
     </header>
 
     <div class="content">
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Groups</div>
-          <div class="stat-value" id="statTotal">0</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-label">Active Groups</div>
-          <div class="stat-value" id="statActive">0</div>
-        </div>
-        <div class="stat-card blue">
-          <div class="stat-label">Total Members</div>
-          <div class="stat-value" id="statMembers">0</div>
-        </div>
-        <div class="stat-card gold">
-          <div class="stat-label">Avg per Group</div>
-          <div class="stat-value" id="statAvg">0</div>
-        </div>
-      </div>
-
       <div class="success-msg" id="successMsg"></div>
 
-      <div class="tabs">
-        <button type="button" class="tab-btn active" onclick="showTab('groups', this)">Groups</button>
-        <button type="button" class="tab-btn" onclick="showTab('members', this)">Members</button>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Groups</div><div class="stat-value" id="statGroups">0</div></div>
+        <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">0</div></div>
+        <div class="stat"><div class="stat-label">Group members</div><div class="stat-value" id="statMembers">0</div></div>
+        <div class="stat"><div class="stat-label">Selected group</div><div class="stat-value" id="statSelected" style="font-size:0.95rem;">—</div></div>
       </div>
 
-      <div class="form-panel" id="groupForm">
-        <div class="section-title" id="groupFormTitle">Add Growth Group</div>
+      <div class="toolbar">
+        <input type="search" id="searchGroups" placeholder="Search groups..." oninput="filterGroups()" />
+        <button type="button" class="btn btn-primary" onclick="openGroupForm()">+ New Group</button>
+        <button type="button" class="btn btn-secondary" onclick="openMemberForm()">+ Assign Member</button>
+      </div>
+
+      <!-- Group form -->
+      <div class="card hidden" id="groupFormCard">
+        <h3 id="groupFormTitle">New Growth Group</h3>
         <div class="form-grid">
           <div class="form-group">
-            <label>Group Name *</label>
-            <input type="text" id="gName" placeholder="e.g. Growth Group 1" />
+            <label>Group name *</label>
+            <input type="text" id="gName" placeholder="e.g. Rongai East" />
           </div>
           <div class="form-group">
-            <label>Leader Name *</label>
-            <input type="text" id="gLeader" placeholder="Leader full name" />
+            <label>Leader</label>
+            <input type="text" id="gLeader" placeholder="Leader name" />
           </div>
           <div class="form-group">
-            <label>Leader Phone</label>
-            <input type="tel" id="gPhone" placeholder="07XX XXX XXX" />
-          </div>
-          <div class="form-group">
-            <label>Meeting Day</label>
+            <label>Meeting day</label>
             <select id="gDay">
-              <option value="">Select day</option>
+              <option value="">—</option>
               <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
               <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label>Meeting Time</label>
-            <input type="text" id="gTime" placeholder="e.g. 6:00 PM" />
-          </div>
-          <div class="form-group">
-            <label>Location</label>
-            <input type="text" id="gLocation" placeholder="e.g. Rongai Stage" />
           </div>
           <div class="form-group">
             <label>Status</label>
@@ -565,32 +437,46 @@
             </select>
           </div>
           <div class="form-group full">
-            <label>Notes</label>
-            <textarea id="gNotes" placeholder="Optional notes..."></textarea>
+            <label>Location / notes</label>
+            <textarea id="gNotes" rows="2" placeholder="Venue or notes"></textarea>
           </div>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeGroupForm()">Cancel</button>
-          <button type="button" class="btn btn-primary-form" id="groupSaveBtn" onclick="saveGroup()">Save Group</button>
+          <button type="button" class="btn btn-primary" onclick="saveGroup()">Save Group</button>
         </div>
       </div>
 
-      <div class="form-panel" id="memberForm">
-        <div class="section-title" id="memberFormTitle">Add Group Member</div>
+      <!-- Member assign form -->
+      <div class="card hidden" id="memberFormCard">
+        <h3 id="memberFormTitle">Assign Member to Group</h3>
         <div class="form-grid">
-          <div class="form-group">
-            <label>Full Name *</label>
-            <input type="text" id="mName" placeholder="Member full name" />
+          <div class="form-group full">
+            <label>Search church member *</label>
+            <input type="search" id="mSearch" placeholder="Type name or phone..." oninput="searchMembers()" autocomplete="off" />
+            <div class="search-hits" id="mHits"></div>
+            <input type="hidden" id="mMemberId" />
+            <input type="hidden" id="mMemberName" />
           </div>
           <div class="form-group">
-            <label>Group *</label>
-            <select id="mGroupId">
-              <option value="">Select group</option>
-            </select>
+            <label>Or type name manually</label>
+            <input type="text" id="mName" placeholder="Full name" />
           </div>
           <div class="form-group">
             <label>Phone</label>
-            <input type="tel" id="mPhone" placeholder="07XX XXX XXX" />
+            <input type="tel" id="mPhone" />
+          </div>
+          <div class="form-group">
+            <label>Group *</label>
+            <select id="mGroup"></select>
+          </div>
+          <div class="form-group">
+            <label>Role in group</label>
+            <select id="mRole">
+              <option value="Member">Member</option>
+              <option value="Leader">Leader</option>
+              <option value="Assistant">Assistant</option>
+            </select>
           </div>
           <div class="form-group">
             <label>Status</label>
@@ -601,52 +487,31 @@
           </div>
           <div class="form-group full">
             <label>Notes</label>
-            <textarea id="mNotes" placeholder="Optional notes..."></textarea>
+            <input type="text" id="mNotes" />
           </div>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeMemberForm()">Cancel</button>
-          <button type="button" class="btn btn-primary-form" id="memberSaveBtn" onclick="saveMember()">Save Member</button>
+          <button type="button" class="btn btn-primary" onclick="saveMember()">Save Assignment</button>
         </div>
       </div>
 
-      <div class="tab-panel active" id="tab-groups">
-        <div class="toolbar">
-          <div class="search-box">
-            <span style="margin-right:0.35rem;opacity:0.6;">🔍</span>
-            <input type="text" id="groupSearch" placeholder="Search groups or leaders..." oninput="renderGroups()" />
-          </div>
-          <button type="button" class="btn-primary" onclick="openGroupForm()">+ Add Group</button>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Groups</h3>
+          <div class="group-list" id="groupList"></div>
         </div>
-        <div class="groups-grid" id="groupsGrid"></div>
-      </div>
-
-      <div class="tab-panel" id="tab-members">
-        <div class="toolbar">
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;flex:1;">
-            <div class="search-box">
-              <span style="margin-right:0.35rem;opacity:0.6;">🔍</span>
-              <input type="text" id="memberSearch" placeholder="Search members..." oninput="renderMembers()" />
-            </div>
-            <select class="filter-select" id="filterGroup" onchange="renderMembers()">
-              <option value="">All Groups</option>
-            </select>
-          </div>
-          <button type="button" class="btn-primary" onclick="openMemberForm()">+ Add Member</button>
-        </div>
-        <div class="table-card">
+        <div class="card">
+          <h3>
+            <span>Members in group</span>
+            <button type="button" class="btn btn-primary" style="min-height:36px;padding:0.4rem 0.8rem;font-size:0.8rem;" onclick="openMemberForm()">+ Assign</button>
+          </h3>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Group</th>
-                  <th>Phone</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
+                <tr><th>Name</th><th>Role</th><th>Phone</th><th>Status</th><th></th></tr>
               </thead>
-              <tbody id="membersTable"></tbody>
+              <tbody id="memberTable"></tbody>
             </table>
           </div>
         </div>
@@ -658,6 +523,8 @@
     var API = '/api';
     var GROUPS = [];
     var MEMBERS = [];
+    var ALL_MEMBERS = [];
+    var selectedGroupId = null;
     var editingGroupId = null;
     var editingMemberId = null;
 
@@ -672,9 +539,7 @@
       document.body.style.overflow = '';
     }
 
-    function getToken() {
-      return localStorage.getItem('jcf_token') || '';
-    }
+    function getToken() { return localStorage.getItem('jcf_token') || ''; }
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
       catch (e) { return null; }
@@ -687,9 +552,9 @@
     function requireLogin() {
       if (!getToken() || !getSession()) {
         window.location.href = 'login.html';
-        return null;
+        return false;
       }
-      return getSession();
+      return true;
     }
     function apiFetch(path, options) {
       options = options || {};
@@ -701,309 +566,277 @@
           logout();
           return Promise.reject(new Error('Unauthorized'));
         }
-        return res.json().then(function (data) {
-          return { ok: res.ok, data: data };
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; }
+          catch (e) {
+            return Promise.reject(new Error('Bad response (status ' + res.status + ')'));
+          }
+          return { ok: res.ok, status: res.status, data: data };
         });
       });
     }
-
-    function normalizeGroup(g) {
-      return {
-        id: g.id || '',
-        name: g.name || '',
-        leader: g.leader || '',
-        phone: g.phone || '',
-        day: g.day || '',
-        time: g.time || '',
-        location: g.location || '',
-        status: g.status || 'Active',
-        notes: g.notes || ''
-      };
+    function esc(str) {
+      return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
-    function normalizeMember(m) {
-      return {
-        id: m.id || '',
-        name: m.name || '',
-        groupId: m.group_id || m.groupId || '',
-        groupName: m.group_name || m.groupName || '',
-        phone: m.phone || '',
-        status: m.status || 'Active',
-        notes: m.notes || ''
-      };
-    }
-
-    function loadAll() {
-      return Promise.all([
-        apiFetch('/groups'),
-        apiFetch('/group-members')
-      ]).then(function (results) {
-        GROUPS = results[0].ok && Array.isArray(results[0].data)
-          ? results[0].data.map(normalizeGroup) : [];
-        MEMBERS = results[1].ok && Array.isArray(results[1].data)
-          ? results[1].data.map(normalizeMember) : [];
-        updateStats();
-        fillGroupSelects();
-        renderGroups();
-        renderMembers();
-      }).catch(function () {
-        GROUPS = [];
-        MEMBERS = [];
-        updateStats();
-        fillGroupSelects();
-        renderGroups();
-        renderMembers();
-      });
-    }
-
-    function memberCount(groupId) {
-      return MEMBERS.filter(function (m) { return m.groupId === groupId; }).length;
-    }
-
     function showSuccess(msg) {
       var el = document.getElementById('successMsg');
       el.textContent = msg;
       el.classList.add('show');
-      setTimeout(function () { el.classList.remove('show'); }, 2500);
+      setTimeout(function () { el.classList.remove('show'); }, 2800);
     }
 
-    function showTab(id, btn) {
-      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
-      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
-      document.getElementById('tab-' + id).classList.add('active');
-      if (btn) btn.classList.add('active');
-      closeGroupForm();
-      closeMemberForm();
+    function groupMemberCount(gid) {
+      return MEMBERS.filter(function (m) {
+        return String(m.groupId || m.group_id) === String(gid);
+      }).length;
     }
 
     function updateStats() {
-      document.getElementById('statTotal').textContent = GROUPS.length;
-      document.getElementById('statActive').textContent = GROUPS.filter(function (g) { return g.status === 'Active'; }).length;
+      document.getElementById('statGroups').textContent = GROUPS.length;
+      document.getElementById('statActive').textContent = GROUPS.filter(function (g) {
+        return (g.status || 'Active') === 'Active';
+      }).length;
       document.getElementById('statMembers').textContent = MEMBERS.length;
-      document.getElementById('statAvg').textContent = GROUPS.length ? Math.round(MEMBERS.length / GROUPS.length) : 0;
+      var g = GROUPS.find(function (x) { return String(x.id) === String(selectedGroupId); });
+      document.getElementById('statSelected').textContent = g ? (g.name || '—') : '—';
     }
 
-    function fillGroupSelects() {
-      var opts = '<option value="">Select group</option>' +
-        GROUPS.filter(function (g) { return g.status === 'Active'; }).map(function (g) {
-          return '<option value="' + g.id + '">' + g.name + ' (' + g.leader + ')</option>';
-        }).join('');
-      document.getElementById('mGroupId').innerHTML = opts;
-
-      var filter = document.getElementById('filterGroup');
-      var cur = filter.value;
-      filter.innerHTML = '<option value="">All Groups</option>' +
-        GROUPS.map(function (g) {
-          return '<option value="' + g.id + '">' + g.name + '</option>';
-        }).join('');
-      filter.value = cur;
+    function fillGroupSelect() {
+      var sel = document.getElementById('mGroup');
+      sel.innerHTML = GROUPS.map(function (g) {
+        return '<option value="' + g.id + '">' + (g.name || g.id) + '</option>';
+      }).join('') || '<option value="">No groups</option>';
+      if (selectedGroupId) sel.value = selectedGroupId;
     }
 
-    function renderGroups() {
-      var q = (document.getElementById('groupSearch').value || '').toLowerCase();
-      var data = GROUPS.filter(function (g) {
-        return !q ||
-          (g.name || '').toLowerCase().indexOf(q) !== -1 ||
-          (g.leader || '').toLowerCase().indexOf(q) !== -1 ||
-          (g.location || '').toLowerCase().indexOf(q) !== -1;
+    function filterGroups() {
+      var q = (document.getElementById('searchGroups').value || '').toLowerCase();
+      var list = GROUPS.filter(function (g) {
+        if (!q) return true;
+        return (g.name || '').toLowerCase().indexOf(q) !== -1 ||
+          (g.leader || '').toLowerCase().indexOf(q) !== -1;
       });
-      var grid = document.getElementById('groupsGrid');
-      if (!data.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:#94a3b8;background:var(--card);border:1px solid var(--border);border-radius:14px;">No groups found. Click Add Group.</div>';
+      renderGroups(list);
+    }
+
+    function renderGroups(list) {
+      list = list || GROUPS;
+      var box = document.getElementById('groupList');
+      if (!list.length) {
+        box.innerHTML = '<div class="muted">No growth groups yet. Click + New Group.</div>';
         return;
       }
-      grid.innerHTML = data.map(function (g) {
-        return '<div class="group-card">' +
-          '<div class="group-header">' +
-            '<div class="group-name">' + g.name + '</div>' +
-            '<span class="group-badge ' + (g.status === 'Inactive' ? 'inactive' : '') + '">' + g.status + '</span>' +
-          '</div>' +
+      box.innerHTML = list.map(function (g) {
+        var id = esc(g.id);
+        var active = String(g.id) === String(selectedGroupId) ? ' active' : '';
+        var st = (g.status || 'Active') === 'Active' ? 'badge' : 'badge inactive';
+        return '<div class="group-item' + active + '" onclick="selectGroup(\'' + id + '\')">' +
+          '<strong>' + (g.name || '—') + '</strong>' +
           '<div class="group-meta">' +
-            '<div>👤 Leader: <strong>' + g.leader + '</strong></div>' +
-            '<div>📞 ' + (g.phone || '-') + '</div>' +
-            '<div>📅 ' + (g.day || '-') + ' · ' + (g.time || '-') + '</div>' +
-            '<div>📍 ' + (g.location || '-') + '</div>' +
-            '<div>👥 Members: <strong>' + memberCount(g.id) + '</strong></div>' +
+            (g.leader ? 'Leader: ' + g.leader + ' · ' : '') +
+            groupMemberCount(g.id) + ' members · ' +
+            '<span class="' + st + '">' + (g.status || 'Active') + '</span>' +
           '</div>' +
-          '<div class="group-actions">' +
-            '<button type="button" class="action-btn" onclick="viewGroupMembers(\'' + g.id + '\')">Members</button>' +
-            '<button type="button" class="action-btn" onclick="editGroup(\'' + g.id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteGroup(\'' + g.id + '\')">Delete</button>' +
+          '<div style="margin-top:0.45rem;">' +
+            '<button type="button" class="action-btn" onclick="event.stopPropagation();editGroup(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="event.stopPropagation();deleteGroup(\'' + id + '\')">Delete</button>' +
           '</div></div>';
       }).join('');
     }
 
+    function selectGroup(id) {
+      selectedGroupId = id;
+      renderGroups();
+      renderMembers();
+      updateStats();
+      fillGroupSelect();
+    }
+
+    function renderMembers() {
+      var rows = MEMBERS.filter(function (m) {
+        if (!selectedGroupId) return true;
+        return String(m.groupId || m.group_id) === String(selectedGroupId);
+      });
+      var tbody = document.getElementById('memberTable');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="muted">' +
+          (selectedGroupId ? 'No members in this group' : 'Select a group or assign a member') +
+          '</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(function (m) {
+        var id = esc(m.id);
+        return '<tr>' +
+          '<td><strong>' + (m.name || '—') + '</strong></td>' +
+          '<td>' + (m.role || 'Member') + '</td>' +
+          '<td>' + (m.phone || '—') + '</td>' +
+          '<td>' + (m.status || 'Active') + '</td>' +
+          '<td>' +
+            '<button type="button" class="action-btn" onclick="editMember(\'' + id + '\')">Edit</button>' +
+            '<button type="button" class="action-btn" onclick="deleteMember(\'' + id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    }
+
+    /* ---- Group form ---- */
     function openGroupForm() {
       editingGroupId = null;
-      document.getElementById('groupFormTitle').textContent = 'Add Growth Group';
-      document.getElementById('groupSaveBtn').textContent = 'Save Group';
+      document.getElementById('groupFormTitle').textContent = 'New Growth Group';
       document.getElementById('gName').value = '';
       document.getElementById('gLeader').value = '';
-      document.getElementById('gPhone').value = '';
       document.getElementById('gDay').value = '';
-      document.getElementById('gTime').value = '';
-      document.getElementById('gLocation').value = '';
       document.getElementById('gStatus').value = 'Active';
       document.getElementById('gNotes').value = '';
-      closeMemberForm();
-      document.getElementById('groupForm').classList.add('show');
+      document.getElementById('groupFormCard').classList.remove('hidden');
+      document.getElementById('memberFormCard').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
     function closeGroupForm() {
-      document.getElementById('groupForm').classList.remove('show');
+      document.getElementById('groupFormCard').classList.add('hidden');
       editingGroupId = null;
     }
-
     function editGroup(id) {
-      var g = GROUPS.find(function (x) { return x.id === id; });
+      var g = GROUPS.find(function (x) { return String(x.id) === String(id); });
       if (!g) return;
       editingGroupId = id;
       document.getElementById('groupFormTitle').textContent = 'Edit Growth Group';
-      document.getElementById('groupSaveBtn').textContent = 'Update Group';
-      document.getElementById('gName').value = g.name;
-      document.getElementById('gLeader').value = g.leader;
-      document.getElementById('gPhone').value = g.phone || '';
-      document.getElementById('gDay').value = g.day || '';
-      document.getElementById('gTime').value = g.time || '';
-      document.getElementById('gLocation').value = g.location || '';
+      document.getElementById('gName').value = g.name || '';
+      document.getElementById('gLeader').value = g.leader || '';
+      document.getElementById('gDay').value = g.meetingDay || g.day || '';
       document.getElementById('gStatus').value = g.status || 'Active';
-      document.getElementById('gNotes').value = g.notes || '';
-      closeMemberForm();
-      document.getElementById('groupForm').classList.add('show');
+      document.getElementById('gNotes').value = g.notes || g.location || '';
+      document.getElementById('groupFormCard').classList.remove('hidden');
+      document.getElementById('memberFormCard').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
     function saveGroup() {
       var name = document.getElementById('gName').value.trim();
-      var leader = document.getElementById('gLeader').value.trim();
-      if (!name || !leader) {
-        alert('Group name and leader are required');
-        return;
-      }
-      var record = {
+      if (!name) { alert('Group name is required'); return; }
+      var body = {
         id: editingGroupId || ('GG-' + Date.now()),
         name: name,
-        leader: leader,
-        phone: document.getElementById('gPhone').value.trim(),
-        day: document.getElementById('gDay').value,
-        time: document.getElementById('gTime').value.trim(),
-        location: document.getElementById('gLocation').value.trim(),
+        leader: document.getElementById('gLeader').value.trim(),
+        meetingDay: document.getElementById('gDay').value,
         status: document.getElementById('gStatus').value,
         notes: document.getElementById('gNotes').value.trim()
       };
       var path = editingGroupId ? '/groups/' + encodeURIComponent(editingGroupId) : '/groups';
       var method = editingGroupId ? 'PUT' : 'POST';
-      apiFetch(path, { method: method, body: JSON.stringify(record) })
-        .then(function (result) {
-          if (!result.ok) {
-            alert((result.data && result.data.error) || 'Save failed');
+      apiFetch(path, { method: method, body: JSON.stringify(body) })
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Save failed');
             return;
           }
-          showSuccess(editingGroupId ? 'Group updated!' : '"' + name + '" added!');
+          showSuccess(editingGroupId ? 'Group updated.' : 'Group created.');
           closeGroupForm();
           loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (e) { alert(e.message || 'Server error'); });
     }
-
     function deleteGroup(id) {
-      var count = memberCount(id);
-      var msg = count
-        ? 'This group has ' + count + ' member(s). Delete group and those members?'
-        : 'Delete this growth group?';
-      if (!confirm(msg)) return;
+      if (!confirm('Delete this growth group? Members stay in the system but unassigned from the group.')) return;
       apiFetch('/groups/' + encodeURIComponent(id), { method: 'DELETE' })
-        .then(function (result) {
-          if (result.ok) {
-            showSuccess('Group deleted.');
-            loadAll();
-          } else {
-            alert((result.data && result.data.error) || 'Delete failed');
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Delete failed');
+            return;
           }
+          if (String(selectedGroupId) === String(id)) selectedGroupId = null;
+          showSuccess('Group deleted.');
+          loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (e) { alert(e.message || 'Server error'); });
     }
 
-    function viewGroupMembers(groupId) {
-      showTab('members', document.querySelectorAll('.tab-btn')[1]);
-      document.getElementById('filterGroup').value = groupId;
-      renderMembers();
-    }
-
-    function renderMembers() {
-      var q = (document.getElementById('memberSearch').value || '').toLowerCase();
-      var groupId = document.getElementById('filterGroup').value;
-      var data = MEMBERS.filter(function (m) {
-        var matchQ = !q || (m.name || '').toLowerCase().indexOf(q) !== -1 || (m.phone || '').indexOf(q) !== -1;
-        var matchG = !groupId || m.groupId === groupId;
-        return matchQ && matchG;
-      });
-      var tbody = document.getElementById('membersTable');
-      if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8;">No members found</td></tr>';
-        return;
-      }
-      tbody.innerHTML = data.map(function (m) {
-        return '<tr>' +
-          '<td><strong>' + m.name + '</strong></td>' +
-          '<td>' + (m.groupName || '-') + '</td>' +
-          '<td>' + (m.phone || '-') + '</td>' +
-          '<td><span class="badge ' + (m.status === 'Active' ? 'active' : 'inactive') + '">' + m.status + '</span></td>' +
-          '<td>' +
-            '<button type="button" class="action-btn" onclick="editMember(\'' + m.id + '\')">Edit</button> ' +
-            '<button type="button" class="action-btn" onclick="deleteMember(\'' + m.id + '\')">Delete</button>' +
-          '</td></tr>';
-      }).join('');
-    }
-
+    /* ---- Member assign ---- */
     function openMemberForm() {
       editingMemberId = null;
-      document.getElementById('memberFormTitle').textContent = 'Add Group Member';
-      document.getElementById('memberSaveBtn').textContent = 'Save Member';
+      document.getElementById('memberFormTitle').textContent = 'Assign Member to Group';
+      document.getElementById('mSearch').value = '';
+      document.getElementById('mHits').classList.remove('show');
+      document.getElementById('mMemberId').value = '';
+      document.getElementById('mMemberName').value = '';
       document.getElementById('mName').value = '';
       document.getElementById('mPhone').value = '';
+      document.getElementById('mRole').value = 'Member';
       document.getElementById('mStatus').value = 'Active';
       document.getElementById('mNotes').value = '';
-      fillGroupSelects();
-      closeGroupForm();
-      document.getElementById('memberForm').classList.add('show');
+      fillGroupSelect();
+      document.getElementById('memberFormCard').classList.remove('hidden');
+      document.getElementById('groupFormCard').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
     function closeMemberForm() {
-      document.getElementById('memberForm').classList.remove('show');
+      document.getElementById('memberFormCard').classList.add('hidden');
       editingMemberId = null;
     }
-
+    function searchMembers() {
+      var q = (document.getElementById('mSearch').value || '').toLowerCase().trim();
+      var box = document.getElementById('mHits');
+      if (q.length < 2) {
+        box.classList.remove('show');
+        box.innerHTML = '';
+        return;
+      }
+      var hits = ALL_MEMBERS.filter(function (m) {
+        return (m.name || '').toLowerCase().indexOf(q) !== -1 ||
+          (m.phone || '').indexOf(q) !== -1 ||
+          String(m.id || '').toLowerCase().indexOf(q) !== -1;
+      }).slice(0, 8);
+      if (!hits.length) {
+        box.innerHTML = '<div class="search-hit">No members found</div>';
+        box.classList.add('show');
+        return;
+      }
+      box.innerHTML = hits.map(function (m) {
+        var id = esc(m.id);
+        var name = esc(m.name);
+        return '<div class="search-hit" onclick="pickMember(\'' + id + '\',\'' + name + '\',\'' + esc(m.phone || '') + '\')">' +
+          (m.name || '—') + ' <span style="color:#94a3b8;">' + (m.phone || '') + '</span></div>';
+      }).join('');
+      box.classList.add('show');
+    }
+    function pickMember(id, name, phone) {
+      document.getElementById('mMemberId').value = id;
+      document.getElementById('mMemberName').value = name;
+      document.getElementById('mName').value = name;
+      document.getElementById('mPhone').value = phone || '';
+      document.getElementById('mSearch').value = name;
+      document.getElementById('mHits').classList.remove('show');
+    }
     function editMember(id) {
-      var m = MEMBERS.find(function (x) { return x.id === id; });
+      var m = MEMBERS.find(function (x) { return String(x.id) === String(id); });
       if (!m) return;
       editingMemberId = id;
       document.getElementById('memberFormTitle').textContent = 'Edit Group Member';
-      document.getElementById('memberSaveBtn').textContent = 'Update Member';
-      fillGroupSelects();
-      document.getElementById('mName').value = m.name;
-      document.getElementById('mGroupId').value = m.groupId;
+      document.getElementById('mMemberId').value = m.memberId || m.member_id || '';
+      document.getElementById('mName').value = m.name || '';
       document.getElementById('mPhone').value = m.phone || '';
+      document.getElementById('mRole').value = m.role || 'Member';
       document.getElementById('mStatus').value = m.status || 'Active';
       document.getElementById('mNotes').value = m.notes || '';
-      closeGroupForm();
-      document.getElementById('memberForm').classList.add('show');
+      fillGroupSelect();
+      document.getElementById('mGroup').value = m.groupId || m.group_id || '';
+      document.getElementById('memberFormCard').classList.remove('hidden');
+      document.getElementById('groupFormCard').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
     function saveMember() {
       var name = document.getElementById('mName').value.trim();
-      var groupId = document.getElementById('mGroupId').value;
-      if (!name || !groupId) {
-        alert('Name and group are required');
-        return;
-      }
-      var record = {
+      var groupId = document.getElementById('mGroup').value;
+      if (!name) { alert('Name is required'); return; }
+      if (!groupId) { alert('Select a group'); return; }
+      var g = GROUPS.find(function (x) { return String(x.id) === String(groupId); });
+      var body = {
         id: editingMemberId || ('GM-' + Date.now()),
+        memberId: document.getElementById('mMemberId').value || '',
         name: name,
-        groupId: groupId,
         phone: document.getElementById('mPhone').value.trim(),
+        groupId: groupId,
+        groupName: g ? g.name : '',
+        role: document.getElementById('mRole').value,
         status: document.getElementById('mStatus').value,
         notes: document.getElementById('mNotes').value.trim()
       };
@@ -1011,46 +844,66 @@
         ? '/group-members/' + encodeURIComponent(editingMemberId)
         : '/group-members';
       var method = editingMemberId ? 'PUT' : 'POST';
-      apiFetch(path, { method: method, body: JSON.stringify(record) })
-        .then(function (result) {
-          if (!result.ok) {
-            alert((result.data && result.data.error) || 'Save failed');
+      apiFetch(path, { method: method, body: JSON.stringify(body) })
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Save failed');
             return;
           }
-          showSuccess(editingMemberId ? 'Member updated!' : '"' + name + '" added!');
+          selectedGroupId = groupId;
+          showSuccess(editingMemberId ? 'Member updated.' : '"' + name + '" assigned.');
           closeMemberForm();
           loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (e) { alert(e.message || 'Server error'); });
     }
-
     function deleteMember(id) {
-      if (!confirm('Delete this group member?')) return;
+      if (!confirm('Remove this member from the group?')) return;
       apiFetch('/group-members/' + encodeURIComponent(id), { method: 'DELETE' })
-        .then(function (result) {
-          if (result.ok) {
-            showSuccess('Member deleted.');
-            loadAll();
-          } else {
-            alert((result.data && result.data.error) || 'Delete failed');
+        .then(function (r) {
+          if (!r.ok) {
+            alert((r.data && r.data.error) || 'Delete failed');
+            return;
           }
+          showSuccess('Member removed from group.');
+          loadAll();
         })
-        .catch(function () { alert('Server error'); });
+        .catch(function (e) { alert(e.message || 'Server error'); });
     }
 
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-    });
-
-    requireLogin();
-    var session = getSession();
-    if (session) {
-      document.getElementById('userName').textContent = session.name;
-      document.getElementById('userRole').textContent = session.role;
-      document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+    function loadAll() {
+      Promise.all([
+        apiFetch('/groups'),
+        apiFetch('/group-members'),
+        apiFetch('/members')
+      ]).then(function (results) {
+        GROUPS = results[0].ok && Array.isArray(results[0].data) ? results[0].data : [];
+        MEMBERS = results[1].ok && Array.isArray(results[1].data) ? results[1].data : [];
+        ALL_MEMBERS = results[2].ok && Array.isArray(results[2].data) ? results[2].data : [];
+        if (selectedGroupId && !GROUPS.find(function (g) { return String(g.id) === String(selectedGroupId); })) {
+          selectedGroupId = GROUPS[0] ? GROUPS[0].id : null;
+        }
+        if (!selectedGroupId && GROUPS.length) selectedGroupId = GROUPS[0].id;
+        updateStats();
+        fillGroupSelect();
+        filterGroups();
+        renderMembers();
+      }).catch(function (e) {
+        alert(e.message || 'Could not load growth groups. Is npm start running?');
+      });
     }
 
-    loadAll();
+    if (!requireLogin()) {
+      /* redirect */
+    } else {
+      var session = getSession();
+      if (session) {
+        document.getElementById('userName').textContent = session.name || '—';
+        document.getElementById('userRole').textContent = session.role || '—';
+        document.getElementById('userAvatar').textContent = (session.name || '?').charAt(0);
+      }
+      loadAll();
+    }
   </script>
   <script src="js/access.js"></script>
 </body>
