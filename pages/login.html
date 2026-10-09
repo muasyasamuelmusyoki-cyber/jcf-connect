@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JCF Connect – Login</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/logo.jpg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
@@ -105,10 +106,157 @@
       justify-content: center;
       margin-bottom: 1.25rem;
     }
+
+    /* Professional post-login loading screen */
+    .boot-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #060b12;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+    .boot-screen.show {
+      display: flex;
+      opacity: 1;
+    }
+    .boot-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 30%, rgba(196, 30, 58, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 35% at 50% 80%, rgba(30, 58, 95, 0.15) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .boot-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      max-width: 360px;
+    }
+    .boot-logo-ring {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(145deg, rgba(196, 30, 58, 0.55), rgba(212, 160, 23, 0.35), rgba(30, 58, 95, 0.5));
+      margin-bottom: 1.75rem;
+      animation: logoPulse 2.2s ease-in-out infinite;
+    }
+    .boot-logo-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #0c1524;
+      padding: 10px;
+      display: block;
+    }
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.25); }
+      50% { box-shadow: 0 0 0 12px rgba(196, 30, 58, 0); }
+    }
+    .boot-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+    }
+    .boot-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #d4a017;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+    }
+    .boot-progress {
+      width: 180px;
+      height: 3px;
+      background: #1e3352;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .boot-progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #c41e3a, #d4a017);
+      animation: progressFill 1.85s ease-out forwards;
+    }
+    @keyframes progressFill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    .boot-sub {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .boot-credit {
+      position: absolute;
+      bottom: 2rem;
+      left: 1rem;
+      right: 1rem;
+      text-align: center;
+      z-index: 1;
+    }
+    .boot-credit-line {
+      font-size: 0.72rem;
+      color: #64748b;
+      letter-spacing: 0.02em;
+    }
+    .boot-credit-line strong {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+    .boot-version {
+      margin-top: 0.35rem;
+      font-size: 0.68rem;
+      color: #475569;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .boot-divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #d4a017, transparent);
+      margin: 0.85rem auto;
+    }
   </style>
 </head>
 <body>
-  <div class="login-container">
+  <div class="boot-screen" id="bootScreen">
+    <div class="boot-inner">
+      <div class="boot-logo-ring">
+        <img src="../assets/images/logo.jpg" alt="JCF Connect" onerror="this.parentElement.style.display='none'" />
+      </div>
+      <div class="boot-title">JCF Connect</div>
+      <div class="boot-tag">City of Champions</div>
+      <div class="boot-progress">
+        <div class="boot-progress-bar"></div>
+      </div>
+      <div class="boot-sub">Preparing your workspace</div>
+    </div>
+    <div class="boot-credit">
+      <div class="boot-divider"></div>
+      <div class="boot-credit-line">Designed by <strong>Samuel Musyoki</strong></div>
+      <div class="boot-version">Version 1.0</div>
+    </div>
+  </div>
+
+  <div class="login-container" id="loginContainer">
     <div class="login-card">
       <div class="logo-section">
         <div class="logo-wrapper">
@@ -120,7 +268,7 @@
       </div>
 
       <div class="error-msg" id="errorMsg"><span>⚠</span><span id="errorText">Error</span></div>
-      <div class="success-msg" id="successMsg"><span>✓</span><span>Login successful. Redirecting...</span></div>
+      <div class="success-msg" id="successMsg"><span>✓</span><span>Login successful. Preparing workspace…</span></div>
 
       <form id="loginForm" novalidate>
         <div class="form-group">
@@ -142,12 +290,9 @@
           </label>
           <a href="forgot-password.html" class="forgot">Forgot password?</a>
         </div>
-
-        <!-- Paste YOUR Site Key from Google if this one is different -->
         <div class="captcha-wrap">
           <div class="g-recaptcha" data-sitekey="6LeYeswtAAAAAC3rYUllOWkll8EHqUZs3NgUSN6I"></div>
         </div>
-
         <button type="submit" class="btn-login" id="loginBtn">
           <span class="btn-text">Sign In</span>
         </button>
@@ -160,7 +305,7 @@
           <input type="text" id="otpCode" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
         </div>
         <button type="button" class="btn-login" id="verify2FABtn">Verify</button>
-       <button type="button" class="btn-login" id="backToLoginBtn" style="margin-top:0.75rem;background:transparent;border:1px solid var(--text-muted);box-shadow:none;">Back</button>
+        <button type="button" class="btn-login" id="backToLoginBtn" style="margin-top:0.75rem;background:transparent;border:1px solid var(--text-muted);box-shadow:none;">Back</button>
       </div>
 
       <div class="footer">
@@ -184,6 +329,18 @@
         input.type = 'password';
         btn.textContent = 'Show';
       }
+    }
+
+    function showBootScreen() {
+      var container = document.getElementById('loginContainer');
+      var boot = document.getElementById('bootScreen');
+      if (container) container.style.display = 'none';
+      boot.style.display = 'flex';
+      void boot.offsetWidth;
+      boot.classList.add('show');
+      setTimeout(function () {
+        window.location.href = 'dashboard.html';
+      }, 2100);
     }
 
     function handleLogin(e) {
@@ -235,7 +392,6 @@
             if (window.grecaptcha) grecaptcha.reset();
             return;
           }
-
           if (result.data.requires2FA) {
             window._pending2FA = result.data.pendingToken;
             document.getElementById('loginForm').style.display = 'none';
@@ -243,7 +399,6 @@
             document.getElementById('otpCode').focus();
             return;
           }
-
           finishLogin(result.data);
         })
         .catch(function () {
@@ -263,22 +418,18 @@
         localStorage.removeItem('jcf_remember');
       }
       document.getElementById('successMsg').classList.add('show');
-      setTimeout(function () {
-        window.location.href = 'dashboard.html';
-      }, 700);
+      setTimeout(showBootScreen, 400);
     }
 
     function verify2FA() {
       var code = document.getElementById('otpCode').value.trim();
       var error = document.getElementById('errorMsg');
       var errorText = document.getElementById('errorText');
-
       if (!code || !window._pending2FA) {
         errorText.textContent = 'Enter the 6-digit code.';
         error.classList.add('show');
         return;
       }
-
       fetch(API + '/auth/verify-2fa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -303,18 +454,32 @@
         });
     }
 
-   function backToLogin() {
-  window._pending2FA = null;
-  document.getElementById('twoFactorBox').style.display = 'none';
-  document.getElementById('loginForm').style.display = 'block';
-  document.getElementById('errorMsg').classList.remove('show');
-  if (window.grecaptcha) grecaptcha.reset();
-}
+    function backToLogin() {
+      window._pending2FA = null;
+      document.getElementById('twoFactorBox').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('errorMsg').classList.remove('show');
+      if (window.grecaptcha) grecaptcha.reset();
+    }
 
-document.getElementById('loginForm').addEventListener('submit', handleLogin);
-document.getElementById('passwordToggle').addEventListener('click', togglePassword);
-document.getElementById('verify2FABtn').addEventListener('click', verify2FA);
-document.getElementById('backToLoginBtn').addEventListener('click', backToLogin);
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('passwordToggle').addEventListener('click', togglePassword);
+    document.getElementById('verify2FABtn').addEventListener('click', verify2FA);
+    document.getElementById('backToLoginBtn').addEventListener('click', backToLogin);
+
+    window.addEventListener('DOMContentLoaded', function () {
+      var session = JSON.parse(localStorage.getItem('jcf_user') || 'null');
+      var token = localStorage.getItem('jcf_token');
+      if (session && token) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      var remembered = localStorage.getItem('jcf_remember');
+      if (remembered) {
+        document.getElementById('email').value = remembered;
+        document.getElementById('remember').checked = true;
+      }
+    });
   </script>
 </body>
 </html>
