@@ -40,18 +40,25 @@ router.put('/church', requireRole('Super Admin', 'Admin'), (req, res) => {
   db.saveStore();
   res.json(s.settings.church);
 });
-
 router.put('/prefs', (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
+
+  const idleMins = Number(b.idleMins);
+
   s.settings.prefs = {
     dark: b.dark !== false,
     banner: b.banner !== false,
-    currency: b.currency || 'KES',
+    currency: ['KES', 'USD', 'EUR'].includes(b.currency)
+      ? b.currency
+      : 'KES',
     idle: b.idle !== false,
-    idleMins: Number(b.idleMins) || 5
+    idleMins: Number.isFinite(idleMins)
+      ? Math.min(60, Math.max(1, idleMins))
+      : 5
   };
+
   db.saveStore();
   res.json(s.settings.prefs);
 });

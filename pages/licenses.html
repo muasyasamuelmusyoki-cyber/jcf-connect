@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>License Management | JCF Connect</title>
+  <style>
+    :root {
+      --primary: #2546a8;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #697386;
+      --border: #e4e8f0;
+      --green: #16834a;
+      --red: #c63737;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: #172554;
+      color: white;
+      padding: 20px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 6px 0 0; color: #dbeafe; font-size: 13px; }
+    header a { color: white; text-decoration: none; }
+    main { max-width: 1250px; margin: 28px auto; padding: 0 18px 40px; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .toolbar h2 { margin: 0; font-size: 21px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(20, 35, 70, .035);
+      min-width: 0;
+    }
+    .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-number { font-size: 29px; font-weight: 700; margin-top: 9px; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 350px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    h3 { margin: 0 0 18px; font-size: 17px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 7px; }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #cfd6e4;
+      border-radius: 8px;
+      padding: 11px 12px;
+      font: inherit;
+      font-size: 14px;
+      background: white;
+      color: var(--text);
+    }
+    textarea { min-height: 85px; resize: vertical; }
+    button, .button-link {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 15px;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .secondary { background: #e9edf7; color: #23345e; }
+    .danger { background: #fff0f0; color: var(--red); }
+    .full { width: 100%; margin-top: 18px; }
+    .message { margin: 14px 0; font-size: 13px; white-space: pre-wrap; }
+    .error { color: var(--red); }
+    .success { color: var(--green); }
+    .key-panel {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid #b7e4c7;
+      background: #f0fff5;
+      border-radius: 9px;
+    }
+    .key-value {
+      display: block;
+      overflow-wrap: anywhere;
+      font-family: Consolas, monospace;
+      margin: 10px 0;
+      font-size: 13px;
+      user-select: all;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+    td { overflow-wrap: anywhere; }
+    .pill {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #edf0f5;
+      color: #4b5563;
+    }
+    .pill.active { background: #e4f8ec; color: #13763e; }
+    .pill.revoked { background: #fff0f0; color: #b42323; }
+    .pill.expired { background: #fff3d8; color: #885b00; }
+    .empty { text-align: center; color: var(--muted); padding: 28px; }
+    .small-btn { padding: 7px 9px; font-size: 12px; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      header { padding: 17px; }
+      main { padding: 0 12px 30px; margin-top: 18px; }
+      .card { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>JCF Connect</h1>
+      <p>License Management</p>
+    </div>
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div>
+        <h2>Software Licenses</h2>
+        <p class="muted">Issue, monitor and revoke JCF Connect licenses.</p>
+      </div>
+      <button type="button" class="secondary" id="refreshBtn">Refresh</button>
+    </div>
+
+    <div id="pageMessage" class="message" role="status" aria-live="polite"></div>
+
+    <section class="stats">
+      <div class="card"><div class="stat-label">Total licenses</div><div class="stat-number" id="totalCount">—</div></div>
+      <div class="card"><div class="stat-label">Active</div><div class="stat-number" id="activeCount">—</div></div>
+      <div class="card"><div class="stat-label">Expired</div><div class="stat-number" id="expiredCount">—</div></div>
+      <div class="card"><div class="stat-label">Revoked</div><div class="stat-number" id="revokedCount">—</div></div>
+    </section>
+
+    <section class="layout">
+      <div class="card">
+        <h3>Issue a License</h3>
+        <form id="licenseForm">
+          <label for="customerName">Customer / Organization *</label>
+          <input id="customerName" name="customerName" required maxlength="200" autocomplete="organization">
+
+          <label for="customerEmail">Customer Email</label>
+          <input id="customerEmail" name="customerEmail" type="email" maxlength="254" autocomplete="email">
+
+          <label for="maxInstallations">Allowed Installations *</label>
+          <input id="maxInstallations" name="maxInstallations" type="number" min="1" max="100" value="1" required>
+
+          <label for="expiresAt">Expiry Date (optional)</label>
+          <input id="expiresAt" name="expiresAt" type="date">
+          <p class="muted">Leave blank for a license without a scheduled expiry.</p>
+
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" name="notes" maxlength="5000" placeholder="Internal notes about this license"></textarea>
+
+          <button type="submit" class="full" id="createBtn">Create License</button>
+          <div id="formMessage" class="message" role="status" aria-live="polite"></div>
+        </form>
+
+        <div class="key-panel" id="keyPanel">
+          <strong>License created — copy the activation key now.</strong>
+          <p class="muted">For security, this key is shown only in this response. If you leave or refresh this page, it cannot be retrieved from the server.</p>
+          <code class="key-value" id="activationKey"></code>
+          <button type="button" id="copyKeyBtn">Copy Activation Key</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Issued Licenses</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Key Prefix</th>
+                <th>Status</th>
+                <th>Installations</th>
+                <th>Expires</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="licensesTable">
+              <tr><td colspan="7" class="empty">Loading licenses…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/access.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var API = '/api';
+      var licenses = [];
+      var pageMessage = document.getElementById('pageMessage');
+      var formMessage = document.getElementById('formMessage');
+      var createBtn = document.getElementById('createBtn');
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+          return {
+            '&': '&amp;', '<': '&lt;', '>': '&gt;',
+            '"': '&quot;', "'": '&#39;'
+          }[ch];
+        });
+      }
+
+      function setMessage(element, message, kind) {
+        element.textContent = message || '';
+        element.className = 'message' + (kind ? ' ' + kind : '');
+      }
+
+      function request(path, options) {
+        options = options || {};
+        options.headers = options.headers || {};
+        var token = typeof window.getToken === 'function'
+          ? window.getToken()
+          : (localStorage.getItem('jcf_token') || '');
+
+        if (!token) {
+          window.location.href = 'login.html';
+          return Promise.reject(new Error('Please sign in again.'));
+        }
+
+        options.headers.Authorization = 'Bearer ' + token;
+        if (options.body) options.headers['Content-Type'] = 'application/json';
+
+        return fetch(API + path, options).then(function (response) {
+          return response.json().catch(function () { return {}; }).then(function (data) {
+            if (!response.ok) {
+              var message = response.status === 403
+                ? 'Your account does not have permission to manage licenses.'
+                : response.status === 401
+                  ? 'Your session has expired. Please sign in again.'
+                  : ((data && data.error) || 'The request could not be completed.');
+              var error = new Error(message);
+              error.status = response.status;
+              throw error;
+            }
+            return data;
+          });
+        });
+      }
+
+      function statusFor(license) {
+        var status = String(license.status || '').toLowerCase();
+        if (status === 'revoked' || license.revoked_at) return 'Revoked';
+        if (license.expires_at && new Date(license.expires_at).getTime() < Date.now()) return 'Expired';
+        return license.status || 'Unknown';
+      }
+
+      function formatDate(value) {
+        if (!value) return '—';
+        var date = new Date(value);
+        return isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+      }
+
+      function updateStats() {
+        document.getElementById('totalCount').textContent = licenses.length;
+        document.getElementById('activeCount').textContent = licenses.filter(function (item) {
+          return statusFor(item).toLowerCase() === 'active';
+        }).length;
+        document.getElementById('expiredCount').textContent = licenses.filter(function (item) {
+          return statusFor(item).toLowerCase() === 'expired';
+        }).length;
+        document.getElementById('revokedCount').textContent = licenses.filter(function (item) {
+          return statusFor(item).toLowerCase() === 'revoked';
+        }).length;
+      }
+
+      function renderLicenses() {
+        var tbody = document.getElementById('licensesTable');
+        updateStats();
+
+        if (!licenses.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty">No licenses found. Create your first license using the form.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = licenses.map(function (license) {
+          var status = statusFor(license);
+          var cssStatus = status.toLowerCase();
+          var installations = Number(license.active_installations || 0) + ' / ' +
+            Number(license.max_installations || 1);
+          var customer = license.customer_name || 'Unnamed customer';
+          var customerEmail = license.customer_email || '';
+          var canRevoke = cssStatus === 'active';
+
+          return '<tr>' +
+            '<td><strong>' + escapeHtml(customer) + '</strong><br><span class="muted">' +
+              escapeHtml(customerEmail) + '</span></td>' +
+            '<td>' + escapeHtml(license.key_prefix || '—') + '</td>' +
+            '<td><span class="pill ' + escapeHtml(cssStatus) + '">' + escapeHtml(status) + '</span></td>' +
+            '<td>' + escapeHtml(installations) + '</td>' +
+            '<td>' + escapeHtml(formatDate(license.expires_at)) + '</td>' +
+            '<td>' + escapeHtml(formatDate(license.created_at)) + '</td>' +
+            '<td>' + (canRevoke
+              ? '<button type="button" class="danger small-btn" data-revoke="' + encodeURIComponent(String(license.id)) + '">Revoke</button>'
+              : '<span class="muted">—</span>') + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function loadLicenses() {
+        setMessage(pageMessage, 'Loading licenses…');
+        document.getElementById('refreshBtn').disabled = true;
+
+        request('/licensing')
+          .then(function (data) {
+            licenses = Array.isArray(data.licenses) ? data.licenses : [];
+            renderLicenses();
+            setMessage(pageMessage, 'Licenses loaded successfully.', 'success');
+          })
+          .catch(function (error) {
+            if (error.status === 401) {
+              if (typeof window.logout === 'function') window.logout();
+              else window.location.href = 'login.html';
+              return;
+            }
+            setMessage(pageMessage, error.message || 'Could not load licenses.', 'error');
+            document.getElementById('licensesTable').innerHTML =
+              '<tr><td colspan="7" class="empty">Unable to load licenses. Check your access and server connection.</td></tr>';
+          })
+          .finally(function () {
+            document.getElementById('refreshBtn').disabled = false;
+          });
+      }
+
+      document.getElementById('licenseForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        setMessage(formMessage, '');
+
+        var customerName = document.getElementById('customerName').value.trim();
+        var customerEmail = document.getElementById('customerEmail').value.trim();
+        var maxInstallations = Number(document.getElementById('maxInstallations').value);
+        var expiryInput = document.getElementById('expiresAt').value;
+        var notes = document.getElementById('notes').value.trim();
+
+        if (!customerName) {
+          setMessage(formMessage, 'Enter the customer or organization name.', 'error');
+          return;
+        }
+        if (!Number.isInteger(maxInstallations) || maxInstallations < 1 || maxInstallations > 100) {
+          setMessage(formMessage, 'Installations must be a whole number from 1 to 100.', 'error');
+          return;
+        }
+
+        var body = {
+          customerName: customerName,
+          customerEmail: customerEmail,
+          maxInstallations: maxInstallations,
+          expiresAt: expiryInput ? new Date(expiryInput + 'T23:59:59').toISOString() : null,
+          notes: notes
+        };
+
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creating…';
+
+        request('/licensing', {
+          method: 'POST',
+          body: JSON.stringify(body)
+        }).then(function (data) {
+          var key = data.activationKey;
+          if (key) {
+            document.getElementById('activationKey').textContent = key;
+            document.getElementById('keyPanel').style.display = 'block';
+          }
+          document.getElementById('licenseForm').reset();
+          document.getElementById('maxInstallations').value = '1';
+          setMessage(formMessage, 'License created successfully.', 'success');
+          loadLicenses();
+        }).catch(function (error) {
+          setMessage(formMessage, error.message || 'Could not create license.', 'error');
+        }).finally(function () {
+          createBtn.disabled = false;
+          createBtn.textContent = 'Create License';
+        });
+      });
+
+      document.getElementById('copyKeyBtn').addEventListener('click', function () {
+        var key = document.getElementById('activationKey').textContent;
+        if (!key) return;
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(key).then(function () {
+            setMessage(formMessage, 'Activation key copied.', 'success');
+          }).catch(function () {
+            setMessage(formMessage, 'Copy failed. Select the activation key and copy it manually.', 'error');
+          });
+        } else {
+          setMessage(formMessage, 'Select the activation key above and copy it manually.', 'error');
+        }
+      });
+
+      document.getElementById('licensesTable').addEventListener('click', function (event) {
+        var button = event.target.closest('[data-revoke]');
+        if (!button) return;
+
+        var id;
+        try {
+          id = decodeURIComponent(button.getAttribute('data-revoke'));
+        } catch (error) {
+          setMessage(pageMessage, 'Invalid license identifier.', 'error');
+          return;
+        }
+
+        if (!confirm('Revoke this license? This may prevent future activations.')) return;
+
+        button.disabled = true;
+        request('/licensing/' + encodeURIComponent(id) + '/revoke', {
+          method: 'POST',
+          body: JSON.stringify({})
+        }).then(function () {
+          setMessage(pageMessage, 'License revoked.', 'success');
+          loadLicenses();
+        }).catch(function (error) {
+          setMessage(pageMessage, error.message || 'Could not revoke license.', 'error');
+          button.disabled = false;
+        });
+      });
+
+      document.getElementById('refreshBtn').addEventListener('click', loadLicenses);
+      loadLicenses();
+    })();
+  </script>
+</body>
+</html>
