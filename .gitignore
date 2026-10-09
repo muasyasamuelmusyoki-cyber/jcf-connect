@@ -9,3 +9,5 @@ server/data/jcf.json
 server/data/*backup*.json
 *.bak
 *.backup
+# Local database recovery backups
+server/data/jcf-*.json
