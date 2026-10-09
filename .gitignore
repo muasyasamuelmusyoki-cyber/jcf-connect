@@ -3,3 +3,9 @@ dist/
 .env
 .env.local
 .env.*.local
+
+# Private church database and local backups
+server/data/jcf.json
+server/data/*backup*.json
+*.bak
+*.backup

@@ -1,69 +1,71 @@
 const { app, BrowserWindow, shell } = require('electron');
-const path = require('path');
 
 const ALLOWED_URL = 'https://jcf-connect.onrender.com';
 
 function isAllowedURL(url) {
-    try {
-        const parsed = new URL(url);
-        return parsed.protocol === 'https:' &&
-               parsed.hostname === 'jcf-connect.onrender.com';
-    } catch {
-        return false;
-    }
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === 'https:' &&
+      parsed.hostname === 'jcf-connect.onrender.com'
+    );
+  } catch {
+    return false;
+  }
 }
 
 function createWindow() {
-    const win = new BrowserWindow({
-        width: 1400,
-        height: 900,
-        minWidth: 1000,
-        minHeight: 700,
-        title: 'JCF Connect',
+  const win = new BrowserWindow({
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
+    title: 'JCF Connect',
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      webSecurity: true
+    }
+  });
 
-        icon: path.join(__dirname, 'icons', 'icon.ico'),
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (isAllowedURL(url)) {
+      return { action: 'allow' };
+    }
 
-        webPreferences: {
-            contextIsolation: true,
-            nodeIntegration: false,
-            sandbox: true,
-            webSecurity: true
-        }
-    });
+    if (url.startsWith('https://') || url.startsWith('http://')) {
+      shell.openExternal(url);
+    }
 
-    win.webContents.setWindowOpenHandler(({ url }) => {
-        if (isAllowedURL(url)) {
-            return { action: 'allow' };
-        }
+    return { action: 'deny' };
+  });
 
+  win.webContents.on('will-navigate', (event, url) => {
+    if (!isAllowedURL(url)) {
+      event.preventDefault();
+
+      if (url.startsWith('https://') || url.startsWith('http://')) {
         shell.openExternal(url);
-        return { action: 'deny' };
-    });
+      }
+    }
+  });
 
-    win.webContents.on('will-navigate', (event, url) => {
-        if (!isAllowedURL(url)) {
-            event.preventDefault();
-            shell.openExternal(url);
-        }
-    });
-
-    
-
-    win.loadURL(`${ALLOWED_URL}/pages/login.html`);
+  win.loadURL(`${ALLOWED_URL}/pages/login.html`);
 }
 
 app.whenReady().then(() => {
-    createWindow();
+  createWindow();
 
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
-        }
-    });
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

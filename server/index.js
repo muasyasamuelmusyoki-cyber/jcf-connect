@@ -22,6 +22,8 @@ const leadersRoutes = require('./routes/leaders');
 const usersRoutes = require('./routes/users');
 const settingsRoutes = require('./routes/settings');
 const twofactorRoutes = require('./routes/twofactor');
+const licensingRoutes = require('./routes/licensing');
+const licenseActivationRoutes = require('./routes/license-activation');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +48,8 @@ app.use('/api/leaders', leadersRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/2fa', twofactorRoutes);
+app.use('/api/licensing', licensingRoutes);
+app.use('/api/license-activation', licenseActivationRoutes);
 
 app.use(express.static(path.join(__dirname, '..')));
 app.use('/pages', express.static(path.join(__dirname, '..', 'pages')));

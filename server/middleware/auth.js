@@ -1,10 +1,15 @@
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'jcf-connect-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-if (!process.env.JWT_SECRET) {
-  console.warn('Warning: JWT_SECRET not set in .env (using default)');
+if (
+  typeof JWT_SECRET !== 'string' ||
+  Buffer.byteLength(JWT_SECRET, 'utf8') < 32
+) {
+  throw new Error(
+    'Security error: JWT_SECRET must be configured with at least 32 bytes.'
+  );
 }
 
 function authRequired(req, res, next) {
@@ -74,6 +79,7 @@ function requireAccess(...pageKeys) {
     next();
   };
 }
+
 
 module.exports = {
   authRequired,

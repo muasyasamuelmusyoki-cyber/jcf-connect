@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
@@ -239,7 +239,6 @@
       <a href="finance.html" class="nav-item"><span class="nav-icon">💰</span> Finance</a>
       <a href="assets.html" class="nav-item"><span class="nav-icon">📦</span> Assets</a>
       <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events</a>
-      <a href="licenses.html" class="nav-item"><span class="nav-icon">🔑</span> Licenses</a>
       <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span> Reports</a>
       <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
     </nav>
