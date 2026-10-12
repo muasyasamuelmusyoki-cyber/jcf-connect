@@ -40,7 +40,7 @@ function normalize(row) {
   };
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   const list = s.attendance
@@ -49,7 +49,7 @@ router.get('/', (req, res) => {
   res.json(list);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const row = s.attendance.find(
@@ -59,7 +59,7 @@ router.get('/:id', (req, res) => {
   res.json(normalize(row));
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -101,11 +101,11 @@ router.post('/', (req, res) => {
   };
 
   s.attendance.push(record);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(normalize(record));
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const i = s.attendance.findIndex(
@@ -143,18 +143,18 @@ router.put('/:id', (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  db.saveStore();
+  await db.saveStore();
   res.json(normalize(s.attendance[i]));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const before = s.attendance.length;
   s.attendance = s.attendance.filter(
     (x) => String(x.id) !== String(req.params.id)
   );
-  db.saveStore();
+  await db.saveStore();
   if (s.attendance.length === before) {
     return res.status(404).json({ error: 'Record not found' });
   }

@@ -31,13 +31,13 @@ function normalize(a) {
   };
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   res.json(s.assets.map(normalize).reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const row = s.assets.find((x) => String(x.id) === String(req.params.id));
@@ -45,7 +45,7 @@ router.get('/:id', (req, res) => {
   res.json(normalize(row));
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -68,11 +68,11 @@ router.post('/', (req, res) => {
   };
 
   s.assets.push(asset);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(normalize(asset));
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const i = s.assets.findIndex((x) => String(x.id) === String(req.params.id));
@@ -99,16 +99,16 @@ router.put('/:id', (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  db.saveStore();
+  await db.saveStore();
   res.json(normalize(s.assets[i]));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const before = s.assets.length;
   s.assets = s.assets.filter((x) => String(x.id) !== String(req.params.id));
-  db.saveStore();
+  await db.saveStore();
   if (s.assets.length === before) {
     return res.status(404).json({ error: 'Asset not found' });
   }

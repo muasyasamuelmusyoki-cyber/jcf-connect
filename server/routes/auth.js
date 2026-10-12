@@ -113,7 +113,7 @@ router.post('/login', loginLimiter, async (req, res) => {
 });
 
 // VERIFY 2FA
-router.post('/verify-2fa', twoFactorLimiter, (req, res) => {
+router.post('/verify-2fa', twoFactorLimiter, async (req, res) => {
   const pendingToken = req.body.pendingToken || '';
   const code = String(req.body.code || '').trim();
 
@@ -184,7 +184,7 @@ router.post('/verify-2fa', twoFactorLimiter, (req, res) => {
 });
 
 // CURRENT USER
-router.get('/me', authRequired, (req, res) => {
+router.get('/me', authRequired, async (req, res) => {
   const user = db.findUserById(req.user.id);
 
   if (!user) {
@@ -199,7 +199,7 @@ router.get('/me', authRequired, (req, res) => {
 });
 
 // LOGOUT
-router.post('/logout', authRequired, (req, res) => {
+router.post('/logout', authRequired, async (req, res) => {
   res.json({
     ok: true
   });
@@ -235,7 +235,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
     u.resetCode = code;
     u.resetExpires = Date.now() + 10 * 60 * 1000;
     u.resetAttempts = 0;
-    db.saveStore();
+    await db.saveStore();
   }
 
   try {
@@ -252,7 +252,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
 });
 
 // RESET PASSWORD
-router.post('/reset-password', passwordResetLimiter, (req, res) => {
+router.post('/reset-password', passwordResetLimiter, async (req, res) => {
   const email = (req.body.email || '').trim().toLowerCase();
   const code = (req.body.code || '').trim();
   const newPassword = req.body.newPassword || '';
@@ -296,14 +296,14 @@ router.post('/reset-password', passwordResetLimiter, (req, res) => {
       delete user.resetCode;
       delete user.resetExpires;
       delete user.resetAttempts;
-      db.saveStore();
+      await db.saveStore();
 
       return res.status(400).json({
         error: 'Too many invalid reset-code attempts. Request a new code.'
       });
     }
 
-    db.saveStore();
+    await db.saveStore();
 
     return res.status(400).json({
       error: 'Invalid reset code'
@@ -316,7 +316,7 @@ router.post('/reset-password', passwordResetLimiter, (req, res) => {
   delete user.resetExpires;
   delete user.resetAttempts;
 
-  db.saveStore();
+  await db.saveStore();
 
   res.json({
     ok: true,

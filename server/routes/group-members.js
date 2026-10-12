@@ -7,11 +7,11 @@ router.use(authRequired);
 
 function store() { return db.getStore(); }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.json((store().group_members || []).slice().reverse());
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   if (!s.group_members) s.group_members = [];
   const b = req.body;
@@ -26,11 +26,11 @@ router.post('/', (req, res) => {
     notes: b.notes || ''
   };
   s.group_members.push(member);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(member);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   if (!s.group_members) s.group_members = [];
   const i = s.group_members.findIndex((x) => x.id === req.params.id);
@@ -46,15 +46,15 @@ router.put('/:id', (req, res) => {
     status: b.status || 'Active',
     notes: b.notes || ''
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(s.group_members[i]);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   const before = (s.group_members || []).length;
   s.group_members = (s.group_members || []).filter((x) => x.id !== req.params.id);
-  db.saveStore();
+  await db.saveStore();
   if ((s.group_members || []).length === before) return res.status(404).json({ error: 'Not found' });
   res.json({ ok: true });
 });

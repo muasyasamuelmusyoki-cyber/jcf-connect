@@ -26,7 +26,7 @@ function normalize(t) {
   };
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   const list = s.finance
@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
   res.json(list);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const row = s.finance.find((x) => String(x.id) === String(req.params.id));
@@ -43,7 +43,7 @@ router.get('/:id', (req, res) => {
   res.json(normalize(row));
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -64,11 +64,11 @@ router.post('/', (req, res) => {
   };
 
   s.finance.push(record);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(normalize(record));
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const i = s.finance.findIndex((x) => String(x.id) === String(req.params.id));
@@ -90,11 +90,11 @@ router.put('/:id', (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  db.saveStore();
+  await db.saveStore();
   res.json(normalize(s.finance[i]));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const before = s.finance.length;
@@ -102,7 +102,7 @@ router.delete('/:id', (req, res) => {
   if (s.finance.length === before) {
     return res.status(404).json({ error: 'Transaction not found' });
   }
-  db.saveStore();
+  await db.saveStore();
   res.json({ ok: true });
 });
 

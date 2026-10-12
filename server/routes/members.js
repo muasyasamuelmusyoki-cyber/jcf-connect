@@ -15,7 +15,7 @@ router.get('/:id', (req, res) => {
   res.json(row);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const b = req.body;
   const member = {
     id: b.id || ('MEM-' + Date.now()),
@@ -41,10 +41,11 @@ router.post('/', (req, res) => {
     created_at: new Date().toISOString()
   };
   db.addMember(member);
+  await db.saveStore();
   res.status(201).json(member);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const b = req.body;
   const updated = db.updateMember(req.params.id, {
     name: b.name || '',
@@ -68,12 +69,14 @@ router.put('/:id', (req, res) => {
     status: b.status || 'Active'
   });
   if (!updated) return res.status(404).json({ error: 'Member not found' });
+  await db.saveStore();
   res.json(updated);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const ok = db.deleteMember(req.params.id);
   if (!ok) return res.status(404).json({ error: 'Member not found' });
+  await db.saveStore();
   res.json({ ok: true });
 });
 

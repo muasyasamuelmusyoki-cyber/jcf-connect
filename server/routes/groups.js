@@ -7,17 +7,17 @@ router.use(authRequired);
 
 function store() { return db.getStore(); }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.json((store().groups || []).slice().reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const g = (store().groups || []).find((x) => x.id === req.params.id);
   if (!g) return res.status(404).json({ error: 'Group not found' });
   res.json(g);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   if (!s.groups) s.groups = [];
   const b = req.body;
@@ -33,11 +33,11 @@ router.post('/', (req, res) => {
     notes: b.notes || ''
   };
   s.groups.push(group);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(group);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   if (!s.groups) s.groups = [];
   const i = s.groups.findIndex((x) => x.id === req.params.id);
@@ -59,16 +59,16 @@ router.put('/:id', (req, res) => {
       if (m.group_id === req.params.id) m.group_name = s.groups[i].name;
     });
   }
-  db.saveStore();
+  await db.saveStore();
   res.json(s.groups[i]);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   const before = (s.groups || []).length;
   s.groups = (s.groups || []).filter((x) => x.id !== req.params.id);
   s.group_members = (s.group_members || []).filter((m) => m.group_id !== req.params.id);
-  db.saveStore();
+  await db.saveStore();
   if ((s.groups || []).length === before) return res.status(404).json({ error: 'Group not found' });
   res.json({ ok: true });
 });

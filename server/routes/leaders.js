@@ -13,13 +13,13 @@ function ensureLeaders(s) {
   if (!Array.isArray(s.leaders)) s.leaders = [];
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensureLeaders(s);
   res.json(s.leaders.slice().reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensureLeaders(s);
   const row = s.leaders.find((x) => String(x.id) === String(req.params.id));
@@ -27,7 +27,7 @@ router.get('/:id', (req, res) => {
   res.json(row);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensureLeaders(s);
   const b = req.body || {};
@@ -46,11 +46,11 @@ router.post('/', (req, res) => {
     createdAt: new Date().toISOString()
   };
   s.leaders.push(leader);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(leader);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensureLeaders(s);
   const i = s.leaders.findIndex((x) => String(x.id) === String(req.params.id));
@@ -67,16 +67,16 @@ router.put('/:id', (req, res) => {
     notes: (b.notes || '').trim(),
     updatedAt: new Date().toISOString()
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(s.leaders[i]);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensureLeaders(s);
   const before = s.leaders.length;
   s.leaders = s.leaders.filter((x) => String(x.id) !== String(req.params.id));
-  db.saveStore();
+  await db.saveStore();
   if (s.leaders.length === before) {
     return res.status(404).json({ error: 'Leader not found' });
   }

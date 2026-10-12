@@ -36,13 +36,13 @@ function logAction(store, actor, action, detail) {
   }
 }
 
-router.get('/', requireRole('Super Admin', 'Admin'), (req, res) => {
+router.get('/', requireRole('Super Admin', 'Admin'), async (req, res) => {
   const store = db.getStore();
 
   res.json((store.users || []).map(publicUser));
 });
 
-router.post('/', requireRole('Super Admin', 'Admin'), (req, res) => {
+router.post('/', requireRole('Super Admin', 'Admin'), async (req, res) => {
   const store = db.getStore();
 
   if (!store.users) {
@@ -97,12 +97,12 @@ router.post('/', requireRole('Super Admin', 'Admin'), (req, res) => {
     email
   );
 
-  db.saveStore();
+  await db.saveStore();
 
   res.status(201).json(publicUser(user));
 });
 
-router.put('/:id', requireRole('Super Admin', 'Admin'), (req, res) => {
+router.put('/:id', requireRole('Super Admin', 'Admin'), async (req, res) => {
   const store = db.getStore();
 
   const id = isNaN(Number(req.params.id))
@@ -188,12 +188,12 @@ router.put('/:id', requireRole('Super Admin', 'Admin'), (req, res) => {
     u.email
   );
 
-  db.saveStore();
+  await db.saveStore();
 
   res.json(publicUser(u));
 });
 
-router.delete('/:id', requireRole('Super Admin'), (req, res) => {
+router.delete('/:id', requireRole('Super Admin'), async (req, res) => {
   const store = db.getStore();
 
   const id = isNaN(Number(req.params.id))
@@ -227,12 +227,12 @@ router.delete('/:id', requireRole('Super Admin'), (req, res) => {
     user.email
   );
 
-  db.saveStore();
+  await db.saveStore();
 
   res.json({ ok: true });
 });
 
-router.get('/logs', requireRole('Super Admin', 'Admin'), (req, res) => {
+router.get('/logs', requireRole('Super Admin', 'Admin'), async (req, res) => {
   const store = db.getStore();
 
   res.json((store.logs || []).slice(0, 100));

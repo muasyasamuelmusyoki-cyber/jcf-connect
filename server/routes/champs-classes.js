@@ -28,13 +28,13 @@ function normalize(c) {
   };
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   res.json(s.champs_classes.map(normalize).reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const row = s.champs_classes.find((x) => String(x.id) === String(req.params.id));
@@ -42,7 +42,7 @@ router.get('/:id', (req, res) => {
   res.json(normalize(row));
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -65,11 +65,11 @@ router.post('/', (req, res) => {
   };
 
   s.champs_classes.push(record);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(normalize(record));
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const i = s.champs_classes.findIndex((x) => String(x.id) === String(req.params.id));
@@ -89,11 +89,11 @@ router.put('/:id', (req, res) => {
     notes: b.notes != null ? String(b.notes).trim() : (cur.notes || ''),
     updatedAt: new Date().toISOString()
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(normalize(s.champs_classes[i]));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const id = String(req.params.id);
@@ -106,7 +106,7 @@ router.delete('/:id', (req, res) => {
     }
     return st;
   });
-  db.saveStore();
+  await db.saveStore();
   if (s.champs_classes.length === before) {
     return res.status(404).json({ error: 'Class not found' });
   }

@@ -9,20 +9,20 @@ function load() {
   return db.getStore();
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const store = load();
   const list = (store.visitors || []).slice().reverse();
   res.json(list);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const store = load();
   const row = (store.visitors || []).find((v) => v.id === req.params.id);
   if (!row) return res.status(404).json({ error: 'Visitor not found' });
   res.json(row);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const b = req.body;
   const store = load();
   if (!store.visitors) store.visitors = [];
@@ -40,11 +40,11 @@ router.post('/', (req, res) => {
   };
 
   store.visitors.push(visitor);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(visitor);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const store = load();
   if (!store.visitors) store.visitors = [];
   const i = store.visitors.findIndex((v) => v.id === req.params.id);
@@ -61,15 +61,15 @@ router.put('/:id', (req, res) => {
     status: b.status || 'New',
     notes: b.notes || ''
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(store.visitors[i]);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const store = load();
   const before = (store.visitors || []).length;
   store.visitors = (store.visitors || []).filter((v) => v.id !== req.params.id);
-  db.saveStore();
+  await db.saveStore();
   if (store.visitors.length === before) {
     return res.status(404).json({ error: 'Visitor not found' });
   }

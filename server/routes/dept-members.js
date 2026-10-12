@@ -32,13 +32,13 @@ function normalize(m, s) {
   };
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   res.json(s.dept_members.map((m) => normalize(m, s)).reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const row = s.dept_members.find((x) => String(x.id) === String(req.params.id));
@@ -46,7 +46,7 @@ router.get('/:id', (req, res) => {
   res.json(normalize(row, s));
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -66,11 +66,11 @@ router.post('/', (req, res) => {
     createdAt: new Date().toISOString()
   };
   s.dept_members.push(record);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(normalize(record, s));
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const i = s.dept_members.findIndex((x) => String(x.id) === String(req.params.id));
@@ -92,18 +92,18 @@ router.put('/:id', (req, res) => {
     notes: b.notes != null ? String(b.notes).trim() : (cur.notes || ''),
     updatedAt: new Date().toISOString()
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(normalize(s.dept_members[i], s));
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   ensure(s);
   const before = s.dept_members.length;
   s.dept_members = s.dept_members.filter(
     (x) => String(x.id) !== String(req.params.id)
   );
-  db.saveStore();
+  await db.saveStore();
   if (s.dept_members.length === before) {
     return res.status(404).json({ error: 'Member not found' });
   }

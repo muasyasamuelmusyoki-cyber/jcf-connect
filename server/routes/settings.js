@@ -15,7 +15,7 @@ function ensure(s) {
   if (!s.settings.prefs) s.settings.prefs = {};
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const s = store();
   ensure(s);
   res.json({
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.put('/church', requireRole('Super Admin', 'Admin'), (req, res) => {
+router.put('/church', requireRole('Super Admin', 'Admin'), async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -37,10 +37,10 @@ router.put('/church', requireRole('Super Admin', 'Admin'), (req, res) => {
     address: String(b.address || '').trim(),
     about: String(b.about || '').trim()
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(s.settings.church);
 });
-router.put('/prefs', (req, res) => {
+router.put('/prefs', async (req, res) => {
   const s = store();
   ensure(s);
   const b = req.body || {};
@@ -59,7 +59,7 @@ router.put('/prefs', (req, res) => {
       : 5
   };
 
-  db.saveStore();
+  await db.saveStore();
   res.json(s.settings.prefs);
 });
 

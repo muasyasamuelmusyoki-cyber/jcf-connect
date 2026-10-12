@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-require('./db');
+const db = require('./db');
+require('./async-errors');
 
 const authRoutes = require('./routes/auth');
 const membersRoutes = require('./routes/members');
@@ -56,9 +57,25 @@ app.use('/pages', express.static(path.join(__dirname, '..', 'pages')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', app: 'JCF Connect' });
+  res.json({ status: 'ok', app: 'JCF Connect', database: 'connected' });
 });
 
-app.listen(PORT, () => {
-  console.log('JCF Connect API running on http://localhost:' + PORT);
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  console.error('Request failed:', err && err.message ? err.message : 'Unknown error');
+  return res.status(500).json({ error: 'The request could not be completed.' });
 });
+
+async function start() {
+  try {
+    await db.init();
+    app.listen(PORT, () => {
+      console.log('JCF Connect API running on http://localhost:' + PORT);
+    });
+  } catch (error) {
+    console.error('JCF Connect startup failed:', error.message);
+    process.exitCode = 1;
+  }
+}
+
+start();

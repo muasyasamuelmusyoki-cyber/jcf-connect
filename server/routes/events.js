@@ -9,17 +9,17 @@ function store() {
   return db.getStore();
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.json((store().events || []).slice().reverse());
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const row = (store().events || []).find((x) => x.id === req.params.id);
   if (!row) return res.status(404).json({ error: 'Event not found' });
   res.json(row);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const s = store();
   if (!s.events) s.events = [];
   const b = req.body || {};
@@ -40,11 +40,11 @@ router.post('/', (req, res) => {
     notes: b.notes || ''
   };
   s.events.push(event);
-  db.saveStore();
+  await db.saveStore();
   res.status(201).json(event);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const s = store();
   if (!s.events) s.events = [];
   const i = s.events.findIndex((x) => x.id === req.params.id);
@@ -66,15 +66,15 @@ router.put('/:id', (req, res) => {
     department: b.department || '',
     notes: b.notes || ''
   };
-  db.saveStore();
+  await db.saveStore();
   res.json(s.events[i]);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const s = store();
   const before = (s.events || []).length;
   s.events = (s.events || []).filter((x) => x.id !== req.params.id);
-  db.saveStore();
+  await db.saveStore();
   if ((s.events || []).length === before) {
     return res.status(404).json({ error: 'Event not found' });
   }

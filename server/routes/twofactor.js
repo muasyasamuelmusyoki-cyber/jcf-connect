@@ -17,7 +17,7 @@ router.post('/setup', authRequired, async (req, res) => {
   });
 
   user.twoFactorTempSecret = secret.base32;
-  db.saveStore();
+  await db.saveStore();
 
   try {
     const qr = await QRCode.toDataURL(secret.otpauth_url);
@@ -27,7 +27,7 @@ router.post('/setup', authRequired, async (req, res) => {
   }
 });
 
-router.post('/enable', authRequired, (req, res) => {
+router.post('/enable', authRequired, async (req, res) => {
   const code = String(req.body.code || '').trim();
   const store = db.getStore();
   const user = (store.users || []).find((u) => String(u.id) === String(req.user.id));
@@ -47,12 +47,12 @@ router.post('/enable', authRequired, (req, res) => {
   user.twoFactorSecret = user.twoFactorTempSecret;
   user.twoFactorEnabled = true;
   delete user.twoFactorTempSecret;
-  db.saveStore();
+  await db.saveStore();
 
   res.json({ ok: true, message: 'Two-factor authentication enabled' });
 });
 
-router.post('/disable', authRequired, (req, res) => {
+router.post('/disable', authRequired, async (req, res) => {
   const code = String(req.body.code || '').trim();
   const store = db.getStore();
   const user = (store.users || []).find((u) => String(u.id) === String(req.user.id));
@@ -72,12 +72,12 @@ router.post('/disable', authRequired, (req, res) => {
   user.twoFactorEnabled = false;
   delete user.twoFactorSecret;
   delete user.twoFactorTempSecret;
-  db.saveStore();
+  await db.saveStore();
 
   res.json({ ok: true, message: 'Two-factor authentication disabled' });
 });
 
-router.get('/status', authRequired, (req, res) => {
+router.get('/status', authRequired, async (req, res) => {
   const store = db.getStore();
   const user = (store.users || []).find((u) => String(u.id) === String(req.user.id));
   res.json({ enabled: !!(user && user.twoFactorEnabled) });
