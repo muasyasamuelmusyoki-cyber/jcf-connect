@@ -593,7 +593,8 @@
       { key: 'assets', label: 'Assets' },
       { key: 'events', label: 'Events' },
       { key: 'reports', label: 'Reports' },
-      { key: 'settings', label: 'Settings' }
+      { key: 'settings', label: 'Settings' },
+      { key: 'licenses', label: 'Licenses' }
     ];
 
     function openSidebar() {
@@ -608,6 +609,19 @@
     }
 
     function getToken() { return localStorage.getItem('jcf_token') || ''; }
+    function isSuperAdminSession() {
+      var u = null;
+      try { u = JSON.parse(localStorage.getItem('jcf_user') || 'null'); } catch (e) {}
+      return !!u && u.role === 'Super Admin';
+    }
+    function configureUserAdminUI() {
+      var usersTab = document.querySelector('.tabs button[onclick*="users"]');
+      var addButton = document.querySelector('#panel-users button[onclick="openUserForm()"]');
+      if (!isSuperAdminSession()) {
+        if (usersTab) usersTab.style.display = 'none';
+        if (addButton) addButton.style.display = 'none';
+      }
+    }
     function getSession() {
       try { return JSON.parse(localStorage.getItem('jcf_user') || 'null'); }
       catch (e) { return null; }
@@ -800,8 +814,8 @@
           '<td><span class="badge ' + (st === 'active' ? 'active' : 'suspended') + '">' + (u.status || 'Active') + '</span></td>' +
           '<td>' + accessLabel + '</td>' +
           '<td>' +
-            '<button type="button" class="action-btn" onclick="editUser(\'' + id + '\')">Edit</button>' +
-            '<button type="button" class="action-btn" onclick="deleteUser(\'' + id + '\')">Delete</button>' +
+            ((isSuperAdminSession() || u.role !== 'Super Admin') ? '<button type="button" class="action-btn" onclick="editUser(\'' + id + '\')">Edit</button>' : '') +
+            (isSuperAdminSession() ? '<button type="button" class="action-btn" onclick="deleteUser(\'' + id + '\')">Delete</button>' : '') +
           '</td></tr>';
       }).join('');
     }
@@ -816,6 +830,7 @@
       document.getElementById('uRole').value = 'Admin';
       document.getElementById('uStatus').value = 'Active';
       buildAccessGrid([]);
+      document.getElementById('uRole').disabled = false;
       document.getElementById('userModal').classList.add('show');
     }
 
@@ -836,6 +851,8 @@
       document.getElementById('uRole').value = u.role || 'Admin';
       document.getElementById('uStatus').value = u.status || 'Active';
       buildAccessGrid(u.access || []);
+      document.getElementById('uRole').disabled = !isSuperAdminSession();
+      document.querySelectorAll('.access-cb').forEach(function (cb) { cb.disabled = !isSuperAdminSession(); });
       document.getElementById('userModal').classList.add('show');
     }
 
@@ -854,10 +871,16 @@
       var body = {
         name: name,
         email: email,
-        role: document.getElementById('uRole').value,
-        status: document.getElementById('uStatus').value,
-        access: getSelectedAccess()
+        status: document.getElementById('uStatus').value
       };
+      if (isSuperAdminSession()) {
+        body.role = document.getElementById('uRole').value;
+        body.access = getSelectedAccess();
+      }
+      if (!editingUserId && !isSuperAdminSession()) {
+        alert('Only a Super Admin can create users.');
+        return;
+      }
       if (password && password.length >= 6) body.password = password;
 
       var path = editingUserId ? '/users/' + encodeURIComponent(editingUserId) : '/users';
@@ -927,6 +950,7 @@
     });
 
     requireLogin();
+    configureUserAdminUI();
     var session = getSession();
     if (session) {
       document.getElementById('userName').textContent = session.name || '—';

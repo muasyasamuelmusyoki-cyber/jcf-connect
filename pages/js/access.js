@@ -28,7 +28,8 @@
     'events.html': 'events',
     'event-form.html': 'events',
     'reports.html': 'reports',
-    'settings.html': 'settings'
+    'settings.html': 'settings',
+    'licenses.html': 'licenses'
   };
 
   var NAV_TO_KEY = {
@@ -44,7 +45,8 @@
     'assets.html': 'assets',
     'events.html': 'events',
     'reports.html': 'reports',
-    'settings.html': 'settings'
+    'settings.html': 'settings',
+    'licenses.html': 'licenses'
   };
 
   function getSession() {
@@ -85,8 +87,8 @@
 
     var access = user.access;
     if (!Array.isArray(access)) access = [];
-    if (access.indexOf('*') !== -1) return true;
-    if (!pageKey) return true;
+    // Only the Super Admin role gets universal access. Ignore stale or forged wildcards.
+    if (!pageKey) return false;
     return access.indexOf(pageKey) !== -1;
   }
 
@@ -103,7 +105,7 @@
     }
     if (!canAccess(pageKey)) {
       alert('You do not have permission to open this page.');
-      window.location.href = 'dashboard.html';
+      redirectToAllowedPage();
       return false;
     }
     return true;
@@ -112,10 +114,31 @@
   /**
    * Auto-detect current page key from URL and enforce access
    */
+  function redirectToAllowedPage() {
+    var candidates = [
+      ['dashboard.html', 'dashboard'], ['members.html', 'members'],
+      ['visitors.html', 'visitors'], ['growth-groups.html', 'groups'],
+      ['departments.html', 'departments'], ['leaders.html', 'leaders'],
+      ['attendance.html', 'attendance'], ['champs-house.html', 'champs'],
+      ['finance.html', 'finance'], ['assets.html', 'assets'],
+      ['events.html', 'events'], ['reports.html', 'reports'],
+      ['settings.html', 'settings'], ['licenses.html', 'licenses']
+    ];
+    for (var i = 0; i < candidates.length; i++) {
+      if (canAccess(candidates[i][1])) { window.location.href = candidates[i][0]; return; }
+    }
+    logout('no-access');
+  }
+
   function requireAccessForCurrentPage() {
     var file = (window.location.pathname.split('/').pop() || '').toLowerCase();
+    if (file === 'login.html' || file === 'forgot-password.html') return true;
     var key = PAGE_KEYS[file];
-    if (!key) return true;
+    if (!key) {
+      alert('This page is not assigned to an access module.');
+      redirectToAllowedPage();
+      return false;
+    }
     return requireAccess(key);
   }
 
@@ -127,7 +150,10 @@
     links.forEach(function (a) {
       var href = (a.getAttribute('href') || '').split('?')[0].split('/').pop();
       var key = NAV_TO_KEY[href];
-      if (!key) return;
+      if (!key) {
+        if (/\.html$/i.test(href) && href !== 'login.html' && href !== 'forgot-password.html') a.style.display = 'none';
+        return;
+      }
       if (!canAccess(key)) {
         a.style.display = 'none';
       }
@@ -180,18 +206,34 @@
   window.resetIdleTimer = resetIdleTimer;
   window.startIdleWatch = startIdleWatch;
 
-  // Auto-run on load
+  // Refresh the current user from the server before applying page permissions.
+  // This prevents stale localStorage permissions from surviving a role/access change.
   document.addEventListener('DOMContentLoaded', function () {
     var path = (window.location.pathname || '').toLowerCase();
-    if (path.indexOf('login') !== -1 || path.indexOf('forgot') !== -1) return;
+    var file = (path.split('/').pop() || '').toLowerCase();
+    if (file === 'login.html' || file === 'forgot-password.html') return;
 
     if (!getToken() || !getSession()) {
       logout();
       return;
     }
 
-    requireAccessForCurrentPage();
-    applySidebarAccess();
-    startIdleWatch();
+    fetch('/api/auth/me', {
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + getToken() },
+      cache: 'no-store'
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Session could not be verified');
+      return response.json();
+    }).then(function (data) {
+      if (!data || !data.user) throw new Error('Invalid session response');
+      localStorage.setItem('jcf_user', JSON.stringify(data.user));
+      if (!requireAccessForCurrentPage()) return;
+      applySidebarAccess();
+      startIdleWatch();
+    }).catch(function () {
+      // Fail closed: if the server cannot verify the session, do not trust cached access.
+      logout('session-check-failed');
+    });
   });
 })();

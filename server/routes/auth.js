@@ -12,15 +12,45 @@ const { sendResetCode } = require('../mail');
 
 const router = express.Router();
 
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many login attempts. Please try again later.' } });
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many login attempts. Please try again later.'
+  }
+});
 
-const twoFactorLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many verification attempts. Please try again later.' } });
+const twoFactorLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many verification attempts. Please try again later.'
+  }
+});
 
-const passwordResetLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many password reset requests. Please try again later.' } });
+const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many password reset requests. Please try again later.'
+  }
+});
 
 function userAccess(user) {
-  if (Array.isArray(user.access) && user.access.length) return user.access;
-  if (user.role === 'Super Admin') return ['*'];
+  if (Array.isArray(user.access) && user.access.length) {
+    return user.access;
+  }
+
+  if (user.role === 'Super Admin') {
+    return ['*'];
+  }
+
   return [];
 }
 
@@ -41,7 +71,6 @@ router.post('/login', loginLimiter, async (req, res) => {
   const password = req.body.password || '';
   const recaptchaToken = req.body.recaptchaToken || '';
 
-  // Verify Google reCAPTCHA
   const recaptchaOk = await verifyRecaptcha(recaptchaToken);
 
   if (!recaptchaOk) {
@@ -88,11 +117,11 @@ router.post('/login', loginLimiter, async (req, res) => {
 
     return res.json({
       requires2FA: true,
-      pendingToken: pendingToken
+      pendingToken
     });
   }
 
-  // Normal login
+  // NORMAL LOGIN
   const token = jwt.sign(
     {
       id: user.id,
@@ -106,8 +135,8 @@ router.post('/login', loginLimiter, async (req, res) => {
     }
   );
 
-  res.json({
-    token: token,
+  return res.json({
+    token,
     user: publicUser(user)
   });
 });
@@ -177,8 +206,8 @@ router.post('/verify-2fa', twoFactorLimiter, async (req, res) => {
     }
   );
 
-  res.json({
-    token: token,
+  return res.json({
+    token,
     user: publicUser(user)
   });
 });
@@ -193,20 +222,21 @@ router.get('/me', authRequired, async (req, res) => {
     });
   }
 
-  res.json({
+  return res.json({
     user: publicUser(user)
   });
 });
 
 // LOGOUT
 router.post('/logout', authRequired, async (req, res) => {
-  res.json({
+  return res.json({
     ok: true
   });
 });
 
 // FORGOT PASSWORD
 router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
+  const started = Date.now();
   const email = (req.body.email || '').trim().toLowerCase();
 
   if (!email) {
@@ -223,27 +253,78 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
   const user = db.findUserByEmail(email);
 
   if (!user) {
+    console.log(
+      '[Password reset] Unknown-email request:',
+      Date.now() - started,
+      'ms'
+    );
+
     return res.json(safeReply);
   }
 
   const code = String(randomInt(100000, 1000000));
+  const expiresAt = Date.now() + 10 * 60 * 1000;
 
-  const store = db.getStore();
-  const u = store.users.find((x) => x.id === user.id);
+  // SAVE RESET CODE DIRECTLY TO THE USER'S POSTGRESQL ROW
+  try {
+    const saveStarted = Date.now();
 
-  if (u) {
-    u.resetCode = code;
-    u.resetExpires = Date.now() + 10 * 60 * 1000;
-    u.resetAttempts = 0;
-    await db.saveStore();
+    await db.updateUserResetCode(
+      user.id,
+      code,
+      expiresAt
+    );
+
+    console.log(
+      '[Password reset] Database save:',
+      Date.now() - saveStarted,
+      'ms'
+    );
+  } catch (err) {
+    console.error(
+      '[Password reset] Reset-code save failed:',
+      err.message
+    );
+
+    return res.status(500).json({
+      error: 'Could not prepare password reset. Please try again.'
+    });
   }
 
+  // SEND RESET EMAIL
   try {
-    await sendResetCode(user.email, code, user.name);
+    const mailStarted = Date.now();
+
+    await sendResetCode(
+      user.email,
+      code,
+      user.name
+    );
+
+    console.log(
+      '[Password reset] Email send:',
+      Date.now() - mailStarted,
+      'ms'
+    );
+
+    console.log(
+      '[Password reset] Total:',
+      Date.now() - started,
+      'ms'
+    );
 
     return res.json(safeReply);
   } catch (err) {
-    console.error('Email send failed:', err.message);
+    console.error(
+      '[Password reset] Email failed:',
+      err.message
+    );
+
+    console.log(
+      '[Password reset] Total before failure:',
+      Date.now() - started,
+      'ms'
+    );
 
     return res.status(500).json({
       error: 'Could not send email. Check SMTP settings in .env'
@@ -271,7 +352,7 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
 
   const store = db.getStore();
 
-  const user = store.users.find(
+  const user = (store.users || []).find(
     (u) =>
       (u.email || '').toLowerCase() === email &&
       u.status === 'Active'
@@ -290,12 +371,14 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
   }
 
   if (String(user.resetCode) !== code) {
-    user.resetAttempts = (Number(user.resetAttempts) || 0) + 1;
+    user.resetAttempts =
+      (Number(user.resetAttempts) || 0) + 1;
 
     if (user.resetAttempts >= 5) {
       delete user.resetCode;
       delete user.resetExpires;
       delete user.resetAttempts;
+
       await db.saveStore();
 
       return res.status(400).json({
@@ -310,18 +393,28 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     });
   }
 
-  user.password = bcrypt.hashSync(newPassword, 10);
+  try {
+    const passwordHash = await bcrypt.hash(newPassword, 10);
 
-  delete user.resetCode;
-  delete user.resetExpires;
-  delete user.resetAttempts;
+    await db.updateUserPassword(
+      user.id,
+      passwordHash
+    );
 
-  await db.saveStore();
+    return res.json({
+      ok: true,
+      message: 'Password updated. You can sign in now.'
+    });
+  } catch (err) {
+    console.error(
+      'Password reset persistence failed:',
+      err.message
+    );
 
-  res.json({
-    ok: true,
-    message: 'Password updated. You can sign in now.'
-  });
+    return res.status(500).json({
+      error: 'Could not save the new password. Please try again.'
+    });
+  }
 });
 
 module.exports = router;
